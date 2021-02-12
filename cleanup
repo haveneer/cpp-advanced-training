@@ -1,0 +1,2 @@
+#!/bin/sh
+find . -name "*.cpp" -o -name "*.cxx" -o -name "*.hpp" | xargs perl -pi -e 'chomp if eof'

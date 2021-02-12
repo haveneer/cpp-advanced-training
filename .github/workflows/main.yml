@@ -1,0 +1,66 @@
+# To debug a workflow see: https://docs.github.com/en/actions/configuring-and-managing-workflows/managing-a-workflow-run#enabling-debug-logging
+
+name: C++ CI
+
+on: [ push ]
+
+jobs:
+  build-unix:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu GCC 10
+            os: ubuntu-20.04
+            c-compiler: gcc-10
+            cxx-compiler: g++-10
+          - name: Ubuntu GCC 9
+            os: ubuntu-20.04
+            c-compiler: gcc-9
+            cxx-compiler: g++-9
+          - name: Ubuntu Clang 10
+            os: ubuntu-20.04
+            c-compiler: clang-10
+            cxx-compiler: clang++-10
+          - name: macOS 10.15
+            os: macOS-10.15
+          # macOS-11 not yet publicly available
+          # - name: macOS 11
+          #   os: macOS-11
+          #   compiler: # default
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      # Runs a set of commands using the runners shell
+      - name: configure
+        run: |
+          echo "Configure on $(uname -a)"
+          mkdir build && cd build && CC=${{matrix.c-compiler}} CXX=${{matrix.cxx-compiler}} cmake ..
+      # Runs a single command using the runners shell
+      - name: build
+        run: cmake --build build
+      - name: test
+        run: cd build && ctest
+
+  build-windows:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: configure
+        run: mkdir build && cd build && cmake ..
+      - name: build
+        run: cmake --build build --config Debug
+      - name: test
+        run: cd build && ctest -C Debug
