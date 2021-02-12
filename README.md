@@ -1,10 +1,10 @@
-[![C++ CI](https://github.com/haveneer/cpp-training/workflows/C++%20CI/badge.svg)](https://github.com/haveneer/cpp-training/actions) [![Build Status](https://travis-ci.com/haveneer/cpp-training.svg?branch=master)](https://travis-ci.com/haveneer/cpp-training)
+[![C++ CI](https://github.com/haveneer/cpp-advanced-training/workflows/C++%20CI/badge.svg)](https://github.com/haveneer/cpp-advanced-training/actions) [![Build Status](https://travis-ci.com/haveneer/cpp-advanced-training.svg?branch=master)](https://travis-ci.com/haveneer/cpp-advanced-training)
 
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
     <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0">
         <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
     </a><br>
-    <a rel="cc:attributionURL" property="dct:title" href="https://github.com/haveneer/cpp-training">
+    <a rel="cc:attributionURL" property="dct:title" href="https://github.com/haveneer/cpp-advanced-training">
         Code snippets for Advanced C++ training
     </a>
     by 
