@@ -114,9 +114,9 @@ void init_20() {
 void types_20() {
 #if __cpp_lib_bit_cast
 #ifdef WIN32
-  cout << typeid(bit_cast<double>(0));
-#else  
 #pragma message("was not supported in MSVC 19.28")
+#else  
+  cout << typeid(bit_cast<double>(0));
 #endif
 #else
 #pragma message("undefined __cpp_lib_bit_cast")
