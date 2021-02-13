@@ -21,7 +21,7 @@ template <typename T> std::string type() { return typeid(T).name(); }
 #endif
 #include <iostream>
 
-static_assert(__cplusplus >= 201707);
+static_assert(__cplusplus >= 201703); // better with 201707 ?
 
 #if __has_include(<bit>)
 #include <bit>
@@ -39,10 +39,10 @@ static_assert(__cplusplus >= 201707);
 #endif
 #include <array>
 #include <sstream>
-#if __cpp_concepts
+#if __has_include(<concepts>)
 #include <concepts>
 #else
-#pragma message("undefined __cpp_concepts")
+#pragma message("include <concepts> not found")
 #endif
 
 using namespace std;
@@ -118,26 +118,6 @@ void types_20() {
 #pragma message("undefined __cpp_lib_bit_cast")
 #endif
 }
-
-// template <bool do_check> struct Check {
-//  template <typename V> static auto check(V v) { assert(v == 1); }
-//};
-//
-// template <> struct Check<false> {
-//  static auto check() {}
-//};
-
-// template <bool do_check> struct Check {
-//  template <typename V, typename Pred> static auto check(V &v, Pred pred) {
-//    assert(erase_if(v, pred) == 1);
-//  }
-//};
-//
-// template <> struct Check<false> {
-//  template <typename V, typename Pred> static auto check(V &v, Pred pred) {
-//    erase_if(v, pred);
-//  }
-//};
 
 void dynamic_memory_20() {
 #if __cpp_lib_shared_ptr_arrays
