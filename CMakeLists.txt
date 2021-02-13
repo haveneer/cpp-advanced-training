@@ -4,6 +4,7 @@ option(ENABLE_STATIC_ANALYSIS "Enable static analysis" OFF)
 set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source in sub-projects
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DDEBUG_TYPE)
 add_definitions(-DSAFE_RUN) # add workaround for explicitly buggy example (or on the edge behavior)
 
@@ -39,6 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # To focus only on useful warnings 
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wunused-function -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
     # To focus only on useful warnings 
