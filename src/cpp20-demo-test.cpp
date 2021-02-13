@@ -113,9 +113,9 @@ void init_20() {
 
 void types_20() {
 #if __cpp_lib_bit_cast
-#ifdef WIN32
+#ifdef _MSC_VER // cf _MSC_FULL_VER
 #pragma message("was not supported in MSVC 19.28")
-#else  
+#else
   cout << typeid(bit_cast<double>(0));
 #endif
 #else
@@ -297,8 +297,10 @@ static_assert(_inc2(1) == 2);
  */
 
 template <typename T> concept compound_requirements = requires(T x) {
+#if !defined(__clang__) || (__clang_major__ > 11) || (__clang_major__ == 11 && __clang_minor__ > 0)
   { x + 1 }
-  ->convertible_to<bool>;
+  ->convertible_to<bool>; // not supported by clang 11.0
+#endif
   { x * 2 }
   ->same_as<int>;
 };
@@ -420,7 +422,7 @@ struct location_20 {
   }
 } location_20;
 #else
-#pragma message ("undefined __cpp_lib_source_location")
+#pragma message("undefined __cpp_lib_source_location")
 #endif
 
 /// @} other20
