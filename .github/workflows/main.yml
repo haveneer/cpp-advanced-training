@@ -20,14 +20,14 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-9
             cxx-compiler: g++-9
-          - name: Ubuntu Clang 10
-            os: ubuntu-20.04
-            c-compiler: clang-10
-            cxx-compiler: clang++-10
-          - name: Ubuntu Clang 11
-            os: ubuntu-20.04
-            c-compiler: clang-11
-            cxx-compiler: clang++-11
+#          - name: Ubuntu Clang 10
+#            os: ubuntu-20.04
+#            c-compiler: clang-10
+#            cxx-compiler: clang++-10
+#          - name: Ubuntu Clang 11
+#            os: ubuntu-20.04
+#            c-compiler: clang-11
+#            cxx-compiler: clang++-11
           - name: macOS 10.15
             os: macOS-10.15
           # macOS-11 not yet publicly available
