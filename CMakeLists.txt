@@ -3,7 +3,7 @@ project(cpp-advanced-training)
 option(ENABLE_STATIC_ANALYSIS "Enable static analysis" OFF)
 set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source in sub-projects
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DDEBUG_TYPE)
 add_definitions(-DSAFE_RUN) # add workaround for explicitly buggy example (or on the edge behavior)
@@ -47,6 +47,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-member-function -Wunused-private-field -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /Zc:__cplusplus")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI")
+    set(PGI TRUE)
 endif ()
 
 if (NOT WIN32)
@@ -62,6 +64,14 @@ if (MSVC)
         list(APPEND EXCLUDED)
     endif ()
 endif ()
+
+if (PGI)
+    # compile time errors
+    list(APPEND EXCLUDED)
+    # runtime errors
+    list(APPEND EXCLUDED)
+endif()
+
 
 enable_testing()
 foreach (SRC_PATH ${SRCS})
