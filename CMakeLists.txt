@@ -47,6 +47,12 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif ()
 
+if (NOT WIN32)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    link_libraries(Threads::Threads)
+endif()
+
 set(EXCLUDED)
 if (MSVC)
     list(APPEND EXCLUDED)
