@@ -42,7 +42,7 @@ jobs:
           submodules: true
       - name: install
         run: |
-          apt update && apt install -y clang-11 libc++-11-dev libc++abi-11-dev
+          sudo apt update && sudo apt install -y clang-11 libc++-11-dev libc++abi-11-dev
         if: matrix.c-compiler == 'clang-11' && runner.os == 'Linux'
       - name: configure
         run: |
