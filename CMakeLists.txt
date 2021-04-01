@@ -23,15 +23,6 @@ endif ()
 
 #------------------------------------------------------
 
-# to enable shared lib in WIN32
-# cf    https://github.com/google/googletest/tree/master/googletest#incorporating-into-an-existing-cmake-project
-#   and https://stackoverflow.com/questions/12540970/how-to-make-gtest-build-mdd-instead-of-mtd-by-default-using-cmake
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # 
-
-add_subdirectory(third_party/googletest)
-
-#------------------------------------------------------
-
 add_executable(manage_test_crash tools/manage_test_crash.c)
 
 message(STATUS "Detect file to compile using globbing")
@@ -63,6 +54,17 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI")
     set(CMAKE_CXX_STANDARD 17) # C++20 requires an updated compiler (not yet available) 
 endif ()
 
+#------------------------------------------------------
+
+# to enable shared lib in WIN32
+# cf    https://github.com/google/googletest/tree/master/googletest#incorporating-into-an-existing-cmake-project
+#   and https://stackoverflow.com/questions/12540970/how-to-make-gtest-build-mdd-instead-of-mtd-by-default-using-cmake
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # 
+
+add_subdirectory(third_party/googletest)
+
+#------------------------------------------------------
+
 if (NOT WIN32)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
@@ -83,7 +85,6 @@ if (PGI)
     # runtime errors
     list(APPEND EXCLUDED)
 endif()
-
 
 enable_testing()
 foreach (SRC ${SRCS})
