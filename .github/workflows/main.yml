@@ -35,14 +35,15 @@ jobs:
           # - name: macOS 11
           #   os: macOS-11
           #   compiler: # default
-          - name: NVidia HPC 20.11
-            os: ubuntu-20.04
-            c-compiler: nvc
-            cxx-compiler: nvc++
-            # for C++20 requires ≥21.1; check 
-            # * https://ngc.nvidia.com/catalog/containers/nvidia:nvhpc
-            # * https://developer.nvidia.com/nvidia-hpc-sdk-downloads
-            container: nvcr.io/nvidia/nvhpc:20.11-devel-cuda_multi-ubuntu20.04 # C++17 support 
+
+          # - name: NVidia HPC 20.11
+          #   os: ubuntu-20.04
+          #   c-compiler: nvc
+          #   cxx-compiler: nvc++
+          #   # for C++20 requires ≥21.1; check 
+          #   # * https://ngc.nvidia.com/catalog/containers/nvidia:nvhpc
+          #   # * https://developer.nvidia.com/nvidia-hpc-sdk-downloads
+          #   container: nvcr.io/nvidia/nvhpc:20.11-devel-cuda_multi-ubuntu20.04 # C++17 support 
             
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
