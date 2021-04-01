@@ -23,6 +23,15 @@ endif ()
 
 #------------------------------------------------------
 
+# to enable shared lib in WIN32
+# cf    https://github.com/google/googletest/tree/master/googletest#incorporating-into-an-existing-cmake-project
+#   and https://stackoverflow.com/questions/12540970/how-to-make-gtest-build-mdd-instead-of-mtd-by-default-using-cmake
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # 
+
+add_subdirectory(third_party/googletest)
+
+#------------------------------------------------------
+
 add_executable(manage_test_crash tools/manage_test_crash.c)
 
 message(STATUS "Detect file to compile using globbing")
@@ -30,7 +39,9 @@ file(GLOB SRCS1 RELATIVE "${CMAKE_SOURCE_DIR}" "src/*.cpp")
 file(GLOB SRCS2 RELATIVE "${CMAKE_SOURCE_DIR}" "Solutions/*.cpp")
 file(GLOB SRCS3 RELATIVE "${CMAKE_SOURCE_DIR}" "Curiosity/*.cpp")
 file(GLOB SRCS4 RELATIVE "${CMAKE_SOURCE_DIR}" "extras/*.cpp")
-set(SRCS ${SRCS1} ${SRCS2} ${SRCS3} ${SRCS4})
+file(GLOB SRCS5 RELATIVE "${CMAKE_SOURCE_DIR}" "gtest/*--unittest.cpp")
+file(GLOB SRCS6 RELATIVE "${CMAKE_SOURCE_DIR}" "gtest/samples/*--unittest.cpp")
+set(SRCS ${SRCS1} ${SRCS2} ${SRCS3} ${SRCS4} ${SRCS5} ${SRCS6})
 
 include_directories(include)
 
@@ -85,11 +96,18 @@ foreach (SRC ${SRCS})
         set(SRCS ${SRC})
 
         set(TYPE "example")
-        string(REGEX MATCH "--.*\\.cpp$" SKIP_COMPANION ${SRC})
-        if (SKIP_COMPANION)
-            continue()
+        string(REGEX MATCH "--unittest\\.cpp$" NEED_GTEST ${SRC})
+        if (NEED_GTEST)
+            set(TYPE "google test")
+            string(REGEX REPLACE "--unittest.cpp$" "" TEST ${SRC})
+            file(GLOB GTEST_EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}.*")
         else ()
-            string(REGEX REPLACE ".cpp$" "" TEST ${SRC})
+            string(REGEX MATCH "--.*\\.cpp$" SKIP_COMPANION ${SRC})
+            if (SKIP_COMPANION)
+                continue()
+            else ()
+                string(REGEX REPLACE ".cpp$" "" TEST ${SRC})
+            endif ()
         endif ()
         file(GLOB EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}--*.*")
 
@@ -117,6 +135,13 @@ foreach (SRC ${SRCS})
         else ()
             add_test(NAME ${TEST} COMMAND manage_test_crash ${EXE})
             set_tests_properties(${TEST} PROPERTIES WILL_FAIL TRUE)
+        endif ()
+
+        if (NEED_GTEST)
+            target_link_libraries(${EXE} gtest gtest_main gmock)
+            target_include_directories(${EXE} PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+            target_include_directories(${EXE} PUBLIC ${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+            set_property(TEST ${TEST} PROPERTY LABELS "GTest")
         endif ()
     endif ()
 endforeach ()
