@@ -20,7 +20,8 @@ int main() {
   std::ofstream lock("_lock");
   std::ofstream f(file_path, std::ios_base::app);
   for (auto &&t : unsupported_features) {
-    f << "* " << __DATE__ << '@' << __TIME__ << ' ' << t << ' ' << __FILE__ << '\n';
+    f << "* " << __DATE__ << " at " << __TIME__ << " : " << t << " in " << __FILE__
+      << '\n';
     std::cout << "Unsupported feature " << t << '\n';
   }
   f.close();
