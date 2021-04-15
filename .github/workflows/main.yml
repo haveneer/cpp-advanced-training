@@ -62,6 +62,8 @@ jobs:
         run: cmake --build build
       - name: test
         run: cd build && ctest
+      - name: show unsupported examples
+        run: cat build/unsupported_examples.md || true
 
   build-windows:
 
