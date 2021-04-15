@@ -1,4 +1,15 @@
-// Reqquires C++20
+#include <version>
+#ifndef __cpp_lib_jthread
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#define STR(X) #X
+static const char *unsupported_features[] = {STR(__cpp_lib_jthread)};
+#include "unsupported_features.hpp"
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
 
 #include <thread>
 
@@ -19,3 +30,4 @@ int main() {
 
   // with classical threads, without join(), code stops with 'terminated'
 }
+#endif

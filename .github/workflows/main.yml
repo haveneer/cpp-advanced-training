@@ -80,3 +80,5 @@ jobs:
         run: cmake --build build --config Debug
       - name: test
         run: cd build && ctest -C Debug
+      - name: show unsupported examples
+        run: cat build/unsupported_examples.md || true
