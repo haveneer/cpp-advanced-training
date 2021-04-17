@@ -3,7 +3,7 @@
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT(__FILE__, {STR(__cpp_lib_jthread)})
+REPORT_FEATURES({STR(__cpp_lib_jthread)})
 #else
 #error "Unsupported feature"
 #endif
