@@ -3,22 +3,22 @@
 //#endregion
 
 template <typename T> // #A
-class FooClass {
+class MyContainer {
   // use T as a type
 };
 
 template <typename T> // #B
-void fooFunction() {
+void genericFunction() {
   // use T as a type
 }
 
 template <typename T> // #C
-void fooFunction(T t) {
+void genericFunction(T t) {
   // use T as a type
 }
 
 int main() {
-  FooClass<int> foo_int; // #A (T is explicitly int)
-  fooFunction<int>();    // #B (T is explicitly int)
-  fooFunction(1);        // #C (T is implicitly int, deduced from argument)
+  MyContainer<int> foo_int; // #A (T is explicitly int)
+  genericFunction<int>();   // #B (T is explicitly int)
+  genericFunction(1);       // #C (T is implicitly int, deduced from argument)
 }
