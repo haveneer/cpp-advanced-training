@@ -10,7 +10,6 @@ template <typename T1, typename T2> struct FooStruct {
   static T1 bar(T2 t);
   static T1 value;
 };
-template <typename T1, typename T2> T1 FooStruct<T1, T2>::value; // required for data
 
 // Generic definition: required before any usage
 template <typename T> T fooFunc(T t) { return t * t; }
@@ -20,7 +19,7 @@ template <typename T1, typename T2> T1 FooStruct<T1, T2>::bar(T2 t) { return t; 
 template int fooFunc<int>(int);
 // template int fooFunc(int); // same with deduced template parameter
 template <> int FooStruct<int, int>::value; // required to define static variable
-template struct FooStruct<int, int>;        // will be instanciated even if not used
+template struct FooStruct<int, int>;        // will be instantiated even if not used
 
 // Specialization (the body could be completely different from original declaration)
 template <> double fooFunc(double t);
