@@ -2,9 +2,8 @@
 #ifndef __cpp_lib_jthread
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
-#define STR(X) #X
-static const char *unsupported_features[] = {STR(__cpp_lib_jthread)};
 #include "unsupported_features.hpp"
+REPORT(__FILE__, {STR(__cpp_lib_jthread)})
 #else
 #error "Unsupported feature"
 #endif

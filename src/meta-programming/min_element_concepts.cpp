@@ -2,9 +2,8 @@
 #ifndef __cpp_concepts
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
-#define STR(X) #X
-static const char *unsupported_features[] = {STR(__cpp_concepts)};
 #include "unsupported_features.hpp"
+REPORT(__FILE__, {STR(__cpp_concepts)});
 #else
 #error "Unsupported feature"
 #endif
