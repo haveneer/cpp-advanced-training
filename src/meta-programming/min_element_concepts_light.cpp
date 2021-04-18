@@ -18,7 +18,7 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 
 template <typename Iter>
 concept ForwardIterator = requires(Iter iter) {
-  ++iter; // HINT concept definition here
+  ++iter; // HINT new concept definition here
   *iter;
 };
 
