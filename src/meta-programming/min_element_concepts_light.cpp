@@ -1,9 +1,9 @@
 #include <version>
-#ifndef my_cpp_abbreviated_function_template
+#ifndef __cpp_concepts
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
+REPORT_FEATURES({STR(__cpp_concepts)});
 #else
 #error "Unsupported feature"
 #endif
@@ -13,13 +13,22 @@ REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
 //#region [Collapse all]
 #include <iostream>
 #include <list>
+#include <utility>
+//#include <concepts>
 //#endregion
 
-auto min_element(auto first, auto last) {
+template <typename Iter>
+concept ForwardIterator = requires(Iter iter) {
+  ++iter; // HINT concept definition here
+  *iter;
+};
+
+template <ForwardIterator IterT> // HINT concept usage here
+IterT min_element(IterT first, IterT last) {
   if (first == last)
     return last;
 
-  auto smallest = first;
+  IterT smallest = first;
   ++first;
   for (; first != last; ++first) {
     if (*first < *smallest) {
@@ -27,7 +36,7 @@ auto min_element(auto first, auto last) {
     }
   }
   return smallest;
-};
+}
 
 int main() {
   {

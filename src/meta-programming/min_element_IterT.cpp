@@ -1,4 +1,10 @@
-template <typename IterT> IterT min_element(IterT first, IterT last) {
+//#region [Collapse all]
+#include <iostream>
+#include <list>
+//#endregion
+
+template <typename IterT> // IterT could be int*, double* or any iterator ...
+IterT min_element(IterT first, IterT last) {
   if (first == last)
     return last;
 
@@ -11,9 +17,6 @@ template <typename IterT> IterT min_element(IterT first, IterT last) {
   }
   return smallest;
 }
-
-#include <iostream>
-#include <list>
 
 int main() {
   {

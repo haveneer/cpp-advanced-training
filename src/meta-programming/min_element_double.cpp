@@ -1,3 +1,8 @@
+//#region [Collapse all]
+#include <array>
+#include <iostream>
+//#endregion
+
 double *min_element(double *first, double *last) {
   if (first == last)
     return last;
@@ -11,9 +16,6 @@ double *min_element(double *first, double *last) {
   }
   return smallest;
 }
-
-#include <array>
-#include <iostream>
 
 int main() {
   {

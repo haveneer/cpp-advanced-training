@@ -1,19 +1,21 @@
-int *min_element(int *first, int *last) {
-  if (first == last)
-    return last;
-
-  int *smallest = first;
-  ++first;
-  for (; first != last; ++first) {
-    if (*first < *smallest) {
-      smallest = first;
-    }
-  }
-  return smallest;
-}
-
+//#region [Collapse all]
 #include <array>
 #include <iostream>
+//#endregion
+
+int *min_element(int *first, int *last) {
+  if (first == last) // we assume an close-open interval [first, last[
+    return last;     // empty interval case
+
+  int *smallest = first;           // first candidate
+  ++first;                         //
+  for (; first != last; ++first) { // for next candidates
+    if (*first < *smallest) {      // is this other candidate better ?
+      smallest = first;            // if yes, we take its address
+    }
+  }
+  return smallest; // we return the address of the 'best' candidate
+}
 
 int main() {
   {

@@ -1,4 +1,10 @@
-template <typename T> T *min_element(T *first, T *last) {
+//#region [Collapse all]
+#include <array>
+#include <iostream>
+//#endregion
+
+template <typename T> // T could be int, double...
+T *min_element(T *first, T *last) {
   if (first == last)
     return last;
 
@@ -11,9 +17,6 @@ template <typename T> T *min_element(T *first, T *last) {
   }
   return smallest;
 }
-
-#include <array>
-#include <iostream>
 
 int main() {
   {

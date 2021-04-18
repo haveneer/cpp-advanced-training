@@ -10,13 +10,12 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 //#endregion
 #else
 
+//#region [Collapse all]
+#include <iostream>
+#include <list>
 #include <utility>
 //#include <concepts>
-
-template <typename T>
-concept Comparable = requires(T a, T b) {
-  a < b;
-};
+//#endregion
 
 template <typename Iter>
 concept ForwardIterator = requires(Iter iter) {
@@ -24,11 +23,16 @@ concept ForwardIterator = requires(Iter iter) {
   *iter;
 };
 
-template <ForwardIterator Iter> using value_type = decltype(*std::declval<Iter>());
+template <typename T>
+concept Comparable = requires(T a, T b) {
+  { a < b } -> std::same_as<bool>;
+};
+
+template <ForwardIterator Iter> using deref_type = decltype(*std::declval<Iter>());
 
 template <ForwardIterator IterT>
-IterT min_element(IterT first, IterT last) requires Comparable<value_type<IterT>> &&
-    requires(value_type<IterT> &a, value_type<IterT> b) {
+IterT min_element(IterT first, IterT last) requires Comparable<deref_type<IterT>> &&
+    requires(deref_type<IterT> &a, deref_type<IterT> b) {
   {a = b};
   {a = std::move(b)};
 }
@@ -45,9 +49,6 @@ IterT min_element(IterT first, IterT last) requires Comparable<value_type<IterT>
   }
   return smallest;
 }
-
-#include <iostream>
-#include <list>
 
 int main() {
   {
