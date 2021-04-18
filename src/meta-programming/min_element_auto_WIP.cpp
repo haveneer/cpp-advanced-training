@@ -27,7 +27,7 @@ auto min_element(auto first, auto last) {
     }
   }
   return smallest;
-};
+}
 
 int main() {
   {
