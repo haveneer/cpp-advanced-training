@@ -22,6 +22,17 @@ if (ENABLE_STATIC_ANALYSIS)
 endif ()
 
 #------------------------------------------------------
+# Check compiler support (when __cpp_* feature is not available)
+include(CheckCXXSourceCompiles)
+
+# https://en.cppreference.com/w/cpp/language/function_template#Abbreviated_function_template
+check_cxx_source_compiles("auto f(auto a, auto b) { return a + b; } int main() { return f(1, -1); }"
+        HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
+if (HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
+    ADD_COMPILE_DEFINITIONS(my_cpp_abbreviated_function_template)
+endif()
+
+#------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
 
@@ -68,7 +79,7 @@ if (NOT WIN32)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     link_libraries(Threads::Threads)
-endif()
+endif ()
 
 set(EXCLUDED)
 if (MSVC)
@@ -83,7 +94,7 @@ if (PGI)
     list(APPEND EXCLUDED)
     # runtime errors
     list(APPEND EXCLUDED)
-endif()
+endif ()
 
 enable_testing()
 foreach (SRC ${SRCS})

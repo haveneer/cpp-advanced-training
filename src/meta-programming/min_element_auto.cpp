@@ -1,7 +1,16 @@
-// https://en.cppreference.com/w/cpp/language/function_template#Abbreviated_function_template
-// auto min_element(auto first, auto last) {
-#pragma message("not yet available everywhere and unknown feature tag")
-auto min_element = [](auto first, auto last) {
+#include <version>
+#ifndef my_cpp_abbreviated_function_template
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
+auto min_element(auto first, auto last) {
   if (first == last)
     return last;
 
@@ -31,3 +40,5 @@ int main() {
     std::cout << "min value is " << *minp << '\n';
   }
 }
+
+#endif
