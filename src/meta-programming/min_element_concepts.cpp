@@ -1,5 +1,5 @@
 #include <version>
-#ifndef __cpp_concepts
+#if !(defined(__cpp_concepts) && defined(__cpp_lib_concepts))
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
@@ -14,7 +14,7 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 #include <iostream>
 #include <list>
 #include <utility>
-//#include <concepts>
+#include <concepts>
 //#endregion
 
 template <typename Iter>
