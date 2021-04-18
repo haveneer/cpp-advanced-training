@@ -1,7 +1,7 @@
 // unsupported features should be defined in unsupported_features variables before
 // including this file
 
-#define STR(X) #X,
+#define STR(X) #X
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
@@ -21,7 +21,7 @@ std::string_view remove_common_prefix(std::string_view file,
   return file;
 }
 
-#define REPORT_FEATURES(unsupported_features)                                    \
+#define REPORT_FEATURES(...)                                                     \
   int main() {                                                                   \
     std::filesystem::path file_path{"unsupported_examples.md"};                  \
     while (std::filesystem::exists("_lock")) { /* not a perfect file lock */     \
@@ -32,11 +32,13 @@ std::string_view remove_common_prefix(std::string_view file,
     std::ofstream lock("_lock");                                                 \
     std::ofstream f(file_path, std::ios_base::app);                              \
     f << "* " << __DATE__ << " at " << __TIME__ << " : unsupported ( ";          \
-    for (auto &&t : unsupported_features) {                                      \
-      f << t << " ";                                                             \
-      std::cout << "Unsupported feature " << t << '\n';                          \
+    std::cout << "Unsupported feature set ( ";                                    \
+    for (auto &&t : __VA_ARGS__) {                                               \
+      f << t << ' ';                                                             \
+      std::cout << t << ' ';                                                     \
     }                                                                            \
     f << ") in " << remove_common_prefix(__FILE__, this_file_reference) << '\n'; \
+    std::cout << ")";                                                           \
                                                                                  \
     f.close();                                                                   \
     lock.close();                                                                \
