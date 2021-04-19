@@ -1,5 +1,16 @@
+#include <version>
+#ifndef __cpp_concepts
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_concepts)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 #include <cassert>
-#include <concepts>
 #include <iostream>
 #include <utility>
 
@@ -74,3 +85,5 @@ int main() {
   std::cout << "18 : " << IsPrime<18> << " " << isPrime<18> << '\n';
   std::cout << "19 : " << IsPrime<19> << " " << isPrime<19> << '\n';
 }
+
+#endif
