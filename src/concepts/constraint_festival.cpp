@@ -15,8 +15,8 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 
 template <typename T1, typename T2>
 concept Addable = requires(T1 &t1, T2 t2) { // #1
-  t1 + t2;
-  t1 += t2;
+  t1 + t2; 
+  { t1 += t2 };
 };
 
 template <typename T>
@@ -25,8 +25,8 @@ concept HasValueType = requires { // #2
 };
 
 template <typename T>
-concept NonThrowDefaultCtor = requires { // #3
-  { T{} } noexcept;
+concept NonThrowCtor = requires { // #3
+  { T{T{}} } noexcept;
 };
 
 template <typename T, typename U>
