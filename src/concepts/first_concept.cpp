@@ -16,9 +16,9 @@ template <typename T>
 concept AlwaysOk = true;
 
 template <typename T>
-concept WhatIsWant = std::is_arithmetic_v<T> && !std::is_floating_point_v<T>;
+concept WhatIWant = std::is_arithmetic_v<T> && !std::is_floating_point_v<T>;
 
-template <WhatIsWant T> void f(T t) {} // HINT concept in action !
+template <WhatIWant T> void f(T t) {} // HINT concept in action !
 
 int main() {
   f(1);
