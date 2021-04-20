@@ -6,7 +6,9 @@ struct Converter {                  // for any two types T1 and T2
 
 template <typename T1, typename T2>           // default implementation
 T2 Converter<T1, T2>::convert(const T1 &t1) { //
-  /* ... */
+  //#region [implementation]
+  return t1;
+  //#endregion
 }
 
 template <typename T>    // specialization for same types
