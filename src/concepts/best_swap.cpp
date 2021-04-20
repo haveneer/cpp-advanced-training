@@ -1,9 +1,9 @@
 #include <version>
-#ifndef __cpp_concepts
+#if !(defined(__cpp_concepts) && defined(__cpp_lib_concepts))
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(__cpp_concepts)});
+REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_lib_concepts)});
 #else
 #error "Unsupported feature"
 #endif
@@ -12,17 +12,29 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 
 #include <concepts>
 #include <utility>
+
+template <typename T>
+concept has_member_swap = requires(T x, T y) {
+  x.swap(y);
+};
+
+template <typename T>
+concept has_nonmember_swap = requires(T x, T y) {
+  swap(x, y);
+};
+
 template <std::movable T> //
 void smart_swap(T &x, T &y) {
-  constexpr bool has_member_swap = requires(T x, T y) { x.swap(y); };
-  constexpr bool has_nonmember_swap = requires(T x, T y) { swap(x, y); };
-  if constexpr (has_member_swap) { // use member swap
+  //#region [Location allowed by GCC 10.3 & Clang 12 but not by MSVC 19.28]
+  // constexpr bool has_member_swap = requires(T x, T y) { x.swap(y); };
+  // constexpr bool has_nonmember_swap = requires(T x, T y) { swap(x, y); };
+  //#endregion
+
+  if constexpr (has_member_swap<T>) { // use member swap
     x.swap(y);
-  }
-  else if constexpr (has_nonmember_swap) { // use nonmember swap
+  } else if constexpr (has_nonmember_swap<T>) { // use nonmember swap
     swap(x, y);
-  }
-  else {
+  } else {
     // use general swap algorithm
     T tmp = std::move(x);
     x = std::move(y);
