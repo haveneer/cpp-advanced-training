@@ -49,7 +49,7 @@ concept NotDivisible = (N % M != 0);
 
 template <unsigned N, unsigned... Ms>
 requires(NotDivisible<N, Ms + 2> &&...) //
-    struct ShiftAndCheck {
+struct ShiftAndCheck {
   ShiftAndCheck(std::integral_constant<unsigned, N>,
                 std::integer_sequence<unsigned, Ms...>);
 };
@@ -70,7 +70,7 @@ struct ShiftAndCheck2<N, std::integer_sequence<unsigned, Ms...>> {
 template <unsigned N> constexpr bool isPrime = ShiftAndCheck2<N, range<N>>::value;
 
 int main() {
-  // constexpr unsigned N = 17; // Only instanciable if N is prime
+  // constexpr unsigned N = 17; // Only instantiable if N is prime
   // auto xx = ShiftAndCheck(std::integral_constant<unsigned, N>{}, range<N>{});
 
   std::cout << std::boolalpha;
