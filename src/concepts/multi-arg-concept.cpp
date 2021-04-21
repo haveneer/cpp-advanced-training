@@ -35,7 +35,7 @@ int main() {
   DISPLAY(ConstructibleAndSmallerThanLong<float>);
   DISPLAY(ConstructibleAndSmallerThanLong<double>);
 
-  SmallerThan<long> auto i = 'x'; // HINT use only second template argument
+  SmallerThan<long> auto i = '0'; // HINT use only second template argument
   // SmallerThan<double> auto f = 0.0; // error: deduced initializer does
   //                                   //        not satisfy placeholder constraints
 }

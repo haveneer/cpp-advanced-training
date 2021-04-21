@@ -35,7 +35,7 @@ void f(const V &v) {
 }
 
 template <typename V>
-requires(!Iterable<V>)
+requires(!Iterable<V>) //
 void f(const V &v) {
   std::cout << "not Iterable implementation with V=" << type<V>() << '\n';
 }
@@ -53,8 +53,8 @@ int main() {
 
   f(1);
   f(array);
-  f(vector); // error: call of overloaded 'f(std::vector<int>&)' is ambiguous
-  f(list);   // error: call of overloaded 'f(std::vector<int>&)' is ambiguous
+  f(vector);
+  f(list);
 }
 
 #endif

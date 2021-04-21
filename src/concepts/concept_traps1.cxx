@@ -22,6 +22,7 @@ template <typename T> std::string type() { if (std::is_same_v<std::remove_extent
 #include <list>
 #include <vector>
 //#endregion
+//#region [Definitions]
 
 template <typename T>
 concept Indexable = requires(T t) {
@@ -42,16 +43,17 @@ void f(const V &v) {
   std::cout << "not Indexable implementation with V=" << type<V>() << '\n';
 }
 
-template<class T>
+template <typename T>
 concept int_sized = requires {
-  sizeof(T) == sizeof(int); // FIXME: missing requires keyword 
+  sizeof(T) == sizeof(int);
 };
+static_assert(int_sized<int[128]>); // FIXME
 
 int main() {
   std::vector<int> vector;
   std::list<int> list;
-
-  f(vector); // error: call of overloaded is ambiguous; TODO: Why ?
+  
+  f(vector); // error: call of overloaded is ambiguous; FIXME
   //#region [answer]
   // 'requires { negate(Indexable<V>); }' is not the negation of Indexable concept;
   // it only checks that you can apply negate on Indexable

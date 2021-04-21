@@ -16,11 +16,11 @@ REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
 //#endregion
 
 auto min_element(auto first, auto last) { // HINT C++20 breaking news !
-  if (first == last)                      // all auto are like template<...>
+  if (first == last)                      // all auto are now like template<...>
     return last;                          // but they are all independent:
-                                          // template<typename I1, typename I2>
-  auto smallest = first;                  // auto min_element(I1 first, I2 last)
-  ++first;
+                                          // 
+  auto smallest = first;                  // template<typename I1, typename I2>
+  ++first;                                // auto min_element(I1 first, I2 last)
   for (; first != last; ++first) {
     if (*first < *smallest) {
       smallest = first;
