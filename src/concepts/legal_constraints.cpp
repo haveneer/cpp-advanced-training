@@ -34,10 +34,10 @@ concept CouldBeTemplateTemplate = requires {                 // template class
 static_assert(CouldBeTemplateTemplate<std::vector>);
 
 template <typename T>
-concept InstanciateAsManyAsYouWant = requires(T a, T b, T c, T d) {
+concept InstantiateAsManyAsYouWant = requires(T a, T b, T c, T d) {
   a + b / c ^ d;
 };
-static_assert(InstanciateAsManyAsYouWant<int> && !InstanciateAsManyAsYouWant<double>);
+static_assert(InstantiateAsManyAsYouWant<int> && !InstantiateAsManyAsYouWant<double>);
 
 template <typename T>
 concept ComplexInstanciationIsAllowed = requires {
