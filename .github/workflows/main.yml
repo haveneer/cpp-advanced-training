@@ -81,7 +81,7 @@ jobs:
       - name: build
         run: cmake --build build --config Debug
       - name: test
-        run: cd build && ctest -C Debug
+        run: cd build && ctest -C Debug --timeout 5
       - name: show unsupported examples
         shell: bash
         run: cat build/unsupported_examples.md 2>/dev/null || true
