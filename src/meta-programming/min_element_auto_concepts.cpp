@@ -1,9 +1,9 @@
 #include <version>
-#if !(defined(__cpp_concepts) && defined(__cpp_lib_concepts))
+#ifndef my_cpp_abbreviated_function_template
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_lib_concepts)});
+REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
 #else
 #error "Unsupported feature"
 #endif
@@ -11,12 +11,11 @@ REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_lib_concepts)});
 #else
 
 //#region [Collapse all]
-#include <concepts>
 #include <iostream>
 #include <list>
-#include <utility>
 //#endregion
 
+//#region [Same concepts]
 template <typename Iter>
 concept ForwardIterator = requires(Iter iter) {
   ++iter;
@@ -37,14 +36,14 @@ concept Copiable = requires(T a, T b) {
 template <ForwardIterator I> using deref_t = decltype(*std::declval<I>());
 template <typename I>
 concept ValuableIterator = Comparable<deref_t<I>> &&(Copiable<deref_t<I>>);
+//#endregion
 
-template <ForwardIterator IterT>
-IterT min_element(IterT first, IterT last) requires ValuableIterator<IterT> {
+auto min_element(ForwardIterator auto first, ForwardIterator auto last) { // HINT
   if (first == last) {
     return last;
   }
 
-  IterT smallest = first;
+  ValuableIterator auto smallest = first; // HINT
   ++first;
   for (; first != last; ++first) {
     if (*first < *smallest) {
@@ -57,14 +56,9 @@ IterT min_element(IterT first, IterT last) requires ValuableIterator<IterT> {
 int main() {
   {
     int v[] = {5, 4, 1, 8, 4};
-    auto minp = ::min_element(std::begin(v), std::end(v));
-    std::cout << "min value is " << *minp << '\n';
-  }
-
-  {
-    std::list<double> v = {{5.1, 4.1, 1.1, 8.1, 4.1}};
-    auto minp = ::min_element(std::begin(v), std::end(v));
-    std::cout << "min value is " << *minp << '\n';
+    ValuableIterator auto minp = ::min_element(std::begin(v), std::end(v)); // HINT
+    Copiable auto minv = *minp;                                             // HINT
+    std::cout << "min value is " << minv << '\n';
   }
 }
 

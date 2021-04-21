@@ -9,31 +9,35 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 #endif
 //#endregion
 #else
-
-#include <type_traits>
+// clang-format off
+#include <string>
 #include <vector>
 
 template <int i>
 concept GoodNumber = (i > 2) && (i < 10);
+static_assert(GoodNumber<5> && !GoodNumber<10>); // You can assert it at compile-time
 
 template <auto i>
-concept GoodNumberOnAutoTemplate = (i > 2) && (i < 10);
+concept GoodNumberOnAutoTemplate = (i > 60) && requires { (i < 70); }; // requires in
+static_assert(GoodNumberOnAutoTemplate<'A'>);                          // conjunction
 
 template <typename... Args>
-concept FoldExpression = requires(Args... args) {
-  (args + ...); // parenthesis are still required
+concept FoldableExpression = requires(Args... args) { // Variadic constraint
+  (args + ...);                                       // parenthesis are still required
 };
+static_assert(FoldableExpression<int, double> && !FoldableExpression<int, std::string>);
 
-template <template <typename> class Container>
-concept TemplateContainerShouldBeTemplateTemplate = requires {
-  typename Container<int>::value_type;
-  Container<int>::value_type; // complete instanciation: no ambiguity
-};
+template <template <typename T, typename A> class Container> // You can make concept
+concept CouldBeTemplateTemplate = requires {                 // template class
+  typename Container<int, std::allocator<int>>::value_type;  // but constrained on
+};                                                           // concrete type
+static_assert(CouldBeTemplateTemplate<std::vector>);
 
 template <typename T>
 concept InstanciateAsManyAsYouWant = requires(T a, T b, T c, T d) {
   a + b / c ^ d;
 };
+static_assert(InstanciateAsManyAsYouWant<int> && !InstanciateAsManyAsYouWant<double>);
 
 template <typename T>
 concept ComplexInstanciationIsAllowed = requires {

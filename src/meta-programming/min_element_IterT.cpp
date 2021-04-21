@@ -5,8 +5,9 @@
 
 template <typename IterT> // IterT could be int*, double* or any iterator ...
 IterT min_element(IterT first, IterT last) {
-  if (first == last)
+  if (first == last) {
     return last;
+  }
 
   IterT smallest = first;
   ++first;

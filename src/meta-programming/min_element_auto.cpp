@@ -15,10 +15,10 @@ REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
 #include <list>
 //#endregion
 
-auto min_element(auto first, auto last) {
-  if (first == last)
-    return last;
-
+auto min_element(auto first, auto last) { // all auto are like template<...>
+  if (first == last)                      // but they are all independent:
+    return last;                          // template<typename I1, typename I2>
+                                          // auto min_element(I1 first, I2 last)
   auto smallest = first;
   ++first;
   for (; first != last; ++first) {
