@@ -5,7 +5,7 @@ set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source 
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-DDEBUG_TYPE)
+add_definitions(-DDEBUG_TYPE) # TODO could be replaced by using __has_include in .cpp
 add_definitions(-DSAFE_RUN) # add workaround for explicitly buggy example (or on the edge behavior)
 
 #------------------------------------------------------
