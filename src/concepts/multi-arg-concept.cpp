@@ -18,7 +18,7 @@ REPORT_FEATURES({STR(__cpp_concepts)});
 
 template <typename T1, typename T2>
 concept SmallerThan = (sizeof(T1) < sizeof(T2));
-static_assert(SmallerThan<int, long>); // direct usage requires 2 template arguments
+static_assert(SmallerThan<char, long>); // direct usage requires 2 template arguments
 
 template <typename T>
 concept ConstructibleAndSmallerThanLong = requires {
