@@ -1,9 +1,11 @@
 #include <version>
-#ifndef my_cpp_abbreviated_function_template
+#if !(defined(my_cpp_abbreviated_function_template) && defined(__cpp_concepts) && \
+      defined(__cpp_lib_concepts))
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
+REPORT_FEATURES({STR(my_cpp_abbreviated_function_template), STR(__cpp_concepts),
+                 STR(__cpp_lib_concepts)})
 #else
 #error "Unsupported feature"
 #endif
@@ -11,6 +13,7 @@ REPORT_FEATURES({STR(my_cpp_abbreviated_function_template)})
 #else
 
 //#region [Collapse all]
+#include <concepts>
 #include <iostream>
 #include <list>
 //#endregion
