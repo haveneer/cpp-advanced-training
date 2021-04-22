@@ -22,14 +22,13 @@ constexpr bool isAllSame2 = // Morgan's laws is action
 template <typename T, typename... Ts> // using fold expression (less efficient)
 constexpr bool isAllSame3 = (std::is_same_v<T, Ts> && ...);
 
-//#region [Hidden type definition]
-using T1 = long;
-using T2 = signed long;
-using T3 = long int;
-using T4 = signed long int;
-//#endregion
-
 int main() { // TODO: find 4 basic types of different names but are the same type
+//#region [Hidden type definition]
+  using T1 = long;
+  using T2 = signed long;
+  using T3 = long int;
+  using T4 = signed long int;
+//#endregion
   std::cout << "are all same : " << isAllSame<T1, T2, T3, T4> << '\n';
   std::cout << "are all same : " << isAllSame2<T1, T2, T3, T4> << '\n';
   std::cout << "are all same : " << isAllSame3<T1, T2, T3, T4> << '\n';
