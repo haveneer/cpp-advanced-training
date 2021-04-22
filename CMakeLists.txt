@@ -30,7 +30,7 @@ check_cxx_source_compiles("auto f(auto a, auto b) { return a + b; } int main() {
         HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
 if (HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
     ADD_COMPILE_DEFINITIONS(my_cpp_abbreviated_function_template)
-endif()
+endif ()
 
 #------------------------------------------------------
 
@@ -81,9 +81,13 @@ if (NOT WIN32)
     link_libraries(Threads::Threads)
 endif ()
 
+
 set(EXCLUDED)
 if (MSVC)
-    list(APPEND EXCLUDED)
+    if (DEFINED ENV{GITHUB_ACTIONS})
+        # infinite execution loop on GHA (but Ok with TravisCI ?
+        list(APPEND EXCLUDED src/concepts/concept_setup.cpp)
+    endif ()
     if (NOT DONT_VS_EXCLUDE)
         list(APPEND EXCLUDED)
     endif ()
