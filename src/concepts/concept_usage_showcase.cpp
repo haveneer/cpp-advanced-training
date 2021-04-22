@@ -26,10 +26,10 @@ requires MyConcept<T>
 struct S2 {
 }; // #2
 
-template <typename T> T f2(const T &t) requires MyConcept<T> { return t; } // #2 trailing form
+template <typename T> T f2(const T &t) requires MyConcept<T> { return t; } // #2a trailing form
 
 template <typename T>
-requires MyConcept<T> T f2b(const T &t) { return t; } // #2 (two allowed locations)
+requires MyConcept<T> T f2b(const T &t) { return t; } // #2b (two allowed locations)
 
 auto f3(const MyConcept auto &t) { return t; } // #3
 // auto f3b(const MyConcept &t) { ... } // error: expected 'auto' or 'decltype(auto)'

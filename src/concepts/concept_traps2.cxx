@@ -18,10 +18,14 @@ struct S {
   requires std::integral<Number>
   void f(Number n);
 };
-//#region [Anwser]
+//#region [HINT Answer]
 // The location of the constraint matters !
 // Always choose the same location across all your declarations/definitions
-// (Sometimes they could be 'equivalent' but it is not portable)
+// trailing definition is different from head definition
+// #A template <typename Number>  requires std::integral<Number> void f(Number n);
+// #B template <std::integral Number> void f(Number n);
+// #C template <typename Number> void f(Number n);
+// #A <=> #B but <!=> #C
 //#endregion
 
 // Definitions
