@@ -68,7 +68,7 @@ int main() {
     const auto begin = std::begin(sorted_persons);
     const auto end = std::end(sorted_persons);
     const auto max_distance = std::distance(begin, end);
-    const auto pivot = std::next(begin, std::min(4l, max_distance));
+    const auto pivot = std::next(begin, std::min(std::ptrdiff_t{4}, max_distance));
 
     std::nth_element(begin, pivot, end, [](const Person &a, const Person &b) {
       return a.poids > b.poids;
@@ -100,7 +100,8 @@ int main() {
     const auto begin = std::begin(tmp);
     const auto end = std::end(tmp);
     const auto max_distance = std::distance(begin, end);
-    const auto pivot = std::next(tmp.begin(), std::min(4l, max_distance));
+    const auto pivot =
+        std::next(tmp.begin(), std::min(std::ptrdiff_t{4}, max_distance));
     std::nth_element(begin, pivot, end, [](const Person &a, const Person &b) {
       return a.poids > b.poids;
     });
