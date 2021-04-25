@@ -91,7 +91,7 @@ int main() {
                  is_selected_imc);
     auto split_point =
         std::remove_if(std::begin(tmp), std::end(tmp), std::not_fn(is_selected_age));
-    tmp.erase(split_point, std::end(tmp)); // remove useless elements (not necessary)
+    tmp.erase(split_point, std::end(tmp)); // remove useless elements
     //                                     // WARNING: this invalidates iterators
     //#region [Debug print]
     // std::for_each(tmp.begin(), tmp.end(),
