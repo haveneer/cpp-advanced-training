@@ -1,10 +1,22 @@
+#include <version>
+#ifndef __cpp_lib_ranges
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_lib_ranges)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 //#region [Collapse all]
 #include <algorithm>
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <iterator>
 #include <numeric>
+#include <ranges>
 #include <string>
 #include <vector>
 //#endregion
@@ -25,7 +37,33 @@ std::ostream &operator<<(std::ostream &o, const Person &p) {
            << std::setw(3) << p.poids << " imc=" << std::setw(4) << imc(p) << "}";
 }
 
+template <typename Class, typename Value> auto projector(Value Class::*field) {
+  return [field](const Class &c) { return c.*field; };
+}
+
+//#region [More functional style]
+template <typename F, typename G> struct compose {
+  compose(F ff, G gg) : f(ff), g(gg) {}
+  template <typename... Args>
+  auto operator()(Args &&...args) -> decltype(std::declval<F>()(
+      std::declval<G>()(std::forward<Args>(args)...))) {
+    return f(g(std::forward<Args>(args)...));
+  }
+  F f;
+  G g;
+};
+
+// C++17 CTAD
+template <typename F, typename G> compose(F f, G g) -> compose<F, G>;
+
+auto is_selected_age2 =
+    compose(std::bind2nd(std::ranges::less_equal{}, 30), projector(&Person::age));
+//#endregion
+
 int main() {
+  namespace ranges = std::ranges;
+  namespace views = std::views;
+
   // You cannot modify original data
   const std::vector persons = {
       Person{"John", 25, 1.82, 75.},   Person{"Emy", 28, 1.82, 65.},
@@ -35,6 +73,7 @@ int main() {
       Person{"Alice", 20, 1.72, 60.},  Person{"Eddy", 27, 1.82, 85.},
   };
 
+  auto println = [](auto &&x) { std::cout << x << '\n'; };
   auto is_selected_imc = [](const Person &p) {
     const auto v = imc(p);
     return (18 <= v && v <= 25);
@@ -52,59 +91,40 @@ int main() {
     }
   }
   std::cout << "------ Question 1 ------\n";
-  {
-    std::for_each(persons.begin(), persons.end(), [](const Person &p) {
-      if (p.age <= 30) {
-        std::cout << p.name << '\n';
-      }
-    });
+  { //
+    ranges::for_each(persons | views::filter([](auto &p) { return p.age <= 30; }),
+                     println, projector(&Person::name));
   }
   std::cout << "------ Question 2 ------\n";
-  {
-    std::copy_if(persons.begin(), persons.end(),
-                 std::ostream_iterator<Person>{std::cout, "\n"}, is_selected_imc);
+  { //
+    ranges::for_each(views::filter(is_selected_imc)(persons), println);
   }
   std::cout << "------ Question 3 ------\n";
   {
     std::vector tmp = persons;
     const auto begin = std::begin(tmp);
-    const auto end = std::end(tmp);
-    const auto max_distance = std::distance(begin, end);
-    const auto pivot = std::next(begin, std::min(std::ptrdiff_t{4}, max_distance));
+    const auto pivot = ranges::next(begin, 4, std::end(tmp));
 
-    std::nth_element(begin, pivot, end, [](const Person &a, const Person &b) {
-      return a.poids > b.poids;
-    });
-
-    const auto total = std::accumulate(
+    ranges::nth_element(tmp, pivot, std::greater<>(), projector(&Person::poids));
+    const auto total = std::accumulate( // not available in ranges::
         begin, pivot, 0, [](const auto &a, const Person &b) { return a + b.poids; });
     std::cout << "Total = " << total << '\n';
   }
   std::cout << "------ Question 4 ------\n";
   {
     std::vector<Person> tmp;
-    std::copy_if(persons.begin(), persons.end(), std::back_inserter(tmp),
-                 is_selected_imc);
-    auto split_point =
-        std::remove_if(std::begin(tmp), std::end(tmp), std::not_fn(is_selected_age));
-    tmp.erase(split_point, std::end(tmp)); // remove useless elements
-    //                                     // WARNING: this invalidates iterators
-    //#region [Debug print]
-    // std::for_each(tmp.begin(), tmp.end(),
-    //              [](const Person &p) { std::cout << p << '\n'; });
-    //#endregion
+    ranges::copy(persons                               //
+                     | views::filter(is_selected_imc)  //
+                     | views::filter(is_selected_age), //
+                 std::back_inserter(tmp));
     const auto begin = std::begin(tmp);
-    const auto end = std::end(tmp);
-    const auto max_distance = std::distance(begin, end);
-    const auto pivot =
-        std::next(tmp.begin(), std::min(std::ptrdiff_t{4}, max_distance));
-    std::nth_element(begin, pivot, end, [](const Person &a, const Person &b) {
-      return a.poids > b.poids;
-    });
-    const auto total = std::accumulate(
+    const auto pivot = ranges::next(begin, 4, std::end(tmp));
+    ranges::nth_element(tmp, pivot, std::greater<>(), projector(&Person::poids));
+    const auto total = std::accumulate( // not available in ranges::
         begin, pivot, 0, [](const auto &a, const Person &b) { return a + b.poids; });
     std::cout << "Total = " << total << '\n';
-    std::for_each(tmp.begin(), pivot,
-                  [](const Person &p) { std::cout << p.name << '\n'; });
+    ranges::for_each(tmp.begin(), pivot, println, projector(&Person::name));
   }
 }
+
+#endif
