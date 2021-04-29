@@ -41,25 +41,6 @@ template <typename Class, typename Value> auto projector(Value Class::*field) {
   return [field](const Class &c) { return c.*field; };
 }
 
-//#region [More functional style]
-template <typename F, typename G> struct compose {
-  compose(F ff, G gg) : f(ff), g(gg) {}
-  template <typename... Args>
-  auto operator()(Args &&...args) -> decltype(std::declval<F>()(
-      std::declval<G>()(std::forward<Args>(args)...))) {
-    return f(g(std::forward<Args>(args)...));
-  }
-  F f;
-  G g;
-};
-
-// C++17 CTAD
-template <typename F, typename G> compose(F f, G g) -> compose<F, G>;
-
-auto is_selected_age2 =
-    compose(std::bind2nd(std::ranges::less_equal{}, 30), projector(&Person::age));
-//#endregion
-
 int main() {
   namespace ranges = std::ranges;
   namespace views = std::views;
