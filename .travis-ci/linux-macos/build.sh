@@ -22,4 +22,4 @@ cmake \
   ..
 
 cmake --build . --config "${MODE}" \
-  && ctest -C "${MODE}" # --verbose
+  && ctest -C "${MODE}" --output-on-failure # --verbose

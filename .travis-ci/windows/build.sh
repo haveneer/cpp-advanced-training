@@ -29,4 +29,4 @@ cmake \
   ..
 
 cmake --build . --target ALL_BUILD --config ${MODE} \
-  && ctest -C ${MODE} # --verbose
+  && ctest -C ${MODE} --output-on-failure # --verbose
