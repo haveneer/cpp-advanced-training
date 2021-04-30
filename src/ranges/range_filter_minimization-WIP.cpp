@@ -17,45 +17,10 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include <ranges>
 #include <type_traits>
 
-namespace __detail {
+namespace details {
 template <typename _It>
 concept __has_arrow = std::input_iterator<_It> &&
     (std::is_pointer_v<_It> || requires(_It __it) { __it.operator->(); });
-
-template <typename _Tp>
-concept __boxable = std::copy_constructible<_Tp> && std::is_object_v<_Tp>;
-
-template <__boxable _Tp> struct __box : std::optional<_Tp> {
-  using std::optional<_Tp>::optional;
-
-  constexpr __box() noexcept(std::is_nothrow_default_constructible_v<_Tp>) requires
-      std::default_initializable<_Tp> : std::optional<_Tp>{std::in_place} {}
-
-  __box(const __box &) = default;
-  __box(__box &&) = default;
-
-  using std::optional<_Tp>::operator=;
-
-  // _GLIBCXX_RESOLVE_LIB_DEFECTS
-  // 3477. Simplify constraints for semiregular-box
-  __box &operator=(const __box &__that) noexcept(
-      std::is_nothrow_copy_constructible_v<_Tp>) requires(!std::copyable<_Tp>) {
-    if ((bool)__that)
-      this->emplace(*__that);
-    else
-      this->reset();
-    return *this;
-  }
-
-  __box &operator=(__box &&__that) noexcept(
-      std::is_nothrow_move_constructible_v<_Tp>) requires(!std::movable<_Tp>) {
-    if ((bool)__that)
-      this->emplace(std::move(*__that));
-    else
-      this->reset();
-    return *this;
-  }
-};
 
 template <typename _Iter, typename _Sent, typename _Pred>
 constexpr _Iter find_if(_Iter __first, _Sent __last, _Pred __pred) {
@@ -64,21 +29,9 @@ constexpr _Iter find_if(_Iter __first, _Sent __last, _Pred __pred) {
   return __first;
 }
 
-template <std::ranges::range _Range> struct _CachedPosition {
-  constexpr bool _M_has_value() const { return false; }
+} // namespace details
 
-  constexpr std::ranges::iterator_t<_Range> _M_get(const _Range &) const {
-    __glibcxx_assert(false);
-    return {};
-  }
-
-  constexpr void _M_set(const _Range &,
-                        const std::ranges::iterator_t<_Range> &) const {}
-};
-
-} // namespace __detail
-
-namespace __adaptor {
+namespace adaptor {
 // True if the range adaptor _Adaptor can be applied with _Args.
 template <typename _Adaptor, typename... _Args>
 concept __adaptor_invocable = requires {
@@ -131,38 +84,6 @@ template <typename _Derived> struct _RangeAdaptor {
     return _Partial<_Derived, std::decay_t<_Args>...>{
         std::forward<_Args>(__args)...};
   }
-};
-
-// A range adaptor closure that represents partial application of
-// the range adaptor _Adaptor with arguments _Args.
-template <typename _Adaptor, typename... _Args>
-struct _Partial : _RangeAdaptorClosure {
-  std::tuple<_Args...> _M_args;
-
-  constexpr _Partial(_Args... __args) : _M_args(std::move(__args)...) {}
-
-  // Invoke _Adaptor with arguments __r, _M_args... according to the
-  // value category of the range adaptor closure object.
-  template <typename _Range>
-  requires __adaptor_invocable<_Adaptor, _Range, const _Args &...>
-  constexpr auto operator()(_Range &&__r) const & {
-    auto __forwarder = [&__r](const auto &...__args) {
-      return _Adaptor{}(std::forward<_Range>(__r), __args...);
-    };
-    return std::apply(__forwarder, _M_args);
-  }
-
-  template <typename _Range>
-  requires __adaptor_invocable<_Adaptor, _Range, _Args...>
-  constexpr auto operator()(_Range &&__r) && {
-    auto __forwarder = [&__r](auto &...__args) {
-      return _Adaptor{}(std::forward<_Range>(__r), std::move(__args)...);
-    };
-    return std::apply(__forwarder, _M_args);
-  }
-
-  template <typename _Range>
-  constexpr auto operator()(_Range &&__r) const && = delete;
 };
 
 // A lightweight specialization of the above primary template for
@@ -220,7 +141,7 @@ template <typename _Lhs, typename _Rhs> struct _Pipe : _RangeAdaptorClosure {
   template <typename _Range>
   constexpr auto operator()(_Range &&__r) const && = delete;
 };
-} // namespace __adaptor
+} // namespace adaptor
 
 template <std::ranges::input_range _Vp,
           std::indirect_unary_predicate<std::ranges::iterator_t<_Vp>> _Pred>
@@ -280,14 +201,14 @@ private:
     }
 
     constexpr _Vp_iter operator->()
-        const requires __detail::__has_arrow<_Vp_iter> && std::copyable<_Vp_iter> {
+        const requires details::__has_arrow<_Vp_iter> && std::copyable<_Vp_iter> {
       return _M_current;
     }
 
     constexpr _Iterator &operator++() {
-      _M_current = __detail::find_if(std::move(++_M_current),
-                                     std::ranges::end(_M_parent->_M_base),
-                                     std::ref(*_M_parent->_M_pred));
+      _M_current = details::find_if(std::move(++_M_current),
+                                    std::ranges::end(_M_parent->_M_base),
+                                    std::ref(*_M_parent->_M_pred));
       return *this;
     }
 
@@ -355,8 +276,7 @@ private:
     }
   };
 
-  [[no_unique_address]] __detail::__box<_Pred> _M_pred;
-  [[no_unique_address]] __detail::_CachedPosition<_Vp> _M_cached_begin;
+  std::optional<_Pred> _M_pred;
   _Vp _M_base = _Vp();
 
 public:
@@ -374,13 +294,9 @@ public:
   constexpr const _Pred &pred() const { return *_M_pred; }
 
   constexpr _Iterator begin() {
-    if (_M_cached_begin._M_has_value())
-      return {this, _M_cached_begin._M_get(_M_base)};
-
     __glibcxx_assert(_M_pred.has_value());
-    auto __it = __detail::find_if(std::ranges::begin(_M_base),
-                                  std::ranges::end(_M_base), std::ref(*_M_pred));
-    _M_cached_begin._M_set(_M_base, __it);
+    auto __it = details::find_if(std::ranges::begin(_M_base),
+                                 std::ranges::end(_M_base), std::ref(*_M_pred));
     return {this, std::move(__it)};
   }
 
@@ -397,16 +313,16 @@ custom_filter_view(_Range &&, _Pred)
     -> custom_filter_view<std::ranges::views::all_t<_Range>, _Pred>;
 
 namespace custom_views {
-namespace __detail {
+namespace details2 {
 template <typename _Range, typename _Pred>
 concept __can_filter_view = requires {
   custom_filter_view{std::declval<_Range>(), std::declval<_Pred>()};
 };
-} // namespace __detail
+} // namespace details2
 
-struct _Filter : __adaptor::_RangeAdaptor<_Filter> {
+struct _Filter : adaptor::_RangeAdaptor<_Filter> {
   template <std::ranges::viewable_range _Range, typename _Pred>
-  requires __detail::__can_filter_view<_Range, _Pred>
+  requires details2::__can_filter_view<_Range, _Pred>
   constexpr auto operator()(_Range &&__r, _Pred &&__p) const {
     return custom_filter_view{std::forward<_Range>(__r), std::forward<_Pred>(__p)};
   }
@@ -432,7 +348,7 @@ int main() {
 
   auto v2 = views::iota(1)                                              //
             | views::transform([](auto x) -> int { return 3 * x + 1; }) //
-            | custom_views::custom_filter([](auto x) { return x % 2; })               //
+            | custom_views::custom_filter([](auto x) { return x % 2; }) //
             | views::take(10)                                           //
       ;
 
