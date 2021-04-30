@@ -422,12 +422,21 @@ int main() {
   namespace views = std::ranges::views;
   namespace ranges = std::ranges;
 
-  auto v = views::iota(1)                                              //
-           | custom_views::custom_filter([](auto x) { return x % 2; }) //
-           | views::take(10)                                           //
-           | views::reverse;
+  auto v1 = views::iota(1)                                              //
+            | custom_views::custom_filter([](auto x) { return x % 2; }) //
+            | views::take(10)                                           //
+            | views::reverse;
+  for (auto &&x : v1 | views::take(4)) {
+    std::cout << x << "\n";
+  }
 
-  for (auto &&x : v | views::take(4)) {
+  auto v2 = views::iota(1)                                              //
+            | views::transform([](auto x) -> int { return 3 * x + 1; }) //
+            | views::filter([](auto x) { return x % 2; })               //
+            | views::take(10)                                           //
+      ;
+
+  for (auto &&x : v2 | views::take(4)) {
     std::cout << x << "\n";
   }
 }
