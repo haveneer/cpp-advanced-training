@@ -13,6 +13,7 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include "custom_rnd_view.hpp"
 #include <algorithm>
 #include <cassert>
+#include <deque>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <ranges>
@@ -22,39 +23,34 @@ namespace views = std::ranges::views;
 namespace ranges = std::ranges;
 
 // Parametrized fixture
-class VectorsParametrizedTest
-    : public ::testing::TestWithParam<std::tuple<int, std::vector<int>>> {};
+class ParametrizedTest : public ::testing::TestWithParam<int> {};
 
-using CustomRndView = VectorsParametrizedTest;
-TEST_P(CustomRndView, Direct) {
-  const unsigned int seed = 1;
-  auto [n, output] = GetParam();
-  std::size_t index = 0;
+using CustomRndView = ParametrizedTest;
+TEST_P(CustomRndView, DirectReverseComparaison) {
+  auto n = GetParam();
+  const unsigned int seed = n;
+
+  std::deque<int> direct_result;
   for (auto const &i : custom_views::rnd(seed) | views::drop(4) | views::take(n)) {
-    EXPECT_EQ(i, output[index]);
-    index++;
+    direct_result.push_back(i);
   }
-}
 
-TEST_P(CustomRndView, Reverse) {
-  const unsigned int seed = 1;
-  auto [n, output] = GetParam();
-  std::size_t index = n;
+  std::deque<int> reverse_result;
   for (auto const &i :
        custom_views::rnd(seed) | views::drop(4) | views::take(n) | views::reverse) {
-    EXPECT_EQ(i, output[index - 1]);
-    index--;
+    reverse_result.push_front(i);
   }
+
+  ASSERT_EQ(direct_result.size(), reverse_result.size());
+  auto i1 = direct_result.begin();
+  auto i2 = reverse_result.begin();
+  while (i1 != direct_result.end()) {
+    EXPECT_EQ(*i1++, *i2++);
+  }
+  EXPECT_EQ(i1 == direct_result.end(), i2 == reverse_result.end());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    Jobs, CustomRndView,
-    testing::Values(
-        std::make_tuple(0, std::vector<int>{}),
-        std::make_tuple(1, std::vector{245631, 275145156, 649254245, 2145423170}),
-        std::make_tuple(2, std::vector{245631, 275145156, 649254245, 2145423170}),
-        std::make_tuple(3, std::vector{245631, 275145156, 649254245, 2145423170}),
-        std::make_tuple(4, std::vector{245631, 275145156, 649254245, 2145423170})));
+INSTANTIATE_TEST_SUITE_P(Jobs, CustomRndView, testing::Range(0, 10, 1));
 
 TEST(CustomRndView, SymmetricMove) {
   const unsigned int seed = 1;
