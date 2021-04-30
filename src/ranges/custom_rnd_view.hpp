@@ -1,9 +1,6 @@
 #ifndef CPP_ADVANCED_TRAINING_SRC_RANGES_CUSTOM_RND_VIEW_HPP
 #define CPP_ADVANCED_TRAINING_SRC_RANGES_CUSTOM_RND_VIEW_HPP
 
-// https://github.com/joboccara/ranges/blob/master/adjacent.hpp
-// or/and custom generator
-
 #include <exception>
 #include <random>
 #include <ranges>
