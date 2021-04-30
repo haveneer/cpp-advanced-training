@@ -16,6 +16,7 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include <gtest/gtest.h>
 #include <iostream>
 #include <ranges>
+#include <sstream>
 
 namespace views = std::ranges::views;
 namespace ranges = std::ranges;
@@ -60,7 +61,10 @@ TEST(CustomRndView, CombinedTest) {
   auto v = custom_views::rnd(seed);
   auto i1 = v.begin();
   auto i2 = i1;
-  for (auto &n : {0, 10, 0, -2, -4, 2, -4, -2}) {
+  for (int iteration = 0; auto &n : {0, 10, 0, -2, -4, 2, -4, -2}) {
+    std::ostringstream oss;
+    oss << "Current iteration: " << iteration++ << " with n=" << n;
+    SCOPED_TRACE(oss.str());
     for (int i = 0; i < std::abs(n); ++i) {
       if (n > 0)
         ++i1;
