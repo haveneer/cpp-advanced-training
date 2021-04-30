@@ -56,14 +56,13 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(3, std::vector{245631, 275145156, 649254245, 2145423170}),
         std::make_tuple(4, std::vector{245631, 275145156, 649254245, 2145423170})));
 
-
 TEST(CustomRndView, SymmetricMove) {
   const unsigned int seed = 1;
   auto v = custom_views::rnd(seed);
   auto i1 = v.begin();
   auto i2 = i1;
   ASSERT_TRUE(i1 == i2);
-  for(auto && iteration : {1,2,3,4,5}) {
+  for (auto &&iteration : {1, 2, 3, 4, 5}) {
     std::ostringstream oss;
     oss << "Current iteration: " << iteration;
     SCOPED_TRACE(oss.str());
@@ -77,7 +76,7 @@ TEST(CustomRndView, FastMove) {
   auto v = custom_views::rnd(seed);
   auto i1 = v.begin();
   auto i2 = i1;
-  for (int iteration = 0; auto &n : {0, 10, 0, -2, -4, 2, -4, -2}) {
+  for (int iteration = 0; auto &n : {0, 1, 1, 2, 6, 0, -1, -5, 2, -4, -2}) {
     std::ostringstream oss;
     oss << "Current iteration: " << iteration++ << " with n=" << n;
     SCOPED_TRACE(oss.str());
