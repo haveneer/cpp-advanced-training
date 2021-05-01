@@ -38,6 +38,7 @@ int main() {
 
   auto urandom = custom_views::rnd(seed) //
                  | views::transform([](int c) -> unsigned char { return c % 256; });
+
   auto data =                                                                 //
       urandom                                                                 //
       | views::filter([](const unsigned char c) { return std::isxdigit(c); }) //
