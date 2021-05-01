@@ -54,14 +54,14 @@ private:
 
     constexpr Iterator(window_fold_view *parent, Vp_iter current)
         : m_current(std::move(current)), m_parent(parent) {
-      update();
+      lookup();
     }
 
     constexpr std::string operator*() const { return m_acc; }
 
     constexpr Iterator &operator++() {
       m_current = m_next;
-      update();
+      lookup();
       return *this;
     }
 
@@ -74,6 +74,7 @@ private:
     }
 
     constexpr Iterator &operator--() requires std::ranges::bidirectional_range<Vp> {
+      // backward lookup
       m_acc = {};
       m_next = m_current;
       int n = m_parent->m_n;
@@ -100,7 +101,7 @@ private:
   private :
 
       void
-      update() {
+      lookup() {
       m_acc = {};
       m_next = m_current;
       int n = m_parent->m_n;
@@ -134,7 +135,7 @@ private:
 public:
   window_fold_view() = default;
 
-  constexpr window_fold_view(Vp __base, int n) : m_n(n), m_base(std::move(__base)) {}
+  constexpr window_fold_view(Vp base, int n) : m_n(n), m_base(std::move(base)) {}
 
   constexpr Iterator begin() {
     return {this, std::move(std::ranges::begin(m_base))};
@@ -162,10 +163,10 @@ template <typename Acc> struct WindowFold : adaptor::_RangeAdaptor<WindowFold<Ac
 
   // Everything about invocation and pipe plumbing is hidden here
   using adaptor::_RangeAdaptor<WindowFold<Acc>>::operator();
-  static constexpr int _S_arity = 2;
+  static constexpr int _S_arity = 2; // plugged with adaptor details
 };
 
-template <typename _Acc> inline constexpr WindowFold<_Acc> window_fold;
+template <typename Acc> inline constexpr WindowFold<Acc> window_fold;
 } // namespace custom_views
 
 #endif // CPP_ADVANCED_TRAINING_SRC_RANGES_CUSTOM_WINDOW_FOLD_VIEW_HPP
