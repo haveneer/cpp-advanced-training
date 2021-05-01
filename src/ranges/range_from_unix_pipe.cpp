@@ -21,6 +21,7 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 //#endregion
 
 #include "custom_rnd_view.hpp"
+#include "custom_window_fold_view.hpp"
 
 int main() {
   namespace ranges = std::ranges;
@@ -41,17 +42,21 @@ int main() {
       urandom                                                                 //
       | views::filter([](const unsigned char c) { return std::isxdigit(c); }) //
       | views::take(15)                                                       //
-                        //   | fold(3) //
+      | custom_views::window_fold<std::string>(3)                             //
       ;
 
-  ranges::for_each(data, [](auto &&x) { std::cout << x << " "; });
-  std::cout << "\n";
-  
-//  auto result = std::reduce(ranges::begin(data), ranges::end(data), std::string{},
-//                                [](std::string acc, const char &x) {
-//                                  return std::move(acc) + "_" + std::to_string(x);
-//                                });
-//  std::cout << "result = " << result << "\n";
+  std::vector<std::string> vdata;
+  ranges::copy(data, std::back_inserter(vdata));
+  // accumulate cannot operate directly on ranges
+  auto result = std::accumulate(vdata.begin(), vdata.end(), std::string{},
+                                [](std::string s, auto &&x) {
+                                  if (s.empty()) {
+                                    return x;
+                                  } else {
+                                    return std::move(s) + '-' + x;
+                                  }
+                                });
+  std::cout << "result = " << result << "\n";
 }
 
 #endif
