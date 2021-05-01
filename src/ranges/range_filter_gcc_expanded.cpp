@@ -82,9 +82,8 @@ namespace __adaptor {
 // True if the range adaptor _Adaptor can be applied with _Args.
 template <typename _Adaptor, typename... _Args>
 concept __adaptor_invocable = requires {
-  true;
-  //  std::declval<_Adaptor>()(declval<_Args>()...);
-}; // FIXME
+  std::declval<_Adaptor>()(std::declval<_Args>()...);
+};
 
 // True if the range adaptor non-closure _Adaptor can be partially applied
 // with _Args.
