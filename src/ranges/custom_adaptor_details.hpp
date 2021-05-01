@@ -6,12 +6,6 @@
 #include <ranges>
 #include <type_traits>
 
-namespace details {
-template <typename _It>
-concept __has_arrow = std::input_iterator<_It> &&
-                      (std::is_pointer_v<_It> || requires(_It __it) { __it.operator->(); });
-} // namespace details
-
 namespace adaptor {
 // True if the range adaptor _Adaptor can be applied with _Args.
 template <typename _Adaptor, typename... _Args>

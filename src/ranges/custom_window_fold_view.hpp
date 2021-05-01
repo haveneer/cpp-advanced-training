@@ -7,172 +7,161 @@
 #include <ranges>
 #include <type_traits>
 
-template <std::ranges::input_range _Vp, typename _Acc>
-requires std::ranges::view<_Vp>
+template <std::ranges::input_range Vp, typename Acc>
+requires std::ranges::view<Vp>
 class window_fold_view
-    : public std::ranges::view_interface<window_fold_view<_Vp, _Acc>> {
+    : public std::ranges::view_interface<window_fold_view<Vp, Acc>> {
 private:
-  struct _Sentinel;
+  struct Sentinel;
 
-  struct _Iterator {
+  struct Iterator {
   private:
-    static constexpr auto _S_iter_concept() {
-      if constexpr (std::ranges::bidirectional_range<_Vp>)
+    static constexpr auto iter_concept_static_helper() {
+      if constexpr (std::ranges::bidirectional_range<Vp>)
         return std::bidirectional_iterator_tag{};
-      else if constexpr (std::ranges::forward_range<_Vp>)
+      else if constexpr (std::ranges::forward_range<Vp>)
         return std::forward_iterator_tag{};
       else
         return std::input_iterator_tag{};
     }
 
-    static constexpr auto _S_iter_cat() {
-      using _Cat = typename std::iterator_traits<_Vp_iter>::iterator_category;
-      if constexpr (std::derived_from<_Cat, std::bidirectional_iterator_tag>)
+    static constexpr auto iter_cat_static_helper() {
+      using Cat = typename std::iterator_traits<Vp_iter>::iterator_category;
+      if constexpr (std::derived_from<Cat, std::bidirectional_iterator_tag>)
         return std::bidirectional_iterator_tag{};
-      else if constexpr (std::derived_from<_Cat, std::forward_iterator_tag>)
+      else if constexpr (std::derived_from<Cat, std::forward_iterator_tag>)
         return std::forward_iterator_tag{};
       else
-        return _Cat{};
+        return Cat{};
     }
 
     friend window_fold_view;
 
-    using _Vp_iter = std::ranges::iterator_t<_Vp>;
+    using Vp_iter = std::ranges::iterator_t<Vp>;
 
-    _Vp_iter _M_current = _Vp_iter();
-    _Vp_iter _M_next = _Vp_iter();
-    window_fold_view *_M_parent = nullptr;
-    _Acc _M_acc;
+    Vp_iter m_current = Vp_iter();
+    Vp_iter m_next = Vp_iter();
+    window_fold_view *m_parent = nullptr;
+    Acc m_acc;
 
   public:
-    using iterator_concept = decltype(_S_iter_concept());
-    using iterator_category = decltype(_S_iter_cat());
+    using iterator_concept = decltype(iter_concept_static_helper());
+    using iterator_category = decltype(iter_cat_static_helper());
     using value_type = std::string;
-    using difference_type = std::ranges::range_difference_t<_Vp>;
+    using difference_type = std::ranges::range_difference_t<Vp>;
 
-    _Iterator() = default;
+    Iterator() = default;
 
-    constexpr _Iterator(window_fold_view *__parent, _Vp_iter __current)
-        : _M_current(std::move(__current)), _M_parent(__parent) {
+    constexpr Iterator(window_fold_view *parent, Vp_iter current)
+        : m_current(std::move(current)), m_parent(parent) {
       update();
     }
 
-    constexpr std::string operator*() const { return _M_acc; }
+    constexpr std::string operator*() const { return m_acc; }
 
-    constexpr _Vp_iter operator->()
-        const requires details::__has_arrow<_Vp_iter> && std::copyable<_Vp_iter> {
-      return _M_acc;
-    }
-
-    constexpr _Iterator &operator++() {
-      _M_current = _M_next;
+    constexpr Iterator &operator++() {
+      m_current = m_next;
       update();
       return *this;
     }
 
     constexpr void operator++(int) { ++*this; }
 
-    constexpr _Iterator operator++(int) requires std::ranges::forward_range<_Vp> {
-      auto __tmp = *this;
+    constexpr Iterator operator++(int) requires std::ranges::forward_range<Vp> {
+      auto tmp = *this;
       ++*this;
-      return __tmp;
+      return tmp;
     }
 
-    constexpr _Iterator &
-    operator--() requires std::ranges::bidirectional_range<_Vp> {
-      _M_acc = {};
-      _M_next = _M_current;
-      int n = _M_parent->_n;
-      for (int n = _M_parent->_n;
-           n > 0 && _M_current != std::ranges::begin(_M_parent->_M_base); --n) {
-        _M_acc = *--_M_current + std::move(_M_acc);
+    constexpr Iterator &operator--() requires std::ranges::bidirectional_range<Vp> {
+      m_acc = {};
+      m_next = m_current;
+      int n = m_parent->m_n;
+      for (int n = m_parent->m_n;
+           n > 0 && m_current != std::ranges::begin(m_parent->m_base); --n) {
+        m_acc = *--m_current + std::move(m_acc);
       }
       return *this;
     }
 
-    constexpr _Iterator
-    operator--(int) requires std::ranges::bidirectional_range<_Vp> {
-      auto __tmp = *this;
+    constexpr Iterator
+    operator--(int) requires std::ranges::bidirectional_range<Vp> {
+      auto tmp = *this;
       --*this;
-      return __tmp;
+      return tmp;
     }
 
     friend constexpr bool
-    operator==(const _Iterator &__x,
-               const _Iterator &__y) requires std::equality_comparable<_Vp_iter> {
-      return __x._M_current == __y._M_current;
+    operator==(const Iterator &x,
+               const Iterator &y) requires std::equality_comparable<Vp_iter> {
+      return x.m_current == y.m_current;
     }
 
   private :
 
       void
       update() {
-      _M_acc = {};
-      _M_next = _M_current;
-      int n = _M_parent->_n;
-      for (int n = _M_parent->_n;
-           n > 0 && _M_next != std::ranges::end(_M_parent->_M_base); --n) {
-        _M_acc += *_M_next++;
+      m_acc = {};
+      m_next = m_current;
+      int n = m_parent->m_n;
+      for (int n = m_parent->m_n;
+           n > 0 && m_next != std::ranges::end(m_parent->m_base); --n) {
+        m_acc += *m_next++;
       }
     }
   };
 
-  struct _Sentinel {
+  struct Sentinel {
   private:
-    std::ranges::sentinel_t<_Vp> _M_end = std::ranges::sentinel_t<_Vp>();
-
-    constexpr bool __equal(const _Iterator &__i) const {
-      return __i._M_current == _M_end;
-    }
+    std::ranges::sentinel_t<Vp> m_end = std::ranges::sentinel_t<Vp>();
 
   public:
-    _Sentinel() = default;
+    Sentinel() = default;
 
-    constexpr explicit _Sentinel(window_fold_view *__parent)
-        : _M_end(std::ranges::end(__parent->_M_base)) {}
+    constexpr explicit Sentinel(window_fold_view *parent)
+        : m_end(std::ranges::end(parent->m_base)) {}
 
-    constexpr std::ranges::sentinel_t<_Vp> base() const { return _M_end; }
+    constexpr std::ranges::sentinel_t<Vp> base() const { return m_end; }
 
-    friend constexpr bool operator==(const _Iterator &__x, const _Sentinel &__y) {
-      return __y.__equal(__x);
+    constexpr bool operator==(const Iterator &i) const {
+      return i.m_current == m_end;
     }
   };
 
-  int _n = {};
-  _Vp _M_base = _Vp();
+  int m_n = {};
+  Vp m_base = Vp();
 
 public:
   window_fold_view() = default;
 
-  constexpr window_fold_view(_Vp __base, int n)
-      : _n(n), _M_base(std::move(__base)) {}
+  constexpr window_fold_view(Vp __base, int n) : m_n(n), m_base(std::move(__base)) {}
 
-  constexpr _Iterator begin() {
-    return {this, std::move(std::ranges::begin(_M_base))};
+  constexpr Iterator begin() {
+    return {this, std::move(std::ranges::begin(m_base))};
   }
 
   constexpr auto end() {
-    if constexpr (std::ranges::common_range<_Vp>)
-      return _Iterator{this, std::ranges::end(_M_base)};
+    if constexpr (std::ranges::common_range<Vp>)
+      return Iterator{this, std::ranges::end(m_base)};
     else
-      return _Sentinel{this};
+      return Sentinel{this};
   }
 };
 
-template <typename _Range, typename _Acc>
-window_fold_view(_Range &&, int)
-    -> window_fold_view<std::ranges::views::all_t<_Range>, _Acc>;
+template <typename Range, typename Acc>
+window_fold_view(Range &&, int)
+    -> window_fold_view<std::ranges::views::all_t<Range>, Acc>;
 
 namespace custom_views {
 
-template <typename _Acc>
-struct WindowFold : adaptor::_RangeAdaptor<WindowFold<_Acc>> {
-  template <std::ranges::viewable_range _Range>
-  constexpr auto operator()(_Range &&__r, int n) const {
-    return window_fold_view<_Range, _Acc>{std::forward<_Range>(__r), n};
+template <typename Acc> struct WindowFold : adaptor::_RangeAdaptor<WindowFold<Acc>> {
+  template <std::ranges::viewable_range Range>
+  constexpr auto operator()(Range &&r, int n) const {
+    return window_fold_view<Range, Acc>{std::forward<Range>(r), n};
   }
 
-  using adaptor::_RangeAdaptor<WindowFold<_Acc>>::operator();
+  // Everything about invocation and pipe plumbing is hidden here
+  using adaptor::_RangeAdaptor<WindowFold<Acc>>::operator();
   static constexpr int _S_arity = 2;
 };
 
