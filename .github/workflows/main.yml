@@ -13,6 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # seen at 20210531 in https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md
+          # - name: Ubuntu GCC 11
+          #   os: ubuntu-20.04
+          #   c-compiler: gcc-11
+          #   cxx-compiler: g++-11
           - name: Ubuntu GCC 10
             os: ubuntu-20.04
             c-compiler: gcc-10
@@ -29,21 +34,29 @@ jobs:
             os: ubuntu-20.04
             c-compiler: clang-11
             cxx-compiler: clang++-11
-          - name: macOS 10.15
+          # - name: Ubuntu Clang 12
+          #  os: ubuntu-20.04
+          #  c-compiler: clang-12
+          #  cxx-compiler: clang++-12
+          - name: macOS 10.15 Apple Clang
             os: macOS-10.15
-            # macOS-11 not yet publicly available
-            # - name: macOS 11
-            #   os: macOS-11
-            #   compiler: # default
+          # - name: macOS 10.15 Clang 12
+          #  os: macOS-10.15
+          #  c-compiler: clang-12
+          #  cxx-compiler: clang++-12
+          ## macOS-11 not yet publicly available
+          # - name: macOS 11
+          #   os: macOS-11
+          #   compiler: # default
 
-            # - name: NVidia HPC 20.11
-            #   os: ubuntu-20.04
-            #   c-compiler: nvc
-            #   cxx-compiler: nvc++
-            #   # for C++20 requires ≥21.1; check 
-            #   # * https://ngc.nvidia.com/catalog/containers/nvidia:nvhpc
-            #   # * https://developer.nvidia.com/nvidia-hpc-sdk-downloads
-            #   container: nvcr.io/nvidia/nvhpc:20.11-devel-cuda_multi-ubuntu20.04 # C++17 support 
+          # - name: NVidia HPC 20.11
+          #   os: ubuntu-20.04
+          #   c-compiler: nvc
+          #   cxx-compiler: nvc++
+          #   # for C++20 requires ≥21.1; check 
+          #   # * https://ngc.nvidia.com/catalog/containers/nvidia:nvhpc
+          #   # * https://developer.nvidia.com/nvidia-hpc-sdk-downloads
+          #   container: nvcr.io/nvidia/nvhpc:20.11-devel-cuda_multi-ubuntu20.04 # C++17 support 
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -54,10 +67,14 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y clang-11 libc++-11-dev libc++abi-11-dev
         if: matrix.c-compiler == 'clang-11' && runner.os == 'Linux'
+      - name: install
+        run: |
+          sudo apt update && sudo apt install -y clang-12
+        if: matrix.c-compiler == 'clang-12' && runner.os == 'Linux'
       - name: configure
         run: |
           echo "Configure on $(uname -a)"
-          mkdir build && cd build && CC=${{matrix.c-compiler}} CXX=${{matrix.cxx-compiler}} cmake ..
+          mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake ..
       - name: build
         run: cmake --build build
       - name: test
