@@ -5,6 +5,11 @@ set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source 
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# This message also avoid warning : "Manually-specified variables were not used by the project"
+message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
+message(STATUS "Current binary directory: ${CMAKE_BINARY_DIR}")
+
 add_definitions(-DDEBUG_TYPE) # TODO could be replaced by using __has_include in .cpp
 add_definitions(-DSAFE_RUN) # add workaround for explicitly buggy example (or on the edge behavior)
 
@@ -81,12 +86,12 @@ if (NOT WIN32)
     link_libraries(Threads::Threads)
 endif ()
 
-
 set(EXCLUDED)
 if (MSVC)
     if (DEFINED ENV{GITHUB_ACTIONS})
-        # infinite execution loop on GHA (but Ok with TravisCI ?
+        # infinite execution loop on GHA (but Ok with TravisCI ?)
         list(APPEND EXCLUDED src/concepts/concept_setup.cpp)
+        list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_algorithm.cpp src/ranges/range_filter_gcc_expanded.cpp) # FIXME should be fixed for MVSC 19.29 
     endif ()
     if (NOT DONT_VS_EXCLUDE)
         list(APPEND EXCLUDED)
