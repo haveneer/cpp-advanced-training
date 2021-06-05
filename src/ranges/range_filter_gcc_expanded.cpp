@@ -13,6 +13,8 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include <concepts>
 #include <iostream>
 #include <iterator>
+#include <numeric>
+#include <optional>
 #include <random>
 #include <ranges>
 #include <type_traits>
@@ -431,7 +433,7 @@ int main() {
 
   auto v2 = views::iota(1)                                              //
             | views::transform([](auto x) -> int { return 3 * x + 1; }) //
-            | custom_views::custom_filter([](auto x) { return x % 2; })               //
+            | custom_views::custom_filter([](auto x) { return x % 2; }) //
             | views::take(10)                                           //
       ;
 
