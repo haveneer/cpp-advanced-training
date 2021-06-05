@@ -15,6 +15,7 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include <cassert>
 #include <cctype>
 #include <iostream>
+#include <numeric>
 #include <ranges>
 #include <string>
 #include <vector>

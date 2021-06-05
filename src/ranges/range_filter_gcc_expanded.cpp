@@ -18,6 +18,8 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include <random>
 #include <ranges>
 #include <type_traits>
+#include <functional>
+#include <cassert>
 
 namespace __detail {
 template <typename _It>
@@ -61,7 +63,7 @@ template <__boxable _Tp> struct __box : std::optional<_Tp> {
 
 template <typename _Iter, typename _Sent, typename _Pred>
 constexpr _Iter find_if(_Iter __first, _Sent __last, _Pred __pred) {
-  while (__first != __last && !(bool)std::__invoke(__pred, *__first))
+  while (__first != __last && !(bool)std::invoke(__pred, *__first))
     ++__first;
   return __first;
 }
@@ -70,7 +72,7 @@ template <std::ranges::range _Range> struct _CachedPosition {
   constexpr bool _M_has_value() const { return false; }
 
   constexpr std::ranges::iterator_t<_Range> _M_get(const _Range &) const {
-    __glibcxx_assert(false);
+    assert(false);
     return {};
   }
 
@@ -304,7 +306,7 @@ private:
     operator--() requires std::ranges::bidirectional_range<_Vp> {
       do
         --_M_current;
-      while (!std::__invoke(*_M_parent->_M_pred, *_M_current));
+      while (!std::invoke(*_M_parent->_M_pred, *_M_current));
       return *this;
     }
 
@@ -378,7 +380,7 @@ public:
     if (_M_cached_begin._M_has_value())
       return {this, _M_cached_begin._M_get(_M_base)};
 
-    __glibcxx_assert(_M_pred.has_value());
+    assert(_M_pred.has_value());
     auto __it = __detail::find_if(std::ranges::begin(_M_base),
                                   std::ranges::end(_M_base), std::ref(*_M_pred));
     _M_cached_begin._M_set(_M_base, __it);
