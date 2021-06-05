@@ -4,6 +4,7 @@
 #include <exception>
 #include <random>
 #include <ranges>
+#include <stdexcept>
 
 class rnd_view : public std::ranges::view_interface<rnd_view> { // CRTP in action
 private:
