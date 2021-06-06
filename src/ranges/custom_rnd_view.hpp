@@ -15,12 +15,12 @@ private:
     // using iterator_category = std::forward_iterator_tag;
     using iterator_category =
         std::bidirectional_iterator_tag; // can do reverse iteration but much slower
-    using value_type = int;
+    using value_type = std::uint32_t;
     using difference_type = std::ptrdiff_t;
 
     Iterator() = default;
 
-    explicit Iterator(unsigned int seed, unsigned long long rank)
+    explicit Iterator(std::uint32_t seed, unsigned long long rank)
         : m_seed(seed), m_rank(rank), m_engine(seed) {
       m_engine.discard(m_rank);
       update();
@@ -72,7 +72,7 @@ private:
 
   private:
     void update() {
-      m_current = m_dist(m_engine);
+      m_current = m_engine();
       ++m_rank;
     }
 
@@ -90,11 +90,10 @@ private:
     }
 
   private:
-    unsigned int m_seed = {};
+    std::uint32_t m_seed = {};
     unsigned long long m_rank = {};
     std::mt19937 m_engine;
-    std::uniform_int_distribution<int> m_dist;
-    int m_current = {};
+    std::uint32_t m_current = {};
   };
 
   struct Sentinel {
@@ -105,18 +104,18 @@ private:
 
 public:
   rnd_view() : m_seed(std::random_device{}()) {}
-  constexpr explicit rnd_view(unsigned int seed) : m_seed(seed) {}
+  constexpr explicit rnd_view(std::uint32_t seed) : m_seed(seed) {}
   Iterator begin() const { return Iterator{m_seed, 0}; }
   constexpr auto end() const { return Sentinel{}; }
 
 private:
-  unsigned int m_seed = {};
+  std::uint32_t m_seed = {};
 };
 
 namespace custom_views {
 
 struct RndFactory {
-  constexpr auto operator()(unsigned int seed) const { return rnd_view{seed}; }
+  constexpr auto operator()(std::uint32_t seed) const { return rnd_view{seed}; }
 };
 
 inline constexpr RndFactory rnd{}; // factory object

@@ -35,18 +35,28 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #define CONDITIONAL(X) X
 #endif
 
-TEST(CppRandom, ArePortable) {
-  const unsigned int seed = 1;
+TEST(CppRandom, SequenceIsConform) {
+  // cf Note 6 in
+  // https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine
+  const unsigned int seed = std::mt19937::default_seed;
   std::mt19937 engine{seed};
-  std::uniform_int_distribution<int> dist;
-  std::vector results1{895547922, 2141438069, 1546885062, 2002651684};
-  std::vector results2{245631, 275145156, 649254245, 2145423170};
+  auto reference = 4123659995;
+  engine.discard(10000 - 1);
+  auto generated = engine();
+  EXPECT_EQ(generated, reference);
+}
+
+TEST(CppRandom, ArePortable) {
+  const unsigned int seed = std::mt19937::default_seed;
+  std::mt19937 engine{seed};
+  std::vector results1{3499211612u, 581869302u, 3890346734u, 3586334585u};
+  std::vector results2{545404204u, 4161255391u, 3922919429u, 949333985u};
   for (size_t i = 0; i < results1.size(); ++i) { // dropped in following tests
-    auto generated = dist(engine);
+    auto generated = engine();
     EXPECT_EQ(generated, results1[i]);
   }
   for (size_t i = 0; i < results2.size(); ++i) { // used in following tests
-    auto generated = dist(engine);
+    auto generated = engine();
     EXPECT_EQ(generated, results2[i]);
   }
 }
@@ -59,9 +69,8 @@ class ParametrizedTest : public ::testing::TestWithParam<int> {};
 
 using CustomRndView = ParametrizedTest;
 TEST_P(CustomRndView, CONDITIONAL(DirectReverseComparaison)) {
+  const unsigned int seed = std::mt19937::default_seed;
   auto n = GetParam();
-  const unsigned int seed = n;
-
   std::deque<int> direct_result;
   for (auto const &i : custom_views::rnd(seed) | views::drop(4) | views::take(n)) {
     direct_result.push_back(i);
@@ -86,11 +95,12 @@ INSTANTIATE_TEST_SUITE_P(Jobs, CustomRndView, testing::Range(0, 10, 1));
 
 // Parametrized fixture
 class VectorsParametrizedTest
-    : public ::testing::TestWithParam<std::tuple<int, std::vector<int>>> {};
+    : public ::testing::TestWithParam<std::tuple<int, std::vector<std::uint32_t>>> {
+};
 
 using CustomRndViewSequence = VectorsParametrizedTest;
 TEST_P(CustomRndViewSequence, CONDITIONAL(Direct)) {
-  const unsigned int seed = 1;
+  const unsigned int seed = std::mt19937::default_seed;
   auto [n, output] = GetParam();
   std::size_t index = 0;
   for (auto const &i : custom_views::rnd(seed) | views::drop(4) | views::take(n)) {
@@ -100,7 +110,7 @@ TEST_P(CustomRndViewSequence, CONDITIONAL(Direct)) {
 }
 
 TEST_P(CustomRndViewSequence, CONDITIONAL(Reverse)) {
-  const unsigned int seed = 1;
+  const unsigned int seed = std::mt19937::default_seed;
   auto [n, output] = GetParam();
   std::size_t index = n;
   for (auto const &i :
@@ -112,15 +122,18 @@ TEST_P(CustomRndViewSequence, CONDITIONAL(Reverse)) {
 
 INSTANTIATE_TEST_SUITE_P(
     Jobs, CustomRndViewSequence,
-    testing::Values(
-        std::make_tuple(0, std::vector<int>{}),
-        std::make_tuple(1, std::vector{245631, 275145156, 649254245, 2145423170}),
-        std::make_tuple(2, std::vector{245631, 275145156, 649254245, 2145423170}),
-        std::make_tuple(3, std::vector{245631, 275145156, 649254245, 2145423170}),
-        std::make_tuple(4, std::vector{245631, 275145156, 649254245, 2145423170})));
+    testing::Values(std::make_tuple(0, std::vector<std::uint32_t>{}),
+                    std::make_tuple(1, std::vector{545404204u, 4161255391u,
+                                                   3922919429u, 949333985u}),
+                    std::make_tuple(2, std::vector{545404204u, 4161255391u,
+                                                   3922919429u, 949333985u}),
+                    std::make_tuple(3, std::vector{545404204u, 4161255391u,
+                                                   3922919429u, 949333985u}),
+                    std::make_tuple(4, std::vector{545404204u, 4161255391u,
+                                                   3922919429u, 949333985u})));
 
 TEST(CustomRndView, SymmetricMove) {
-  const unsigned int seed = 1;
+  const unsigned int seed = std::mt19937::default_seed;
   auto v = custom_views::rnd(seed);
   auto i1 = v.begin();
   auto i2 = i1;
@@ -135,7 +148,7 @@ TEST(CustomRndView, SymmetricMove) {
 }
 
 TEST(CustomRndView, FastMove) {
-  const unsigned int seed = 1;
+  const unsigned int seed = std::mt19937::default_seed;
   auto v = custom_views::rnd(seed);
   auto i1 = v.begin();
   auto i2 = i1;
