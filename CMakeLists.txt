@@ -91,7 +91,8 @@ if (MSVC)
     if (DEFINED ENV{GITHUB_ACTIONS})
         # infinite execution loop on GHA (but Ok with TravisCI ?)
         list(APPEND EXCLUDED src/concepts/concept_setup.cpp)
-        list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_algorithm.cpp src/ranges/range_filter_gcc_expanded.cpp) # FIXME should be fixed for MVSC 19.29 
+        list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_algorithm.cpp src/ranges/range_filter_gcc_expanded.cpp) # FIXME should be fixed for MVSC 19.29
+        list(APPEND EXCLUDED src/ranges/ranges_join_bug_100290.cpp) # This GCC bug does not occur in MSVC
     endif ()
     if (NOT DONT_VS_EXCLUDE)
         list(APPEND EXCLUDED)
