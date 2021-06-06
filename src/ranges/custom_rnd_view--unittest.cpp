@@ -16,6 +16,7 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #include <deque>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <random>
 #include <ranges>
 #include <sstream>
 
@@ -33,6 +34,22 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 #else
 #define CONDITIONAL(X) X
 #endif
+
+TEST(CppRandom, ArePortable) {
+  const unsigned int seed = 1;
+  std::mt19937 engine{seed};
+  std::uniform_int_distribution<int> dist;
+  std::vector results1{895547922, 2141438069, 1546885062, 2002651684};
+  std::vector results2{245631, 275145156, 649254245, 2145423170};
+  for (size_t i = 0; i < results1.size(); ++i) { // dropped in following tests
+    auto generated = dist(engine);
+    EXPECT_EQ(generated, results1[i]);
+  }
+  for (size_t i = 0; i < results2.size(); ++i) { // used in following tests
+    auto generated = dist(engine);
+    EXPECT_EQ(generated, results2[i]);
+  }
+}
 
 namespace views = std::ranges::views;
 namespace ranges = std::ranges;
