@@ -20,7 +20,7 @@ struct HelloWorldCoro {
     HelloWorldCoro get_return_object() { return this; }
     std::suspend_always initial_suspend() { return {}; }
     std::suspend_always final_suspend() noexcept { return {}; }
-    std::suspend_never return_void() { return {}; }
+    void return_void() {}
   };
 
   HelloWorldCoro(promise_type *p)
