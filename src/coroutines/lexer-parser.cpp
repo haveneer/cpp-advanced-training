@@ -10,40 +10,22 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 //#endregion
 #else
 
-#include <coroutine>
 #include <iostream>
-#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <vector>
 
-struct HelloWorldCoro {
-  struct promise_type { // compiler looks for `promise_type`
-    void unhandled_exception() { std::exit(1); }
-    HelloWorldCoro get_return_object() { return this; }
-    std::suspend_always initial_suspend() { return {}; }
-    std::suspend_always final_suspend() noexcept { return {}; }
-    std::suspend_never return_void() { return {}; }
-  };
-
-  HelloWorldCoro(promise_type *p)
-      : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
-  ~HelloWorldCoro() { m_handle.destroy(); }
-
-  std::coroutine_handle<promise_type> m_handle;
-};
-
-HelloWorldCoro print_hello_world() {
-  std::cout << "Hello ";
-  co_await std::suspend_always{};
-  std::cout << "World!" << std::endl;
-}
+struct X {}; // FIXME TODO
+auto read(const std::string &) { return X{}; }
+auto parse(const X &) { return std::vector{std::make_tuple("", 0)}; }
 
 int main() {
-  // https://stackoverflow.com/questions/57962476/gcc-clang-lexer-and-parser
-
-  HelloWorldCoro mycoro = print_hello_world();
-
-  mycoro.m_handle.resume();
-  mycoro.m_handle(); // Equal to mycoro.m_handle.resume();
-  return EXIT_SUCCESS;
+  std::string data_stream = "2 3 + ; 1 - 2 +";
+  auto token_stream = read(data_stream);  // read is a coroutine
+  auto expressions = parse(token_stream); // parse is a coroutine
+  for (const auto &[frame, result] : expressions) {
+    std::cout << frame << " = " << result << '\n';
+  }
 }
 
 #endif

@@ -10,10 +10,11 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 //#endregion
 #else
 
+//#region [Collapse all]
 #include <coroutine>
 #include <iostream>
-#include <memory>
 #include <optional>
+//#endregion
 
 template <typename T> class Generator {
 public:
@@ -71,15 +72,21 @@ private:
   handle_type m_co_handle;
 };
 
-Generator<int> generate() noexcept {
-  co_yield 1;
-  co_yield 2;
-  co_yield 3;
-  co_yield 4;
+Generator<int> generate(int n) noexcept {
+  while (true) {
+    co_yield n;
+    if (n == 1)
+      co_return;
+    if (n & 1) {
+      n = 3 * n + 1;
+    } else {
+      n /= 2;
+    }
+  }
 }
 
 int main() {
-  auto g = generate();
+  auto g = generate(127);
   while (auto v = g.next()) {
     std::cout << v.value() << '\n';
   }

@@ -20,7 +20,6 @@ template <typename Container> auto iterate(const Container &c) {
 
 int main() {
   std::list<std::vector<int>> s{{1, 2, 3, 4}, {5, 6, 7, 8}};
-
   for (auto i : iterate(s)) {
     std::cout << i << ' ';
   }
