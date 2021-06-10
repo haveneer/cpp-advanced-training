@@ -20,6 +20,7 @@ struct HelloWorldCoro {
     HelloWorldCoro get_return_object() { return this; }
     std::suspend_always initial_suspend() { return {}; }
     std::suspend_always final_suspend() noexcept { return {}; }
+    std::suspend_never return_void() { return {}; }
   };
 
   HelloWorldCoro(promise_type *p)
@@ -37,7 +38,7 @@ HelloWorldCoro print_hello_world() {
 
 int main() {
   // https://stackoverflow.com/questions/57962476/gcc-clang-lexer-and-parser
-  
+
   HelloWorldCoro mycoro = print_hello_world();
 
   mycoro.m_handle.resume();
