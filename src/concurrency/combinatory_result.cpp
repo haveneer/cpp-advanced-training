@@ -26,7 +26,7 @@ int main() {
 
   constexpr uint32_t slow_down_factor = 0; // 5; // max in nanoseconds
 
-  for (auto count = 1'000'000; count > 0; --count) {
+  for (auto count = 100'000; count > 0; --count) {
     std::atomic<int> a{1}, b{0}, c{1};
     // int a{1}, b{0}, c{1};
 
