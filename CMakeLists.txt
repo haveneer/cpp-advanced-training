@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # This message also avoid warning : "Manually-specified variables were not used by the project"
-message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
+message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}") # used for conan
 message(STATUS "Current binary directory: ${CMAKE_BINARY_DIR}")
 
 add_definitions(-DDEBUG_TYPE) # TODO could be replaced by using __has_include in .cpp
@@ -77,6 +77,8 @@ endif ()
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # 
 
 add_subdirectory(third_party/googletest)
+OPTION(BENCHMARK_ENABLE_TESTING "" OFF)
+add_subdirectory(third_party/benchmark)
 
 #------------------------------------------------------
 
@@ -123,11 +125,18 @@ foreach (SRC ${SRCS})
             string(REGEX REPLACE "--unittest.cpp$" "" TEST ${SRC})
             file(GLOB GTEST_EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}.*")
         else ()
-            string(REGEX MATCH "--.*\\.cpp$" SKIP_COMPANION ${SRC})
-            if (SKIP_COMPANION)
-                continue()
+            string(REGEX MATCH "--benchmark\\.cpp$" NEED_GBENCH ${SRC})
+            if (NEED_GBENCH)
+                set(TYPE "google benchmark")
+                string(REGEX REPLACE "--benchmark.cpp$" "" TEST ${SRC})
+                file(GLOB GTEST_EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}.*")
             else ()
-                string(REGEX REPLACE ".cpp$" "" TEST ${SRC})
+                string(REGEX MATCH "--.*\\.cpp$" SKIP_COMPANION ${SRC})
+                if (SKIP_COMPANION)
+                    continue()
+                else ()
+                    string(REGEX REPLACE ".cpp$" "" TEST ${SRC})
+                endif ()
             endif ()
         endif ()
         file(GLOB EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}--*.*")
@@ -158,6 +167,11 @@ foreach (SRC ${SRCS})
             set_tests_properties(${TEST} PROPERTIES WILL_FAIL TRUE)
         endif ()
 
+        if (NEED_GBENCH)
+            target_link_libraries(${EXE} benchmark::benchmark)
+            target_include_directories(${EXE} PUBLIC ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR})
+            set(NEED_GTEST 1)
+        endif ()
         if (NEED_GTEST)
             target_link_libraries(${EXE} gtest gtest_main gmock)
             target_include_directories(${EXE} PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
