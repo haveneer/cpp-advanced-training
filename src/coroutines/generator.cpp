@@ -58,7 +58,7 @@ public:
     auto get_return_object() { // (2)
       return Generator{handle_type::from_promise(*this)};
     }
-    auto return_void() { return std::suspend_never{}; }
+    void return_void() {}
 
     auto yield_value(const T value) { // (6)
       current_value = value;
