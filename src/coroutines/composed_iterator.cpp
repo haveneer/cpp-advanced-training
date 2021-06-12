@@ -27,6 +27,7 @@ struct Generator {
       m_val = val;
       return {};
     }
+    void return_void() {}
     void unhandled_exception() { std::exit(1); }
   };
   /* -------- Iterator Implementation ---------- */
