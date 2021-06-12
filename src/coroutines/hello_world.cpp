@@ -10,38 +10,57 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 //#endregion
 #else
 
-#include <coroutine>
+//#region [Collapse all]
 #include <iostream>
-#include <stdexcept>
+#include <string>
+#include <vector>
+#define PRINTME() std::cout << __LINE__ << ": " << __FUNCTION__ << '\n'
+//#endregion
+
+#include <coroutine>
 
 struct HelloWorldCoro {
-  struct promise_type { // compiler looks for `promise_type`
-    void unhandled_exception() { std::exit(1); }
-    HelloWorldCoro get_return_object() { return this; }
-    std::suspend_always initial_suspend() { return {}; }
-    std::suspend_always final_suspend() noexcept { return {}; }
-    void return_void() {}
-  };
+  // clang-format off
+  struct promise_type; // type required by compiler; defined later
 
   HelloWorldCoro(promise_type *p)
-      : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
-  ~HelloWorldCoro() { m_handle.destroy(); }
+      : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) { PRINTME(); }
+  ~HelloWorldCoro() { PRINTME(); /* m_handle.destroy(); */ }
+
+  struct promise_type {
+    promise_type() { PRINTME(); }
+    ~promise_type() { PRINTME(); }
+    HelloWorldCoro get_return_object() { PRINTME(); return {this}; }
+    std::suspend_always initial_suspend() { PRINTME(); return {}; }
+    std::suspend_never final_suspend() noexcept { PRINTME(); return {}; }
+    void return_void() { PRINTME(); }
+    void unhandled_exception() { PRINTME(); std::exit(1); }
+  };
 
   std::coroutine_handle<promise_type> m_handle;
+  // clang-format on  
 };
 
-HelloWorldCoro print_hello_world() {
-  std::cout << "Hello ";
-  co_await std::suspend_always{};
+HelloWorldCoro helloWorld() {
+  // should suspend here ? (cf promise_type::initial_suspend) (A)
+  PRINTME();
+  // first build coroutine object (promise_type::using get_return_object)
+  std::cout << "Hello \n";
+  co_await std::suspend_always{}; // (B)
   std::cout << "World!" << std::endl;
-}
+  PRINTME();
+  // should suspend here ? (cf promise_type::final_suspend)
+} // destroy promise_type - by ~HelloWorldCoro if final_suspend is suspend_always
+  //                      - itself if final_suspend is suspend_never
 
 int main() {
-  HelloWorldCoro mycoro = print_hello_world();
+  HelloWorldCoro c = helloWorld(); // new coroutine
 
-  mycoro.m_handle.resume();
-  mycoro.m_handle(); // Equal to mycoro.m_handle.resume();
-  return EXIT_SUCCESS;
+  PRINTME();
+  c.m_handle.resume(); // (A) : usually, m_handle is wrapped in Coro object 
+  PRINTME();          
+  c.m_handle();        // (B) : equivalent to c.m_handle.resume();
+  PRINTME();
 }
 
 #endif
