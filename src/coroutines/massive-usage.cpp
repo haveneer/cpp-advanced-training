@@ -14,13 +14,13 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 #else
 
 //#region [Collapse all]
-#if __has_include(<experimental/coroutine>)
+#if __has_include(<coroutine>)
+#include <coroutine>
+#elif __has_include(<experimental/coroutine>)
 #include <experimental/coroutine>
 namespace std {
 using namespace std::experimental;
 }
-#else
-#include <coroutine>
 #endif
 #include <array>
 #include <iostream>
