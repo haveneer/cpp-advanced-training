@@ -1,6 +1,6 @@
 #include <version>
-#if !(defined(my_cpp_abbreviated_function_template) && defined(__cpp_concepts) && \
-      defined(__cpp_lib_concepts))
+#if !defined(my_cpp_abbreviated_function_template) || !defined(__cpp_concepts) || \
+    !defined(__cpp_lib_concepts)
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
