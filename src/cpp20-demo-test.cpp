@@ -124,7 +124,7 @@ void types_20() {
 }
 
 void dynamic_memory_20() {
-#if __cpp_lib_shared_ptr_arrays
+#if my_cpp_lib_shared_ptr_arrays // seems to be wrong in clang-13
   /// Shared array
   /// [make_shared](https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared)
   auto a = make_shared<int[10]>();

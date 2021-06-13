@@ -37,6 +37,13 @@ if (HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
     ADD_COMPILE_DEFINITIONS(my_cpp_abbreviated_function_template)
 endif ()
 
+# https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared (in 4-Notes)
+check_cxx_source_compiles("#include <memory>\n int main() { auto a = std::make_shared<int[10]>(); }"
+        HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
+if (HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
+    ADD_COMPILE_DEFINITIONS(my_cpp_abbreviated_function_template)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
