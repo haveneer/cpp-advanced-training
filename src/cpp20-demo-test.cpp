@@ -116,7 +116,7 @@ void types_20() {
 #ifdef _MSC_VER // cf _MSC_FULL_VER
 #pragma message("was not supported in MSVC 19.28")
 #else
-  cout << typeid(bit_cast<double>(0));
+  cout << typeid(bit_cast<double>(0l)).name();
 #endif
 #else
 #pragma message("undefined __cpp_lib_bit_cast")
