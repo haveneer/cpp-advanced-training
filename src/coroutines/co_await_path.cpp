@@ -75,8 +75,9 @@ public:
       m_co_handle.destroy();
   }
   Task(const Task &) = delete;
+  Task(Task &&that) noexcept
+      : m_co_handle(std::exchange(that.m_co_handle, nullptr)) {}
   Task &operator=(const Task &) = delete;
-  Task(Task &&that) noexcept = delete;
   void operator=(Task &&that) = delete;
   void resume() {
     PRINTME();
