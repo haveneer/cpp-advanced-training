@@ -2,11 +2,11 @@
 #if __has_include(<experimental/coroutine>)
 #define __cpp_lib_coroutine
 #endif
-#ifndef __cpp_lib_coroutine
+#if !defined(__cpp_lib_coroutine) || !defined(__cpp_lib_jthread)
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(__cpp_lib_coroutine)});
+REPORT_FEATURES({STR(__cpp_lib_coroutine), STR(__cpp_lib_jthread)});
 #else
 #error "Unsupported feature"
 #endif
