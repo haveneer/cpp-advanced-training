@@ -1,4 +1,7 @@
 #include <version>
+#if __has_include(<experimental/coroutine>)
+#define __cpp_lib_coroutine
+#endif
 #ifndef __cpp_lib_coroutine
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
@@ -11,7 +14,14 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 #else
 
 //#region [Collapse all]
+#if __has_include(<experimental/coroutine>)
+#include <experimental/coroutine>
+namespace std {
+using namespace std::experimental;
+}
+#else
 #include <coroutine>
+#endif
 #include <iostream>
 #include <optional>
 //#endregion
@@ -76,7 +86,7 @@ public:
   handle_type m_co_handle;
 };
 
-Task generate() noexcept {
+Task generate() {
   auto r1 = co_await Expr1{};
   std::cout << "r1 = " << r1 << '\n';
   auto r2 = co_await Expr2{};

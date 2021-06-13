@@ -1,4 +1,7 @@
 #include <version>
+#if __has_include(<experimental/coroutine>)
+#define __cpp_lib_coroutine
+#endif
 #ifndef __cpp_lib_coroutine
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
@@ -10,10 +13,20 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 //#endregion
 #else
 
+//#region [Collapse all]
+#if __has_include(<experimental/coroutine>)
+#include <experimental/coroutine>
+namespace std {
+using namespace std::experimental;
+}
+#else
+#include <coroutine>
+#endif
 #include <iostream>
 #include <string>
 #include <tuple>
 #include <vector>
+//#endregion
 
 struct X {}; // FIXME TODO
 auto read(const std::string &) { return X{}; }

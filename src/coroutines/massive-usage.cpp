@@ -1,19 +1,9 @@
 #include <version>
-
-//#region [Feature check]
-#ifdef __cpp_lib_coroutine
-#include <coroutine>
-#else
 #if __has_include(<experimental/coroutine>)
-#include <experimental/coroutine>
-namespace std {
-using namespace std::experimental;
-}
 #define __cpp_lib_coroutine
 #endif
-#endif
-
 #ifndef __cpp_lib_coroutine
+//#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
 REPORT_FEATURES({STR(__cpp_lib_coroutine)});
@@ -24,6 +14,14 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 #else
 
 //#region [Collapse all]
+#if __has_include(<experimental/coroutine>)
+#include <experimental/coroutine>
+namespace std {
+using namespace std::experimental;
+}
+#else
+#include <coroutine>
+#endif
 #include <array>
 #include <iostream>
 #include <optional>
