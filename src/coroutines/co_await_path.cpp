@@ -41,6 +41,7 @@ struct CoResult {
 
 struct Awaitable {
   Awaitable() { PRINTME(); }
+  ~Awaitable() { PRINTME(); }
   bool await_ready() const {
     PRINTME();
     return false;
