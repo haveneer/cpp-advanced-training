@@ -18,10 +18,14 @@ int main() {
       std::views::single(1)                                                        //
       | std::views::transform([](const auto &s) { return std::views::single(s); }) //
       | std::views::join;
-  
+
+#ifdef _MSC_VER
+  assert(std::ranges::next(v.begin()) == v.end());
+#else
   // When this assertion will fail, the bug will be solved
   // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100290
-  assert(std::ranges::next(v.begin()) != v.end()); 
+  assert(std::ranges::next(v.begin()) != v.end());
+#endif
 }
 
 #endif
