@@ -17,7 +17,6 @@ jobs:
       matrix:
         include:
           # seen at 20210531 in https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md
-          # installed by hand below
           - name: Ubuntu GCC 11
             os: ubuntu-20.04
             c-compiler: gcc-11
@@ -30,18 +29,22 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-9
             cxx-compiler: g++-9
-          - name: Ubuntu Clang 10
+          - name: Ubuntu Clang 13
             os: ubuntu-20.04
-            c-compiler: clang-10
-            cxx-compiler: clang++-10
+            c-compiler: clang-13
+            cxx-compiler: clang++-13
+          - name: Ubuntu Clang 12
+            os: ubuntu-20.04
+            c-compiler: clang-12
+            cxx-compiler: clang++-12
           - name: Ubuntu Clang 11
             os: ubuntu-20.04
             c-compiler: clang-11
             cxx-compiler: clang++-11
-          # - name: Ubuntu Clang 12
-          #  os: ubuntu-20.04
-          #  c-compiler: clang-12
-          #  cxx-compiler: clang++-12
+          - name: Ubuntu Clang 10
+            os: ubuntu-20.04
+            c-compiler: clang-10
+            cxx-compiler: clang++-10
           - name: macOS 10.15 Apple Clang
             os: macOS-10.15
           # - name: macOS 10.15 Clang 12
@@ -67,14 +70,28 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      # Usually already providen by GHA image (could be required in docker)
+      # - name: install common
+      #  run: |
+      #    apt update && apt install -y libpthread-stubs0-dev
+      - name: install Clang 13
+        run: |
+          # for sources, see https://apt.llvm.org
+          curl -Ls https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main'
+          sudo apt update && sudo apt install -qy clang-13 libc++-13-dev libc++abi-13-dev
+        if: matrix.c-compiler == 'clang-13' && runner.os == 'Linux'
+      - name: install Clang-12
+        run: |
+          # for sources, see https://apt.llvm.org
+          curl -Ls https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
+          sudo apt update && sudo apt install -qy clang-12 libc++-12-dev libc++abi-12-dev
+        if: matrix.c-compiler == 'clang-12' && runner.os == 'Linux'
       - name: install Clang-11
         run: |
           sudo apt update && sudo apt install -qy clang-11 libc++-11-dev libc++abi-11-dev
         if: matrix.c-compiler == 'clang-11' && runner.os == 'Linux'
-      - name: install Clang-12
-        run: |
-          sudo apt update && sudo apt install -qy clang-12
-        if: matrix.c-compiler == 'clang-12' && runner.os == 'Linux'
       - name: install GCC-11
         run: |
           sudo apt install -qy software-properties-common
