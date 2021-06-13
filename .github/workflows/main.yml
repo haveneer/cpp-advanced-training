@@ -69,17 +69,17 @@ jobs:
           submodules: true
       - name: install Clang-11
         run: |
-          sudo apt update && sudo apt install -y clang-11 libc++-11-dev libc++abi-11-dev
+          sudo apt update && sudo apt install -qy clang-11 libc++-11-dev libc++abi-11-dev
         if: matrix.c-compiler == 'clang-11' && runner.os == 'Linux'
       - name: install Clang-12
         run: |
-          sudo apt update && sudo apt install -y clang-12
+          sudo apt update && sudo apt install -qy clang-12
         if: matrix.c-compiler == 'clang-12' && runner.os == 'Linux'
       - name: install GCC-11
         run: |
-          sudo apt install software-properties-common
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-          sudo apt install gcc-11 g++-11
+          sudo apt install -qy software-properties-common
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt install -qy gcc-11 g++-11
         if: matrix.c-compiler == 'gcc-11' && runner.os == 'Linux'
       - name: configure
         run: |
