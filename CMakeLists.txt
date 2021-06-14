@@ -15,6 +15,11 @@ add_definitions(-DSAFE_RUN) # add workaround for explicitly buggy example (or on
 
 #------------------------------------------------------
 
+#FIND_PACKAGE(fmt REQUIRED)
+#link_libraries(fmt::fmt)
+
+#------------------------------------------------------
+
 if (ENABLE_STATIC_ANALYSIS)
     # search for clang-tidy (while be used while adding library or executable)
     find_program(CLANG_TIDY clang-tidy)

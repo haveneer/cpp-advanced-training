@@ -1,0 +1,8 @@
+[requires]
+#gtest/1.10.0
+fmt/7.1.3
+#termcolor/2.0.0
+
+[generators]
+cmake_paths
+cmake_find_package

@@ -26,6 +26,16 @@ For more details about this training, contact [hpwxf@haveneer.com](mailto:hpwxf@
 
 * `type.h` contains tool `type(obj)` to get printable type name for given object argument 
 
+# Build with conan
+
+```
+mkdir build
+cd build 
+conan install ..
+cmake -DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake ..
+```
+
+
 # CMake options
 
 * `-DENABLE_STATIC_ANALYSIS=ON|OFF` : enable/disable static analysis while compiling
