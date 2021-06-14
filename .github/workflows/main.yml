@@ -73,7 +73,7 @@ jobs:
       # Usually already providen by GHA image (could be required in docker)
       # - name: install common
       #  run: |
-      #    apt update && apt install -y libpthread-stubs0-dev
+      #    apt update && apt install -y libpthread-stubs0-dev software-properties-common
       - name: install Clang 13
         run: |
           # for sources, see https://apt.llvm.org
