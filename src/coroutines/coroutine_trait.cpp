@@ -91,7 +91,13 @@ auto operator co_await(std::future<T> future) noexcept
       return this->wait_for(0s) != std::future_status::timeout;
     }
     void await_suspend(std::coroutine_handle<> cont) const {
-      std::thread([this, cont] {
+#ifdef __clang__
+#define CLANG_MUTABLE \
+  mutable // experimental/coroutines has not yet the right interface
+#else
+#define CLANG_MUTABLE
+#endif
+      std::thread([this, cont]() CLANG_MUTABLE {
         this->wait();
         cont.resume();
       }).detach();
