@@ -43,7 +43,9 @@ template <typename... Args> void print(std::ostream &out, Args... args) {
 
 struct SyncStream {
   SyncStream(std::ostream &o) : o(o), oss{} {
-    oss << "[" << Colorize{std::this_thread::get_id()} << "] ";
+    auto flags = oss.flags();
+    oss << std::hex << "[" << Colorize{std::this_thread::get_id()} << "] ";
+    oss.setf(flags);
   }
   ~SyncStream() {
     oss << '\n';
@@ -274,7 +276,7 @@ int main() {
       if (task.done()) {
         SyncStream{std::cout} << "## Task " << Colorize{task.m_co_handle.address()}
                               << " done";
-        tasks.erase(i);
+        i = tasks.erase(i); // or tasks.erase(i++); 
       }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
