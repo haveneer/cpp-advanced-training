@@ -8,12 +8,14 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <tuple>
 
 template <typename T> struct Colorize {
   T p;
 
   static auto to_color(const T &p) {
+    std::scoped_lock lock(_mutex);
     if (!_to_color) {
       _last_ptr_color = static_cast<uint32_t>(std::hash<T>{}(p)); // seed
       _to_color = std::make_unique<typename decltype(_to_color)::element_type>();
@@ -31,10 +33,14 @@ template <typename T> struct Colorize {
     return iter->second;
   }
 
-  static auto count() { return (_to_color) ? _to_color->size() : 0; }
+  static auto count() {
+    std::scoped_lock lock(_mutex);
+    return (_to_color) ? _to_color->size() : 0;
+  }
 
 private:
   using Color = std::tuple<uint8_t, uint8_t, uint8_t>;
+  static inline std::mutex _mutex;
   static inline std::unique_ptr<std::map<T, Color>> _to_color;
   static inline uint32_t _last_ptr_color = 0x05caf0;
 };
