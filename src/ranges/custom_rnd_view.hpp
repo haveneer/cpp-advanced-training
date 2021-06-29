@@ -91,7 +91,7 @@ private:
 
   private:
     std::uint32_t m_seed = {};
-    unsigned long long m_rank = {};
+    long long int m_rank = {};
     std::mt19937 m_engine;
     std::uint32_t m_current = {};
   };
