@@ -10,13 +10,13 @@
 #include <memory>
 #include <tuple>
 
-struct Colorize {
-  const void *p;
+template <typename T> struct Colorize {
+  T p;
 
-  static auto to_color(const void *p) {
+  static auto to_color(const T &p) {
     if (!_to_color) {
-      _last_ptr_color = static_cast<uint32_t>(reinterpret_cast<long>(p)); // seed
-      _to_color = std::make_unique<decltype(_to_color)::element_type>();
+      _last_ptr_color = static_cast<uint32_t>(std::hash<T>{}(p)); // seed
+      _to_color = std::make_unique<typename decltype(_to_color)::element_type>();
     }
     const auto color = Color{(_last_ptr_color >> 16u) & 0xFF,
                              (_last_ptr_color >> 8u) & 0xFF, _last_ptr_color & 0xFF};
@@ -31,15 +31,21 @@ struct Colorize {
     return iter->second;
   }
 
+  static auto count() { return (_to_color) ? _to_color->size() : 0; }
+
 private:
   using Color = std::tuple<uint8_t, uint8_t, uint8_t>;
-  static inline std::unique_ptr<std::map<const void *, Color>> _to_color;
+  static inline std::unique_ptr<std::map<T, Color>> _to_color;
   static inline uint32_t _last_ptr_color = 0x05caf0;
 };
 
-inline std::ostream &operator<<(std::ostream &o, const Colorize &c) {
+// Custom CTAD (required by CLANG but not by GCC)
+template <typename T> Colorize(T &&t) -> Colorize<T>;
+
+template <typename T>
+inline std::ostream &operator<<(std::ostream &o, const Colorize<T> &c) {
 #ifdef USE_COLOR
-  auto color = Colorize::to_color(c.p);
+  auto color = Colorize<T>::to_color(c.p);
   char command[20] = {0};
   std::snprintf(command, sizeof(command), "\033[38;2;%d;%d;%dm", std::get<0>(color),
                 std::get<1>(color), std::get<2>(color));
