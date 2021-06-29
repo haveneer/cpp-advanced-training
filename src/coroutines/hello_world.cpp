@@ -38,7 +38,7 @@ using namespace std::experimental;
 struct HelloWorldCoro {
   // clang-format off
   struct promise_type; // type required by compiler; defined later
-
+  using handle_type = std::coroutine_handle<promise_type>;
   HelloWorldCoro(promise_type *p)
       : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) { PRINTME(); }
   ~HelloWorldCoro() { PRINTME(); /* m_handle.destroy(); */ }
@@ -53,7 +53,7 @@ struct HelloWorldCoro {
     void unhandled_exception() { PRINTME(); std::exit(1); }
   };
 
-  std::coroutine_handle<promise_type> m_handle;
+  handle_type m_handle;
   // clang-format on  
 };
 
