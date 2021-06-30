@@ -15,11 +15,6 @@ add_definitions(-DSAFE_RUN) # add workaround for explicitly buggy example (or on
 
 #------------------------------------------------------
 
-#FIND_PACKAGE(fmt REQUIRED)
-#link_libraries(fmt::fmt)
-
-#------------------------------------------------------
-
 if (ENABLE_STATIC_ANALYSIS)
     # search for clang-tidy (while be used while adding library or executable)
     find_program(CLANG_TIDY clang-tidy)
@@ -95,6 +90,11 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) #
 add_subdirectory(third_party/googletest)
 OPTION(BENCHMARK_ENABLE_TESTING "" OFF)
 add_subdirectory(third_party/benchmark)
+
+#------------------------------------------------------
+
+add_subdirectory(third_party/fmt)
+link_libraries(fmt::fmt)
 
 #------------------------------------------------------
 
