@@ -73,6 +73,9 @@ jobs:
       # Usually already provided by GHA image (could be required in docker)
       # - name: install common
       #  run: |
+      #    echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections
+      #    echo 'tzdata tzdata/Zones/Europe select Paris' | debconf-set-selections
+      #    DEBIAN_FRONTEND="noninteractive" apt install -y tzdata
       #    apt update && apt install -y libpthread-stubs0-dev software-properties-common
       #                  apt install -y curl sudo cmake
       - name: install Clang 13
