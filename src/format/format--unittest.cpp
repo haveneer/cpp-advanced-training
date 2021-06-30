@@ -13,15 +13,14 @@
 #include <version>
 #ifdef __cpp_lib_format
 #include <format>
-namespace stdx = std;
 #else
-namespace stdx = fmt;
+namespace std { using namespace fmt; }
 #endif
 //#endregion
 
 TEST(stdformat, trivial) {
   //
-  CHECK("The answer is 42.", stdx::format("The answer is {}.", 42));
+  CHECK("The answer is 42.", std::format("The answer is {}.", 42));
 }
 
 #include <fmt/color.h>
