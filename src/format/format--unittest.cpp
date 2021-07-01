@@ -8,7 +8,7 @@
   }
 //#endregion
 
-//#region [Compiler dependent format header]
+//#region [Compiler dependent <format> header]
 #include <fmt/core.h>
 #include <version>
 #ifdef __cpp_lib_format
