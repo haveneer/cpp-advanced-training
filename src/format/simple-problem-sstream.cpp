@@ -2,7 +2,13 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#if __has_include(<numbers>)
 #include <numbers> // C++20
+#else
+namespace std::numbers {
+constexpr double pi = 3.1415926535897932;
+}
+#endif
 #include <sstream>
 #include <string>
 #include <tuple>
