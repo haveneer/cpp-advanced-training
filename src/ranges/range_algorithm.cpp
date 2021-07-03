@@ -45,7 +45,7 @@ void quicksort(Range &&range, Proj proj = {}) {
   auto last = std::end(range);
   auto pivot = ranges::next(first, ranges::distance(range) / 2, last);
 
-  if constexpr (requires { first + 1; }) {
+  if constexpr (requires { first + 1; }) { // inlined requires not supported by MSVC
     static const auto printOnce = print("Random access algo", type<Range>());
     ranges::nth_element(range, pivot, ranges::less{}, proj);
     quicksort(ranges::subrange(first, pivot), proj);
