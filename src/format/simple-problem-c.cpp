@@ -32,7 +32,7 @@ int main() {
                   fmt, name.c_str(), answer, answer, number); // should return 'sz'
     std::string_view result{std::data(buffer), sz};
 
-    assert(result == expected_result);
     std::cout << result << std::endl;
+    assert(result == expected_result);
   }
 }

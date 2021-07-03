@@ -34,7 +34,7 @@ int main() {
         << std::setprecision(previous_precision) << ";";
     std::string result = oss.str();
 
-    assert(result == expected_result);
     std::cout << result << std::endl;
+    assert(result == expected_result);
   }
 }

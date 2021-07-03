@@ -38,7 +38,7 @@ int main() {
         std::format("Name: {0:>9}; answer: {1:#06x}={1:5d}; number: {2:<+11.5g};",
                     name, answer, number);
 
-    assert(result == expected_result);
     std::cout << result << std::endl;
+    assert(result == expected_result);
   }
 }
