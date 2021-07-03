@@ -44,6 +44,12 @@ if (HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
     ADD_COMPILE_DEFINITIONS(my_cpp_abbreviated_function_template)
 endif ()
 
+check_cxx_source_compiles("#include <chrono>\n int main() { std::chrono::year_month_day check_this; }"
+        HAS_CXX_FEATURE_CHRONO_YMD)
+if (HAS_CXX_FEATURE_CHRONO_YMD)
+    ADD_COMPILE_DEFINITIONS(my_cpp_chrono_ymd)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)

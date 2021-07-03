@@ -106,10 +106,6 @@ TEST(stdformat, precision_specifier) {
   // clang-format on
 }
 
-template <typename, typename = void> constexpr bool is_type_complete_v = false;
-template <typename T>
-constexpr bool is_type_complete_v<T, std::void_t<decltype(sizeof(T))>> = true;
-
 TEST(stdformat, chrono) {
   // https://en.cppreference.com/w/cpp/chrono/system_clock/formatter
   // clang-format off
@@ -119,35 +115,36 @@ TEST(stdformat, chrono) {
   EXPECT_EQ("strftime-like format: 03:15:30", std::format("strftime-like format: {:%H:%M:%S}", 3h + 15min + 30s));
   // clang-format on
 
-  // struct check: https://devblogs.microsoft.com/oldnewthing/20190710-00/?p=102678
+#ifdef my_cpp_chrono_ymd
   using namespace std::chrono; // should be done before is_type_complete_v
-  if constexpr (is_type_complete_v<struct local_t>) { // Check C++20 features
 #if 1
-    std::cout << std::format("Logged at {:%F at %T %Z}.\n",
-                             std::chrono::system_clock::now());
-    auto ymd = 25d / June / 2021; // equivalent to 2021y / June / 25
-    auto datetime = std::chrono::sys_days(ymd);
-    EXPECT_EQ("2021-06-25", std::format("{:%F}", datetime));
-    EXPECT_EQ("Friday 25th June 2021", std::format("{:%A %dth %B %Y}", datetime));
+  std::cout << std::format("Logged at {:%F at %T %Z}.\n",
+                           std::chrono::system_clock::now());
+  
+  auto ymd = 25d / June / 2021; // equivalent to 2021y / June / 25
+  auto datetime = std::chrono::sys_days(ymd);
+  EXPECT_EQ("2021-06-25", std::format("{:%F}", datetime));
+  EXPECT_EQ("Friday 25th June 2021", std::format("{:%A %dth %B %Y}", datetime));
 #else
-    std::cout << std::format("Logged at {:%F at %T %Z}.\n",
-                             std::chrono::system_clock::now());
-    std::tm tm = {};
-    std::stringstream ss("Jun 25 2021 20:32");
-    ss >> std::get_time(&tm, "%b %d %Y %H:%M");
-    auto datetime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
-    EXPECT_EQ("2021-06-25", std::format("{:%F}", datetime));
-    EXPECT_EQ("Friday 25th June 2021", std::format("{:%A %dth %B %Y}", datetime));
+  std::cout << std::format("Logged at {:%F at %T %Z}.\n",
+                           std::chrono::system_clock::now());
+  
+  std::tm tm = {};
+  std::stringstream ss("Jun 25 2021 20:32");
+  ss >> std::get_time(&tm, "%b %d %Y %H:%M");
+  auto datetime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+  EXPECT_EQ("2021-06-25", std::format("{:%F}", datetime));
+  EXPECT_EQ("Friday 25th June 2021", std::format("{:%A %dth %B %Y}", datetime));
 #endif
 
-    //    // FIXME There is a problem with timezone; times are shifted
-    //    auto datetime2 = sys_days(ymd) + 20h + 32min;
-    //    EXPECT_EQ("", std::format("{}", datetime));
-    //    EXPECT_EQ("", std::format("{:%FT%T%Z}", std::chrono::system_clock::now()));
-    //    EXPECT_EQ("", std::format("{:%FT%T%Z}", datetime));
-    //    EXPECT_EQ("", std::format("{:%FT%T%Z}", datetime2));
-    //    EXPECT_EQ("", std::format("{:%A %dth %B %Y at %H:%M}", datetime));
-  }
+  //    // FIXME There is a problem with timezone; times are shifted
+  //    auto datetime2 = sys_days(ymd) + 20h + 32min;
+  //    EXPECT_EQ("", std::format("{}", datetime));
+  //    EXPECT_EQ("", std::format("{:%FT%T%Z}", std::chrono::system_clock::now()));
+  //    EXPECT_EQ("", std::format("{:%FT%T%Z}", datetime));
+  //    EXPECT_EQ("", std::format("{:%FT%T%Z}", datetime2));
+  //    EXPECT_EQ("", std::format("{:%A %dth %B %Y at %H:%M}", datetime));
+#endif
 }
 
 #include <fmt/color.h>
