@@ -42,7 +42,7 @@ int main() {
             std::format(localizations[language], a, b, (a + b) / 2));
 
   EXPECT_EQ("1024", std::format("{}", 1024));
-  EXPECT_EQ("1024", std::format(std::locale{"en_US.UTF-8"}, "{}", 1024));
+  EXPECT_EQ("1024", std::format(std::locale{"en_US"}, "{}", 1024));
   EXPECT_EQ("1024", std::format(std::locale{"fr_FR"}, "{}", 1024));
 
   struct numpunct : std::numpunct<char> {
@@ -66,8 +66,8 @@ int main() {
 
   EXPECT_EQ("2021-06-25 21:32:00",std::format("{}", datetime));
   EXPECT_EQ("2021-06-25T21:32:00+0200",std::format("{:%FT%T%z}", datetime));
-  EXPECT_EQ("2021-06-25T21:32:00+0200",std::format(std::locale{"en_US.UTF-8"}, "{:%FT%T%z}", datetime));
+  EXPECT_EQ("2021-06-25T21:32:00+0200",std::format(std::locale{"en_US"}, "{:%FT%T%z}", datetime));
   EXPECT_EQ("2021-06-25T21:32:00+0200",std::format(std::locale{"fr_FR"}, "{:%FT%T%z}", datetime));
-  EXPECT_EQ("Fri Jun 25 21:32:00 2021",std::format(std::locale{"en_US.UTF-8"}, "{:%c}", datetime));
+  EXPECT_EQ("Fri Jun 25 21:32:00 2021",std::format(std::locale{"en_US"}, "{:%c}", datetime));
   EXPECT_EQ("Fri Jun 25 21:32:00 2021",std::format(std::locale{"fr_FR"}, "{:%c}", datetime));
 }

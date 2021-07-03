@@ -2,7 +2,7 @@
 
 name: C++ CI
 
-on: 
+on:
   push:
   schedule:
     - cron: '0 2 * * SAT'
@@ -73,11 +73,11 @@ jobs:
       # Usually already provided by GHA image (could be required in docker)
       # - name: install common
       #  run: |
-      #    echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections
-      #    echo 'tzdata tzdata/Zones/Europe select Paris' | debconf-set-selections
-      #    DEBIAN_FRONTEND="noninteractive" apt install -y tzdata
-      #    apt update && apt install -y libpthread-stubs0-dev software-properties-common
-      #                  apt install -y curl sudo cmake
+      #     echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections
+      #     echo 'tzdata tzdata/Zones/Europe select Paris' | debconf-set-selections
+      #     apt update && DEBIAN_FRONTEND="noninteractive" apt install -y tzdata
+      #     apt install -y software-properties-common libpthread-stubs0-dev
+      #     apt install -y curl sudo cmake ninja-build
       - name: install Clang 13
         run: |
           # for sources, see https://apt.llvm.org
@@ -102,6 +102,12 @@ jobs:
           sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
           sudo apt install -qy gcc-11 g++-11
         if: matrix.c-compiler == 'gcc-11' && runner.os == 'Linux'
+      - name: install locales
+        run: |
+          sudo apt install -y locales
+          sudo locale-gen en_US fr_FR
+          sudo update-locale en_US fr_FR   
+        if: runner.os == 'Linux'
       - name: configure
         run: |
           echo "Configure on $(uname -a)"
