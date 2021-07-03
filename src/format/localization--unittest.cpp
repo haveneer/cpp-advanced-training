@@ -20,6 +20,14 @@ using namespace fmt;
 #endif
 //#endregion
 
+//#region [Conditional constexpr]
+#ifdef FMT_VERSION
+#define FMT_CONSTEXPR constexpr
+#else
+#define FMT_CONSTEXPR
+#endif
+//#endregion
+
 int main() {
   try {
     std::cout << "User-preferred locale setting is " << std::locale("").name()
@@ -65,7 +73,7 @@ int main() {
       "{0} 和 {1} 的平均值为 {2}。"                    // CN
   };
 
-  constexpr int language = 2; // requires constexpr ?
+  FMT_CONSTEXPR int language = 2; // constexpr required by {fmt} // FIXME ?
   double a = 2.5;
   double b = 3.2;
   EXPECT_EQ("La moyenne de 2.5 et 3.2 est 2.85.",
@@ -86,7 +94,7 @@ int main() {
     oss << x;
     return oss.str();
   };
-  
+
   EXPECT_EQ("1'234,57", oss_transform(1234.5678));
   EXPECT_EQ("1234.5678", std::format("{0:L}", 1234.5678));
   EXPECT_EQ("1234,5678", std::format(loc, "{0:L}", 1234.5678));
