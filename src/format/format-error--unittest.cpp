@@ -28,6 +28,7 @@ TEST(stdformat, trivial) {
   EXPECT_THROW(std::format("{:00}", "string"), std::format_error);
   EXPECT_THROW(std::format("{:-5}", "string"), std::format_error);
   EXPECT_THROW(std::format("{", "string"), std::format_error);
+  EXPECT_THROW(std::format("{1}", "string"), std::format_error);
 #endif
   EXPECT_THROW(std::format("{0:{1}}", "string", -1), std::format_error);
   EXPECT_THROW(std::format("{:.{}}", 1.2, -5), std::format_error);
