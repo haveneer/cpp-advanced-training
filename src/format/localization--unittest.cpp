@@ -70,7 +70,7 @@ int main() {
       "La moyenne de {0} et {1} est {2}.",             // Fr
       "El promedio de {0} y {1} es {2}.",              // Es
       "{2} corrisponde alla media di {0} e {1}.",      // It
-      "{0} 和 {1} 的平均值为 {2}。"                    // CN
+      "{0} 和 {1} 的平均值为 {2}。"                    // Zh_CN
   };
 
   FMT_CONSTEXPR int language = 2; // constexpr required by {fmt} // FIXME ?
@@ -85,17 +85,16 @@ int main() {
     std::string do_grouping() const override { return "\003"; }
     char do_thousands_sep() const override { return '\''; }
   };
-
   std::locale loc(std::locale(), new my_number_punctuation());
 
-  auto oss_transform = [&loc](auto &&x) {
+  auto oss_to_string = [&loc](auto &&x) {
     std::ostringstream oss;
     oss.imbue(loc);
     oss << x;
     return oss.str();
   };
 
-  EXPECT_EQ("1'234,57", oss_transform(1234.5678));
+  EXPECT_EQ("1'234,57", std::to_string(1234.5678));
   EXPECT_EQ("1234.5678", std::format("{0:L}", 1234.5678));
   EXPECT_EQ("1234,5678", std::format(loc, "{0:L}", 1234.5678));
   EXPECT_EQ("1'234", std::format(loc, "{0:L}", 1234));
