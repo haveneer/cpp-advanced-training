@@ -34,9 +34,9 @@ int main() {
       fixed_point(0, [&](size_t n) { return std::formatted_size(my_format, n); });
 
   std::vector<char> buffer;
-  buffer.reserve(n + 1);
+  buffer.reserve(n + 1);                    // add extra char for  
+  buffer[n] = '?';                          //     buffer overflow check
   const auto *original_ptr = buffer.data(); // save original point allocation
-  buffer[n] = '?';                          // for buffer overflow check
 
   std::vformat_to(std::back_inserter(buffer), my_format, std::make_format_args(n));
 
