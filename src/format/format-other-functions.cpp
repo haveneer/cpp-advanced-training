@@ -34,11 +34,17 @@ int main() {
       fixed_point(0, [&](size_t n) { return std::formatted_size(my_format, n); });
 
   std::vector<char> buffer;
-  buffer.reserve(n + 1);                    // add extra char for  
+  buffer.reserve(n + 1);                    // add extra char for
   buffer[n] = '?';                          //     buffer overflow check
   const auto *original_ptr = buffer.data(); // save original point allocation
 
+#ifndef _MSC_VER
   std::vformat_to(std::back_inserter(buffer), my_format, std::make_format_args(n));
+#else
+  // FIXME work around for MSVC 
+  // (the error is on the make_format_args type conversion for vformat_to)
+  std::format_to(std::back_inserter(buffer), my_format, n); 
+#endif
 
   std::cout << std::string_view{std::data(buffer), n} << std::endl;
   assert(original_ptr == buffer.data()); // no reallocation
