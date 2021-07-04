@@ -46,7 +46,7 @@ int main() {
   std::format_to(std::back_inserter(buffer), my_format, n); 
 #endif
 
-  std::cout << std::string_view{std::data(buffer), n} << std::endl;
   assert(original_ptr == buffer.data()); // no reallocation
   assert(buffer[n] == '?');              // does not hit guard chat
+  std::cout << std::string_view{std::data(buffer), n} << std::endl;
 }
