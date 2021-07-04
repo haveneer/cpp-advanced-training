@@ -29,8 +29,8 @@ struct std::formatter<Box<T>, CharT> : std::formatter<T, CharT> {
 
   // Define format() by calling the base class implementation with the wrapped value
   template <class FormatContext>                    // With C++20, you can replace
-  auto format(const Box<T> &t, FormatContext &fc) { // template with auto arg
-    return std::formatter<T, CharT>::format(t.value, fc);
+  auto format(const Box<T> &t, FormatContext &context) { // template with auto arg
+    return std::formatter<T, CharT>::format(t.value, context);
   }
 };
 

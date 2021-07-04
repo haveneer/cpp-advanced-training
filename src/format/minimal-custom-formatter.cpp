@@ -1,8 +1,8 @@
 //#region [Collapse all]
 #include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <string>
-#include <cctype>
 //#endregion
 
 //#region [Compiler dependent <format> header]
@@ -27,15 +27,15 @@ struct YourType {
 
 template <> class std::formatter<YourType> {
 public:
-  template<typename FormatContext>
-  constexpr auto parse(FormatContext &context) {
+  template <typename FormatContext>
+  constexpr auto parse(FormatContext &context) { // BETTER IF constexpr
     const auto iter{context.begin()};
     if (iter != context.end() && *iter != '}')
       throw std::format_error{"Invalid specifier"};
     return iter;
   }
 
-  template<typename FormatContext>
+  template <typename FormatContext>
   auto format(const YourType &x, FormatContext &context) {
     auto to_upper = [&](std::string s) {
       std::transform(s.begin(), s.end(), s.begin(),
@@ -52,4 +52,6 @@ int main() {
   YourType x{"John", "Doe", 42};
 
   std::cout << std::format("Who is {} ?", x) << std::endl;
+  // std::cout << std::format("Who is {:} ?", x) << std::endl;  // same
+  // std::cout << std::format("Who is {:x} ?", x) << std::endl; // error
 }
