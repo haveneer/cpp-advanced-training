@@ -27,13 +27,16 @@ struct YourType {
 
 template <> class std::formatter<YourType> {
 public:
-  constexpr auto parse(auto &context) {
+  template<typename FormatContext>
+  constexpr auto parse(FormatContext &context) {
     const auto iter{context.begin()};
     if (iter != context.end() && *iter != '}')
       throw std::format_error{"Invalid specifier"};
     return iter;
   }
-  auto format(const YourType &x, auto &context) {
+
+  template<typename FormatContext>
+  auto format(const YourType &x, FormatContext &context) {
     auto to_upper = [&](std::string s) {
       std::transform(s.begin(), s.end(), s.begin(),
                      [](char ch) { return std::toupper(ch); });
