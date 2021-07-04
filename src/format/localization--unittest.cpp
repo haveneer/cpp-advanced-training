@@ -35,7 +35,8 @@ int main() {
     // std::locale::global(std::locale(""));
 
     EXPECT_EQ("1024", std::format("{}", 1024));
-    EXPECT_EQ("1024", std::format(std::locale{"en_US"}, "{}", 1024));
+    EXPECT_EQ("1024",
+              std::format(std::locale{"en_US"}, "{}", 1024)); // sould be 1'024
     EXPECT_EQ("1024", std::format(std::locale{"fr_FR"}, "{}", 1024));
 #if 0
     using namespace std::chrono;
@@ -74,8 +75,7 @@ int main() {
   };
 
   FMT_CONSTEXPR int language = 2; // constexpr required by {fmt} // FIXME ?
-  double a = 2.5;
-  double b = 3.2;
+  double a{2.5}, b{3.2};
   EXPECT_EQ("La moyenne de 2.5 et 3.2 est 2.85.",
             std::format(localizations[language], a, b, (a + b) / 2));
 

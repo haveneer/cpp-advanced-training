@@ -120,7 +120,7 @@ TEST(stdformat, chrono) {
 #if 1
   std::cout << std::format("Logged at {:%F at %T %Z}.\n",
                            std::chrono::system_clock::now());
-  
+
   auto ymd = 25d / June / 2021; // equivalent to 2021y / June / 25
   auto datetime = std::chrono::sys_days(ymd);
   EXPECT_EQ("2021-06-25", std::format("{:%F}", datetime));
@@ -128,7 +128,7 @@ TEST(stdformat, chrono) {
 #else
   std::cout << std::format("Logged at {:%F at %T %Z}.\n",
                            std::chrono::system_clock::now());
-  
+
   std::tm tm = {};
   std::stringstream ss("Jun 25 2021 20:32");
   ss >> std::get_time(&tm, "%b %d %Y %H:%M");
@@ -136,7 +136,6 @@ TEST(stdformat, chrono) {
   EXPECT_EQ("2021-06-25", std::format("{:%F}", datetime));
   EXPECT_EQ("Friday 25th June 2021", std::format("{:%A %dth %B %Y}", datetime));
 #endif
-
   //    // FIXME There is a problem with timezone; times are shifted
   //    auto datetime2 = sys_days(ymd) + 20h + 32min;
   //    EXPECT_EQ("", std::format("{}", datetime));
@@ -149,5 +148,7 @@ TEST(stdformat, chrono) {
 
 #include <fmt/color.h>
 TEST(fmtlib, trivial) {
-  fmt::print(fmt::emphasis::underline, "{} {}!", "Hello", "world");
+  fmt::print(fmt::emphasis::underline | fmt::emphasis::bold |
+                 fg(fmt::color::dodger_blue),
+             "{} {}!\n", "Hello", "world");
 }
