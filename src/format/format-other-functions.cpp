@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 //#endregion
 
 //#region [Compiler dependent <format> header]
