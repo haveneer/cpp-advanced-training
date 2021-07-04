@@ -21,6 +21,8 @@ using namespace fmt;
 //#endregion
 
 TEST(stdformat, trivial) {
+  int negative_number = -1;
+
 #ifndef FMT_VERSION
   // {fmt} lib checks these errors at compile time (=> new proposal P2216)
   EXPECT_THROW(std::format("{:.}", 42), std::format_error);
@@ -30,6 +32,12 @@ TEST(stdformat, trivial) {
   EXPECT_THROW(std::format("{", "string"), std::format_error);
   EXPECT_THROW(std::format("{1}", "string"), std::format_error);
 #endif
+
   EXPECT_THROW(std::format("{0:{1}}", "string", -1), std::format_error);
+  EXPECT_THROW(std::format("{:.{}}", 1.2, negative_number), std::format_error);
+
+#ifndef _MSC_VER
+  // MSVC checks this error at compile time
   EXPECT_THROW(std::format("{:.{}}", 1.2, -5), std::format_error);
+#endif
 }
