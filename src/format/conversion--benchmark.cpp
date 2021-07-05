@@ -68,61 +68,61 @@ struct Digester {
 };
 
 void sprintf(benchmark::State &state) {
-  auto dc = Digester(state);
+  auto digester = Digester(state);
   for (auto s : state) {
     for (auto value : data) {
       char buffer[buffer_size];
       unsigned size = std::sprintf(buffer, "%.16g", value);
-      dc.add({buffer, size});
+      digester.add({buffer, size});
     }
   }
 }
 BENCHMARK(sprintf);
 
 void std_ostringstream(benchmark::State &state) {
-  auto dc = Digester(state);
-  std::ostringstream os;
+  auto digester = Digester(state);
+  std::ostringstream oss;
   for (auto s : state) {
     for (auto value : data) {
-      os.str(std::string());
-      os << std::setprecision(16) << value;
-      auto s = os.str(); // C++20 .view(); .str() otherwise
-      dc.add(s);
+      oss.str(std::string());
+      oss << std::setprecision(16) << value;
+      auto s = oss.str(); // C++20 .view(); .str() otherwise
+      digester.add(s);
     }
   }
 }
 BENCHMARK(std_ostringstream);
 
 void fmt_format(benchmark::State &state) {
-  auto dc = Digester(state);
+  auto digester = Digester(state);
   for (auto s : state) {
     for (auto value : data) {
       std::string s = std::format("{:.16g}", value);
-      dc.add(s);
+      digester.add(s);
     }
   }
 }
 BENCHMARK(fmt_format);
 
 void fmt_format_to(benchmark::State &state) {
-  auto dc = Digester(state);
+  auto digester = Digester(state);
   for (auto s : state) {
     for (auto value : data) {
       char buffer[buffer_size];
       auto end = std::format_to(buffer, "{:.16g}", value);
       unsigned size = end - buffer;
-      dc.add({buffer, size});
+      digester.add({buffer, size});
     }
   }
 }
 BENCHMARK(fmt_format_to);
 
 void std_to_string(benchmark::State &state) {
-  auto dc = Digester(state);
+  auto digester = Digester(state);
   for (auto s : state) {
     for (auto value : data) {
-      std::string s = std::to_string(value);
-      dc.add(s);
+      std::string s = std::to_string(value); // cannot manage precision
+      digester.add(s);
     }
   }
 }
@@ -130,7 +130,7 @@ BENCHMARK(std_to_string);
 
 #ifdef my_cpp_to_chars_on_double
 void std_to_chars(benchmark::State &state) {
-  auto dc = Digester(state);
+  auto digester = Digester(state);
 
   for (auto s : state) {
     for (auto value : data) {
@@ -138,7 +138,7 @@ void std_to_chars(benchmark::State &state) {
       auto res = std::to_chars(buffer, buffer + sizeof(buffer), value,
                                std::chars_format::general, 16);
       unsigned size = res.ptr - buffer;
-      dc.add({buffer, size});
+      digester.add({buffer, size});
     }
   }
 }
