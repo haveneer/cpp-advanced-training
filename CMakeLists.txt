@@ -50,6 +50,18 @@ if (HAS_CXX_FEATURE_CHRONO_YMD)
     ADD_COMPILE_DEFINITIONS(my_cpp_chrono_ymd)
 endif ()
 
+check_cxx_source_compiles("
+#include <charconv>
+int main() {
+  char buffer[24];
+  auto res = std::to_chars(buffer, buffer + sizeof(buffer), 1. / 3,
+                           std::chars_format::general, 16);
+  unsigned size = res.ptr - buffer;
+}" HAS_CXX_FEATURE_TO_CHARS_ON_DOUBLE)
+if (HAS_CXX_FEATURE_TO_CHARS_ON_DOUBLE)
+    ADD_COMPILE_DEFINITIONS(my_cpp_to_chars_on_double)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
