@@ -131,6 +131,7 @@ if (MSVC)
         list(APPEND EXCLUDED src/coroutines/inlined-coroutines.cpp) # Execution failure; should be debugged later
         list(APPEND EXCLUDED src/coroutines/async_server.cpp) # Strange timeout; should be debugged later
         list(APPEND EXCLUDED src/format/minimal-custom-formatter.cpp) # internal lib error (with MSVC 19.29)
+        list(APPEND EXCLUDED src/format/format-other-functions.cpp) # timeout with MSVC 19.29
     endif ()
     if (NOT DONT_VS_EXCLUDE)
         list(APPEND EXCLUDED)
