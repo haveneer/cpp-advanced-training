@@ -32,6 +32,7 @@ public:
     const auto iter{context.begin()};
     if (iter != context.end() && *iter != '}')
       throw std::format_error{"Invalid specifier"};
+    // HINT Returns iterator on last used char
     return iter;
   }
 
@@ -42,7 +43,7 @@ public:
                      [](char ch) { return std::toupper(ch); });
       return s;
     };
-
+    // HINT Returns iterator to the end of written string
     return std::format_to(context.out(), "{} {} ({})", x.first_name,
                           to_upper(x.last_name), x.age);
   }
