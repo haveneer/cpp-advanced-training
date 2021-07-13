@@ -15,11 +15,11 @@ bool is_ready(const std::future<R> &f) {
 void do_something_and_set_promise(std::promise<int> promise) {
   // do computations
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  std::cout << "Thread Computing" << std::endl;
+  std::cerr << "Thread Computing" << std::endl;
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   promise.set_value(42);
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  std::cout << "Thread Cleaning" << std::endl;
+  std::cerr << "Thread Cleaning" << std::endl;
   // do some cleaning stuff
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   // once set, a promise cannot be reused

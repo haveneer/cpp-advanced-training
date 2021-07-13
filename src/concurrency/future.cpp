@@ -14,7 +14,7 @@ bool is_ready(const std::future<R> &f) {
 
 std::string do_something_and_return_value() {
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  std::cout << "Thread ready" << std::endl;
+  std::cerr << "Thread ready" << std::endl;
   return "Hello";
 }
 

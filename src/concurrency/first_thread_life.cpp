@@ -15,13 +15,13 @@ template <typename T> Colorize(T &&t) -> Colorize<T>;
 
 struct CallableObject {
   CallableObject() { //
-    std::cout << "New CallableObject " << Colorize{this} << "\n";
+    std::cerr << "New CallableObject " << Colorize{this} << "\n";
   }
   ~CallableObject() { //
-    std::cout << "Delete CallableObject " << Colorize{this} << "\n";
+    std::cerr << "Delete CallableObject " << Colorize{this} << "\n";
   }
   CallableObject(CallableObject &&that) {
-    std::cout << "Move CallableObject " << Colorize{&that} << " -> "
+    std::cerr << "Move CallableObject " << Colorize{&that} << " -> "
               << Colorize{this} << "\n";
   }
   CallableObject(const CallableObject &) = delete;
@@ -29,7 +29,7 @@ struct CallableObject {
   void operator=(CallableObject &&) = delete;
 
   void operator()(const std::string &greeting) {
-    std::cout << greeting << " from CallableObject " << Colorize{this} << "\n";
+    std::cerr << greeting << " from CallableObject " << Colorize{this} << "\n";
   }
 };
 
