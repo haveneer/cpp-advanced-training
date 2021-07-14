@@ -62,6 +62,18 @@ if (HAS_CXX_FEATURE_TO_CHARS_ON_DOUBLE)
     ADD_COMPILE_DEFINITIONS(my_cpp_to_chars_on_double)
 endif ()
 
+# __cpp_lib_atomic_wait is not well defined on AppleClang 12
+check_cxx_source_compiles("
+#include <atomic>
+int main() {
+  std::atomic<bool> v;
+  v.wait(false);
+  v.notify_one();
+}" HAS_CXX_FEATURE_ATOMIC_WAIT)
+if (HAS_CXX_FEATURE_ATOMIC_WAIT)
+    ADD_COMPILE_DEFINITIONS(my_cpp_lib_atomic_wait)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
