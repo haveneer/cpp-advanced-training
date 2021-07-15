@@ -42,4 +42,12 @@ cmake -DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake ..
  
 * `-DCMAKE_CXX_COMPILER_LAUNCHER=ccache` : enable `ccache` as compiler cache
 
+# Third party libs
 
+* [Google Benchmark](https://github.com/google/benchmark.git) as submodule in `third_party/benchmark`
+
+* [Google Test](https://github.com/google/googletest.git) as submodule in `third_party/gtest`
+
+* [lib {fmt}](https://github.com/fmtlib/fmt.git) as submodule in `third_party/fmt`
+
+* [oneTBB (ex: TBB)](https://github.com/oneapi-src/oneTBB) as installed component
