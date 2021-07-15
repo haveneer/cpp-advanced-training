@@ -40,7 +40,7 @@ int main() {
   bool ready = false; // need to be protected
   std::condition_variable cv;
 
-  auto start = std::chrono::system_clock::now();
+  auto start = std::chrono::steady_clock::now();
 
   std::thread t([&] {
     // std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -63,6 +63,6 @@ int main() {
 
   t.join();
 
-  std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
+  std::chrono::duration<double> dur = std::chrono::steady_clock::now() - start;
   SyncCout{} << "Duration: " << dur.count() << " seconds";
 }

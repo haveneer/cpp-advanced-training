@@ -249,9 +249,9 @@ static void empty(benchmark::State &state) {
 BENCHMARK(empty);
 
 template <typename F> void timeit(std::string_view name, F &&f) {
-  auto start = std::chrono::system_clock::now();
+  auto start = std::chrono::steady_clock::now();
   f();
-  std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
+  std::chrono::duration<double> dur = std::chrono::steady_clock::now() - start;
   std::cout << std::setw(20) << name << ": " << dur.count() << " seconds" << '\n';
 }
 
