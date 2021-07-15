@@ -50,6 +50,7 @@ if (HAS_CXX_FEATURE_CHRONO_YMD)
     ADD_COMPILE_DEFINITIONS(my_cpp_chrono_ymd)
 endif ()
 
+# Some charconv is incompletely implemented 
 check_cxx_source_compiles("
 #include <charconv>
 int main() {
@@ -128,11 +129,17 @@ link_libraries(fmt::fmt)
 
 #------------------------------------------------------
 
+find_package(TBB)
+
+#------------------------------------------------------
+
 if (NOT WIN32)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     link_libraries(Threads::Threads)
 endif ()
+
+#------------------------------------------------------
 
 set(EXCLUDED)
 if (MSVC)
@@ -190,6 +197,11 @@ foreach (SRC ${SRCS})
         endif ()
         file(GLOB EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}--*.*")
 
+        string(REGEX MATCH "/parallel/" NEED_PARALLEL ${SRC})
+        if (NEED_PARALLEL)
+            set(TYPE "parallel example")
+        endif ()
+
         set(EXTRAS)
         foreach (S ${EXTRAS_PATH} ${GTEST_EXTRAS_PATH})
             if (NOT S IN_LIST SRCS)
@@ -226,6 +238,14 @@ foreach (SRC ${SRCS})
             target_include_directories(${EXE} PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
             target_include_directories(${EXE} PUBLIC ${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
             set_property(TEST ${TEST} PROPERTY LABELS "GTest")
+        endif ()
+        if (NEED_PARALLEL)
+            if (TBB_FOUND)
+                target_compile_definitions(${EXE} PUBLIC WITH_TBB)
+                target_link_libraries(${EXE} TBB::tbb)
+            else ()
+                message(WARNING "Parallel TBB required but not found")
+            endif ()
         endif ()
     endif ()
 endforeach ()
