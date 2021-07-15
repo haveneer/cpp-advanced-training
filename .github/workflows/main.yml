@@ -112,6 +112,14 @@ jobs:
           #     export LC_ALL=fr_FR # select one locale
           #     locale -k LC_TIME   # show rule about with locale
         if: runner.os == 'Linux'
+      - name: install TBB 
+        run: |
+          if [ "${{runner.os}}" == "Linux" ]; then
+            sudo apt install -y libtbb-dev
+          fi
+          if [ "${{runner.os}}" == "macOS" ]; then
+            brew install tbb
+          fi
       - name: configure
         run: |
           echo "Configure on $(uname -a)"
