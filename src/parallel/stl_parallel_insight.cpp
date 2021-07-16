@@ -37,8 +37,15 @@ template <typename T> Colorize(T &&t) -> Colorize<T>;
 #include <map>
 #include <mutex>
 #include <numeric>
+#include <random>
 #include <thread>
 #include <vector>
+//#endregion
+
+//#region [TBB config]
+#ifdef WITH_TBB
+#include <tbb/global_control.h>
+#endif
 //#endregion
 
 struct SyncCout {
@@ -57,21 +64,22 @@ struct SyncCout {
 };
 
 template <typename T> struct Inspector {
-  Inspector(const T *origin)
-      : origin{origin}, start{std::chrono::high_resolution_clock::now()} {}
-  Inspector(const Inspector &that)
-      : origin{that.origin}, start{std::chrono::high_resolution_clock::now()} {}
-  Inspector(Inspector &&that)
-      : origin{that.origin}, start{std::chrono::high_resolution_clock::now()} {}
+  static constexpr bool want_detail = false;
+
+  Inspector(const T *origin) : origin{origin}, start{now()} {}
+  Inspector(const Inspector &that) : origin{that.origin}, start{now()} {}
+  Inspector(Inspector &&that) : origin{that.origin}, start{now()} {}
   Inspector &operator=(const Inspector &) = delete;
   Inspector &operator=(Inspector &&) = delete;
   ~Inspector() {
     if (first != last) {
-      // auto diff = std::chrono::high_resolution_clock::now() - start;
-      // SyncCout{}
-      //     << std::chrono::duration_cast<std::chrono::microseconds>(diff).count()
-      //     << "_us on range [" << first << ":" << last
-      //     << "] = " << (last - first + 1);
+      if constexpr (want_detail) {
+        auto diff = std::chrono::high_resolution_clock::now() - start;
+        SyncCout{}
+            << std::chrono::duration_cast<std::chrono::microseconds>(diff).count()
+            << "_us on range [" << first << ":" << last
+            << "] = " << (last - first + 1);
+      }
       {
         std::lock_guard guard(id_mutex);
         auto [inserter, is_new_entry] =
@@ -92,8 +100,16 @@ template <typename T> struct Inspector {
       first = pos;
     last = pos;
   }
+
   const T *origin = nullptr;
   std::chrono::time_point<std::chrono::high_resolution_clock> start;
+  std::chrono::time_point<std::chrono::high_resolution_clock> now() {
+    if constexpr (want_detail)
+      return std::chrono::high_resolution_clock::now();
+    else
+      return {};
+  }
+
   mutable std::ptrdiff_t first = std::numeric_limits<std::ptrdiff_t>::max();
   mutable std::ptrdiff_t last = std::numeric_limits<std::ptrdiff_t>::max();
 
@@ -108,15 +124,39 @@ template <typename T> struct Inspector {
 };
 
 int main() {
-  std::vector<double> v(10'000'000, 0);
-  std::iota(std::begin(v), std::end(v), 0);
+#ifdef WITH_TBB
+  // Init TBB Threads
+  int pstl_num_threads = tbb::global_control::active_value(
+      tbb::global_control::max_allowed_parallelism);
+  if (auto pstl_num_threads_str = std::getenv("PSTL_NUM_THREADS")) {
+    std::istringstream iss(pstl_num_threads_str);
+    iss >> pstl_num_threads;
+  }
+  SyncCout{} << "PSTL_NUM_THREADS: " << pstl_num_threads;
+  // Thanks to
+  // https://docs.oneapi.io/versions/latest/onetbb/tbb_userguide/Migration_Guide/Task_Scheduler_Init.html
+  tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism,
+                                   pstl_num_threads);
+#endif
+
+  std::vector<double> v(100'000'000, 0);
+
+  //#region [Make random data]
+  std::mt19937 engine(/* seed = */ 42);
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
+  // not parallel since generator is not thread safe
+  std::generate(std::begin(v), std::end(v), [&] { return dist(engine); });
+  //#endregion
 
   auto start = std::chrono::high_resolution_clock::now();
+
+  //  std::sort(std::execution::par, std::begin(v), std::end(v));
+
   std::transform(std::execution::par, //
                  std::begin(v), std::end(v), std::begin(v),
-                 [inspector = std::move(Inspector{std::data(v)})](const auto &v) {
+                 [inspector = Inspector{std::data(v)}](const auto &v) {
                    inspector.inspect(v); // HINT comment this to disable analysis
-                   return std::sqrt(std::sin(v) * std::cos(v));
+                   return std::log(std::abs(std::sin(v) * std::cos(v)) + 1);
                  });
 
   //#region [Do stats]
