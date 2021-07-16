@@ -22,6 +22,7 @@ template <typename T> Colorize(T &&t) -> Colorize<T>;
 #include <string>
 #include <thread>
 #include <vector>
+#include <functional>
 //#endregion
 
 struct SyncCout {
