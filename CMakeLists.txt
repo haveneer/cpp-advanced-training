@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(cpp-advanced-training)
 option(ENABLE_STATIC_ANALYSIS "Enable static analysis" OFF)
+option(BENCHMARK_ONLY "Only enables benchmark list" OFF)
 set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source in sub-projects
 
 set(CMAKE_CXX_STANDARD 20)
@@ -163,14 +164,31 @@ if (PGI)
     # runtime errors
     list(APPEND EXCLUDED)
 endif ()
+#------------------------------------------------------
+
+set(BENCHMARK_LIST)
+list(APPEND BENCHMARK_LIST
+        src/concurrency/incrementation--benchmark.cpp
+        src/concurrency/pingpong--benchmark.cpp
+        src/format/conversion--benchmark.cpp
+        src/coroutines/massive-usage.cpp
+        src/parallel/stl_parallel_insight.cpp
+        src/parallel/sort_executions.cpp
+        )
+
+#------------------------------------------------------
 
 enable_testing()
 foreach (SRC ${SRCS})
     get_filename_component(SHORT_SRC ${SRC} NAME)
     string(REGEX REPLACE ".cpp$" ".exe" EXE ${SHORT_SRC})
+
     list(FIND EXCLUDED ${SRC} IS_EXCLUDED)
+    list(FIND BENCHMARK_LIST ${SRC} IS_BENCHMARK)
     if (IS_EXCLUDED GREATER_EQUAL 0)
         message(STATUS "\tExclude example ${SRC}")
+    elseif (BENCHMARK_ONLY AND IS_BENCHMARK LESS 0)
+        # message(STATUS "\tSkip non benchmark example ${SRC}")
     else ()
         set(SRCS ${SRC})
 
@@ -246,6 +264,9 @@ foreach (SRC ${SRCS})
             else ()
                 message(WARNING "Parallel TBB required but not found")
             endif ()
+        endif ()
+        if (IS_BENCHMARK)
+            set_property(TEST ${TEST} PROPERTY LABELS "Benchmark")
         endif ()
     endif ()
 endforeach ()

@@ -21,6 +21,11 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-11
             cxx-compiler: g++-11
+          - name: Ubuntu GCC 11 Benchmark
+            os: ubuntu-20.04
+            c-compiler: gcc-11
+            cxx-compiler: g++-11
+            config: benchmark
           - name: Ubuntu GCC 10
             os: ubuntu-20.04
             c-compiler: gcc-10
@@ -37,6 +42,11 @@ jobs:
             os: ubuntu-20.04
             c-compiler: clang-12
             cxx-compiler: clang++-12
+          - name: Ubuntu Clang 12 Benchmark
+            os: ubuntu-20.04
+            c-compiler: clang-12
+            cxx-compiler: clang++-12
+            config: benchmark
           - name: Ubuntu Clang 11
             os: ubuntu-20.04
             c-compiler: clang-11
@@ -47,6 +57,9 @@ jobs:
             cxx-compiler: clang++-10
           - name: macOS 10.15 Apple Clang
             os: macOS-10.15
+          - name: macOS 10.15 Apple Clang Benchmark
+            os: macOS-10.15
+            config: benchmark
           # - name: macOS 10.15 Clang 12
           #  os: macOS-10.15
           #  c-compiler: clang-12
@@ -112,22 +125,31 @@ jobs:
           #     export LC_ALL=fr_FR # select one locale
           #     locale -k LC_TIME   # show rule about with locale
         if: runner.os == 'Linux'
-      - name: install TBB 
+      - name: install additional tools and libs
         run: |
           if [ "${{runner.os}}" == "Linux" ]; then
-            sudo apt install -y libtbb-dev
+            sudo apt install -y libtbb-dev ninja-build
           fi
           if [ "${{runner.os}}" == "macOS" ]; then
-            brew install tbb
+            brew install tbb ninja
           fi
       - name: configure
         run: |
           echo "Configure on $(uname -a)"
-          mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake ..
+          if [ "${{matrix.config}}" == "benchmark" ]; then
+            mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ONLY=TRUE 
+          else
+            mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          fi
       - name: build
         run: cmake --build build
       - name: test
-        run: cd build && ctest --output-on-failure
+        run: |
+          if [ "${{matrix.config}}" == "benchmark" ]; then
+            cd build && ctest --timeout 100 --output-on-failure -V
+          else
+            cd build && ctest --timeout 100 --output-on-failure
+          fi
       - name: show unsupported examples
         run: cat build/unsupported_examples.md 2>/dev/null || true
 
@@ -136,18 +158,41 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest ]
+        include:
+          - name: Windows
+            os: windows-latest
+          - name: Windows Benchmark
+            os: windows-latest
+            config: benchmark
 
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
       - name: configure
-        run: mkdir build && cd build && cmake ..
+        shell: bash
+        run: |
+          if [ "${{matrix.config}}" == "benchmark" ]; then
+            mkdir build && cd build && cmake -DBENCHMARK_ONLY=TRUE ..
+          else
+            mkdir build && cd build && cmake ..
+          fi
       - name: build
-        run: cmake --build build --config Debug
+        shell: bash
+        run: |
+          if [ "${{matrix.config}}" == "benchmark" ]; then
+            cmake --build build --config Release
+          else
+            cmake --build build --config Debug
+          fi
       - name: test
-        run: cd build && ctest -C Debug --timeout 100 --output-on-failure
+        shell: bash
+        run: |
+          if [ "${{matrix.config}}" == "benchmark" ]; then
+            cd build && ctest -C Release --timeout 100 --output-on-failure -V
+          else
+            cd build && ctest -C Debug --timeout 100 --output-on-failure          
+          fi
       - name: show unsupported examples
         shell: bash
         run: cat build/unsupported_examples.md 2>/dev/null || true
