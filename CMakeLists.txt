@@ -149,7 +149,7 @@ if (MSVC)
         list(APPEND EXCLUDED src/concepts/concept_setup.cpp)
         list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_algorithm.cpp src/ranges/range_filter_gcc_expanded.cpp) # FIXME should be fixed for MVSC 19.29
         list(APPEND EXCLUDED src/coroutines/inlined-coroutines.cpp) # Execution failure; should be debugged later
-        list(APPEND EXCLUDED src/coroutines/async_server.cpp) # Strange timeout; should be debugged later
+        list(APPEND EXCLUDED src/coroutines/async--unittest.cpp) # Strange timeout; should be debugged later
         list(APPEND EXCLUDED src/format/minimal-custom-formatter.cpp) # internal lib error (with MSVC 19.29)
         list(APPEND EXCLUDED src/format/format-other-functions.cpp) # timeout with MSVC 19.29
     endif ()
@@ -190,7 +190,7 @@ foreach (SRC ${SRCS})
     elseif (BENCHMARK_ONLY AND IS_BENCHMARK LESS 0)
         # message(STATUS "\tSkip non benchmark example ${SRC}")
     else ()
-        set(SRCS ${SRC})
+        set(SRCS ${SRC} src/coroutines/async--server.hpp)
 
         set(TYPE "example")
         string(REGEX MATCH "--unittest\\.cpp$" NEED_GTEST ${SRC})
