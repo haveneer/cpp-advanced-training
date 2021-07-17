@@ -1,17 +1,20 @@
 #pragma once
 
+#include <version>
+#if __has_include(<experimental/coroutine>)
+#define __cpp_lib_coroutine
+#endif
+
+#ifdef __cpp_lib_coroutine
+
 #if __has_include(<coroutine>)
 #include <coroutine>
-#define HAS_COROUTINE
 #elif __has_include(<experimental/coroutine>)
 #include <experimental/coroutine>
 namespace std {
 using namespace std::experimental;
 }
-#define HAS_COROUTINE
 #endif
-
-#ifdef HAS_COROUTINE
 
 #include <span>
 #include <string>

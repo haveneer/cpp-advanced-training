@@ -1,7 +1,12 @@
+#include <version>
+#if __has_include(<experimental/coroutine>)
+#define __cpp_lib_coroutine
+#endif
+
+#ifdef __cpp_lib_coroutine
+
 #include "async--server.hpp"
 #include "async--synccout.hpp"
-
-#ifdef HAS_COROUTINE
 
 #include <cassert>
 #include <thread>
