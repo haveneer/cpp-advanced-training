@@ -55,6 +55,8 @@ struct Task {
   handle_type m_co_handle;
 };
 
+// FIXME if Context does not embed more data/method,
+// ThreadPool should be located in place of context pointer members
 struct Context {
   struct Awaitable {
     Awaitable(Context *context) : context(context) {}
@@ -104,6 +106,6 @@ struct Destination {
   std::string name;
 };
 
-Task tcp_echo_server(Source src, Destination dest, Context &ctxt);
+Task echo_server(Source src, Destination dest, Context &ctxt);
 
 #endif

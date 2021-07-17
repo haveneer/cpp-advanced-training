@@ -31,7 +31,7 @@ void ThreadPool::wait_loop() {
   }
 }
 
-void ThreadPool::add_task(std::function<void()> task) {
+void ThreadPool::addTask(std::function<void()> task) {
   std::unique_lock lock(m_queue_mutex);
   m_task_queue.push(task);
   lock.unlock();

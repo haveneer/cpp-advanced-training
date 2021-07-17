@@ -22,8 +22,9 @@ public:
   ThreadPool &operator=(ThreadPool &&) = delete;
 
 public:
-  void add_task(std::function<void()> task);
+  void addTask(std::function<void()> task);
   void stop(Termination mode);
+  bool isActive() { return !m_pool.empty(); }
 
 private:
   void wait_loop();

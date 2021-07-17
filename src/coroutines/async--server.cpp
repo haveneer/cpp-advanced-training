@@ -80,19 +80,23 @@ size_t generate(std::byte *data, const size_t nval) {
 bool Source::Awaitable::await_suspend(std::coroutine_handle<> h) {
   SyncCout{} << "Suspend for read from " << src->name
              << " (h=" << Colorize{h.address()} << ")";
+
   assert(src->ncount <= n);
   --this->src->ncount;
 
-  constexpr bool do_async = true; // HINT could be changed
-  if constexpr (do_async) {
+  ThreadPool &pool =
+      std::coroutine_handle<Task::promise_type>::from_address(h.address())
+          .promise()
+          .context->pool;
+
+  if (pool.isActive()) {
     auto job = [this, h]() mutable { // mutable required by clang-12
       this->n = generate(data, src->ncount);
       SyncCout{} << "Async Resume from " << src->name << " this->n=" << this->n
                  << " (h=" << Colorize{h.address()} << ")";
       h.resume(); // resume() is not const in clang-12
     };
-    std::thread t{job};
-    t.detach();
+    pool.addTask(job);
     return true;
   } else {
     this->n = generate(data, src->ncount);
@@ -113,18 +117,21 @@ bool Destination::Awaitable::await_suspend(std::coroutine_handle<> h) {
   SyncCout{} << "Suspend for write from " << dst->name
              << " (h=" << Colorize{h.address()} << ")";
 
-  constexpr bool do_async = true; // HINT could be changed
-  if constexpr (do_async) {
+  ThreadPool &pool =
+      std::coroutine_handle<Task::promise_type>::from_address(h.address())
+          .promise()
+          .context->pool;
+
+  if (pool.isActive()) {
     auto job = [this, h]() mutable { // mutable required by clang-12
       SyncCout{} << "Async Write to " << dst->name << " (size=" << data.size()
                  << "): " << data << " (h=" << Colorize{h.address()} << ")";
       h.resume(); // resume() is not const in clang-12
     };
-    std::thread t{job};
-    t.detach();
+    pool.addTask(job);
     return true;
   } else {
-    SyncCout{} << "sync Write to " << dst->name << " (size=" << data.size()
+    SyncCout{} << "Sync Write to " << dst->name << " (size=" << data.size()
                << "): " << data << " (h=" << Colorize{h.address()} << ")";
     return false;
   }
@@ -136,20 +143,16 @@ void Destination::Awaitable::await_resume() const {
 
 /// Server
 
-Task tcp_echo_server(Source src, Destination dest, Context &ctxt) {
+Task echo_server(Source src, Destination dest, Context &ctxt) {
+  SyncCout{} << "New Echo Stream " << src.name << " -> " << dest.name;
   co_await ctxt.schedule(); // TODO save thread context into coroutine promise
 
   std::byte data[64];
   for (;;) {
-    SyncCout{} << src.name << "->" << dest.name << ": Step A";
     size_t n = co_await src.async_read_some(data, std::size(data));
-    if (n == 0) {
-      SyncCout{} << src.name << "->" << dest.name << ": end signal received";
+    if (n == 0)
       co_return;
-    }
-    SyncCout{} << src.name << "->" << dest.name << ": Step B";
     co_await dest.async_write(std::span(std::begin(data), n));
-    SyncCout{} << src.name << "->" << dest.name << ": Step C";
   }
   throw std::runtime_error{"Unexpected call"};
 }
