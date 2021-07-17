@@ -2,12 +2,16 @@
 
 #if __has_include(<coroutine>)
 #include <coroutine>
+#define HAS_COROUTINE
 #elif __has_include(<experimental/coroutine>)
 #include <experimental/coroutine>
 namespace std {
 using namespace std::experimental;
 }
+#define HAS_COROUTINE
 #endif
+
+#ifdef HAS_COROUTINE
 
 #include <span>
 #include <string>
@@ -98,3 +102,5 @@ struct Destination {
 };
 
 Task tcp_echo_server(Source src, Destination dest, Context &ctxt);
+
+#endif

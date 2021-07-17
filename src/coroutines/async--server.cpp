@@ -1,6 +1,8 @@
 #include "async--server.hpp"
 #include "async--synccout.hpp"
 
+#ifdef HAS_COROUTINE
+
 #include <cassert>
 #include <thread>
 
@@ -146,3 +148,5 @@ Task tcp_echo_server(Source src, Destination dest, Context &ctxt) {
   }
   throw std::runtime_error{"Unexpected call"};
 }
+
+#endif
