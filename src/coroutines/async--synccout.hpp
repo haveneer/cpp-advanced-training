@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <thread>
 #if __has_include("colorize.hpp")
 #include "colorize.hpp"
 #else
