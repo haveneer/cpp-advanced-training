@@ -1,38 +1,14 @@
-#include <cstdint>
+#include <benchmark/benchmark.h>
 
 // Special memory management :
 // https://en.cppreference.com/w/cpp/header/memory_resource
-// see also: https://stackoverflow.com/questions/38010544/polymorphic-allocator-when-and-why-should-i-use-it
+// see also:
+// https://stackoverflow.com/questions/38010544/polymorphic-allocator-when-and-why-should-i-use-it
 // https://www.bfilipek.com/2020/08/pmr-dbg.html
-
-// later: use https://github.com/google/benchmark
-#ifndef QUICK_BENCH
-namespace benchmark {
-
-class State {
-public:
-  struct Iterator {
-    uint64_t pos;
-    void operator++() { ++pos; }
-    auto operator*() const { return pos; }
-    bool operator!=(const Iterator &other) const { return pos != other.pos; }
-  };
-
-public:
-  State(uint64_t size) : m_size{size}, m_current{0} {}
-  Iterator begin() const { return {m_current}; }
-  Iterator end() const { return {m_size}; }
-
-private:
-  uint64_t m_size;
-  uint64_t m_current;
-};
-} // namespace benchmark
-#define BENCHMARK(X)
-#endif
 
 // Copy following part into http://quick-bench.com
 // http://quick-bench.com/IBMiNRYcqI3N82mJdeTYu9pPgho
+
 // %<------------------------------------------------
 
 #include <list>
@@ -92,12 +68,5 @@ static void standardVector(benchmark::State &state) {
 BENCHMARK(standardVector);
 
 // ------------------------------------------------>%
-int main() {
-  benchmark::State state{1000};
-#ifdef HAS_PMR
-  PMRList(state);
-  PMRVector(state);
-#endif
-  standardList(state);
-  standardVector(state);
-}
+
+BENCHMARK_MAIN();
