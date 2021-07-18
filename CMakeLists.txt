@@ -172,8 +172,8 @@ list(APPEND BENCHMARK_LIST
         src/concurrency/pingpong--benchmark.cpp
         src/format/conversion--benchmark.cpp
         src/coroutines/massive-usage.cpp
-        src/parallel/stl_parallel_insight.cpp
-        src/parallel/sort_executions.cpp
+        src/parallel-stl/parallel_insight.cpp
+        src/parallel-stl/sort_executions.cpp
         src/pmr/cpp17-pmr--benchmark.cpp
         )
 
