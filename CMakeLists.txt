@@ -174,6 +174,7 @@ list(APPEND BENCHMARK_LIST
         src/coroutines/massive-usage.cpp
         src/parallel/stl_parallel_insight.cpp
         src/parallel/sort_executions.cpp
+        src/pmr/cpp17-pmr--benchmark.cpp
         )
 
 #------------------------------------------------------
