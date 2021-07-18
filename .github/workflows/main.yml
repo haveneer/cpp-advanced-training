@@ -146,9 +146,9 @@ jobs:
       - name: test
         run: |
           if [ "${{matrix.config}}" == "benchmark" ]; then
-            cd build && ctest --timeout 100 --output-on-failure -V
+            cd build && ctest --timeout 200 --output-on-failure -V
           else
-            cd build && ctest --timeout 100 --output-on-failure
+            cd build && ctest --timeout 200 --output-on-failure
           fi
       - name: show unsupported examples
         run: cat build/unsupported_examples.md 2>/dev/null || true
@@ -189,9 +189,9 @@ jobs:
         shell: bash
         run: |
           if [ "${{matrix.config}}" == "benchmark" ]; then
-            cd build && ctest -C Release --timeout 100 --output-on-failure -V
+            cd build && ctest -C Release --timeout 200 --output-on-failure -V
           else
-            cd build && ctest -C Debug --timeout 100 --output-on-failure          
+            cd build && ctest -C Debug --timeout 200 --output-on-failure          
           fi
       - name: show unsupported examples
         shell: bash
