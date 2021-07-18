@@ -144,10 +144,10 @@ endif ()
 
 set(EXCLUDED)
 if (MSVC)
+    list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_filter_gcc_expanded.cpp src/ranges/range_algorithm.cpp ) # FIXME should be fixed for MVSC 19.29
     if (DEFINED ENV{GITHUB_ACTIONS})
         # infinite execution loop on GHA (but Ok with TravisCI ?)
         list(APPEND EXCLUDED src/concepts/concept_setup.cpp)
-        list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_algorithm.cpp src/ranges/range_filter_gcc_expanded.cpp) # FIXME should be fixed for MVSC 19.29
         list(APPEND EXCLUDED src/coroutines/inlined-coroutines.cpp) # Execution failure; should be debugged later
         list(APPEND EXCLUDED src/coroutines/async--unittest.cpp) # Strange timeout; should be debugged later
         list(APPEND EXCLUDED src/format/minimal-custom-formatter.cpp) # internal lib error (with MSVC 19.29)
