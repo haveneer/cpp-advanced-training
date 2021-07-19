@@ -217,7 +217,7 @@ foreach (SRC ${SRCS})
         endif ()
         file(GLOB EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}--*.*")
 
-        string(REGEX MATCH "/parallel/" NEED_PARALLEL ${SRC})
+        string(REGEX MATCH "/parallel-stl/" NEED_PARALLEL ${SRC})
         if (NEED_PARALLEL)
             set(TYPE "parallel example")
         endif ()
