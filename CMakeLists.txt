@@ -170,6 +170,7 @@ set(BENCHMARK_LIST)
 list(APPEND BENCHMARK_LIST
         src/concurrency/incrementation--benchmark.cpp
         src/concurrency/pingpong--benchmark.cpp
+        src/coroutines/concurrency--benchmark.cpp
         src/format/conversion--benchmark.cpp
         src/coroutines/massive-usage.cpp
         src/parallel-stl/parallel_insight.cpp
