@@ -99,7 +99,9 @@ static void hot_start_thread(benchmark::State &state) {
   std::vector<int> v(size);
   std::mt19937 engine{seed};
   std::generate(std::begin(v), std::end(v), engine);
-  for (auto i = state.begin(), e = state.end(); i != e;) {
+
+  bool keep_running = state.KeepRunning();
+  while (keep_running) {
     std::unique_lock lock(queue_mutex);
     task_queue.push([&v] {
       auto data = std::accumulate(std::begin(v), std::end(v), 0);
@@ -107,8 +109,10 @@ static void hot_start_thread(benchmark::State &state) {
     });
     lock.unlock();
     queue_condition.notify_one();
-    // Trick to count end of queue inside benchmark
-    if (!(++i != e)) {
+
+    keep_running = state.KeepRunning();
+
+    if (!keep_running) { // Trick to count end of queue inside benchmark
       lock.lock();
       stop = true;
       lock.unlock();
