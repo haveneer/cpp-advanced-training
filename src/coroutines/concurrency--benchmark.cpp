@@ -25,6 +25,7 @@ using namespace std::experimental;
 #include <algorithm>
 #include <benchmark/benchmark.h>
 #include <condition_variable>
+#include <functional>
 #include <iostream>
 #include <mutex>
 #include <optional>
