@@ -22,12 +22,12 @@ namespace std {
 using namespace std::experimental;
 }
 #endif
-#include <algorithm>
 #include <benchmark/benchmark.h>
 #include <condition_variable>
 #include <functional>
 #include <iostream>
 #include <mutex>
+#include <numeric>
 #include <optional>
 #include <queue>
 #include <random>
