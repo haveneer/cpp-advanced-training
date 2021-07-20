@@ -34,7 +34,9 @@ struct Generator {
     int m_val;
     Generator get_return_object() { return this; }
     std::suspend_never initial_suspend() { return {}; }
-    std::suspend_always final_suspend() noexcept { return {}; }
+    std::suspend_always final_suspend() noexcept { // std::suspend_always requires
+      return {};                                   // by using m_handle.done()
+    }                                              // to check the end (below)
     std::suspend_always yield_value(int val) {
       m_val = val;
       return {};
@@ -44,12 +46,12 @@ struct Generator {
   };
   /* -------- Iterator Implementation ---------- */
   struct iterator {
-    bool operator!=(const iterator &rhs) { return !m_h_ptr->done(); }
+    bool operator!=(const iterator &rhs) const { return !m_h_ptr->done(); }
     iterator &operator++() {
       m_h_ptr->resume();
       return *this;
     }
-    int operator*() { return m_h_ptr->promise().m_val; }
+    int operator*() const { return m_h_ptr->promise().m_val; }
     std::coroutine_handle<promise_type> *m_h_ptr;
   };
   iterator begin() { return iterator{&m_handle}; }
@@ -57,7 +59,9 @@ struct Generator {
   /* -------------------------------------------- */
   Generator(promise_type *p)
       : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
-  ~Generator() { m_handle.destroy(); }
+  ~Generator() {        // even if coroutine is done(), it is not implicitly destroy
+    m_handle.destroy(); // since final_suspend policy is suspend_always
+  }
   std::coroutine_handle<promise_type> m_handle;
 };
 
