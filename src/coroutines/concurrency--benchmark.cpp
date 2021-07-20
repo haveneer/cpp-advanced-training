@@ -51,21 +51,33 @@ struct Generator {
   };
 
   Generator(promise_type *p)
-      : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
-  ~Generator() {        // even if coroutine is done(), it is not implicitly destroy
-    m_handle.destroy(); // since final_suspend policy is always
+      : m_co_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
+  ~Generator() {
+    if (m_co_handle)
+      m_co_handle.destroy();
   }
 
-  std::optional<int> next() {
-    m_handle.resume();
-    if (not m_handle.done()) {
-      return std::make_optional(m_handle.promise().m_val);
+  Generator(const Generator &) = delete;
+  Generator &operator=(const Generator &) = delete;
+  Generator(Generator &&that) noexcept
+      : m_co_handle(std::exchange(that.m_co_handle, nullptr)) {}
+  Generator &operator=(Generator &&that) noexcept {
+    if (m_co_handle)
+      m_co_handle.destroy();
+    m_co_handle = std::exchange(that.m_co_handle, nullptr);
+    return *this;
+  }
+
+  std::optional<int> next() { // undefined behavior if called after first nullopt
+    m_co_handle.resume();     // Could be fixed by checking before 'resume' call
+    if (not m_co_handle.done()) {
+      return std::make_optional(m_co_handle.promise().m_val);
     } else {
       return std::nullopt;
     }
   }
 
-  std::coroutine_handle<promise_type> m_handle;
+  std::coroutine_handle<promise_type> m_co_handle;
 };
 
 constexpr unsigned int seed = std::mt19937::default_seed;
@@ -110,7 +122,7 @@ static void run_hot_thread(benchmark::State &state) {
       task();
     }
   });
-  
+
   std::vector<int> v(size);
   std::mt19937 engine{seed};
   std::generate(std::begin(v), std::end(v), engine);

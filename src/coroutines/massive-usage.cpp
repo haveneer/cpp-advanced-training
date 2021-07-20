@@ -46,12 +46,15 @@ public:
     if (m_co_handle)
       m_co_handle.destroy();
   }
+
   Generator(const Generator &) = delete;
   Generator &operator=(const Generator &) = delete;
   Generator(Generator &&that) noexcept : m_co_handle(that.m_co_handle) {
     that.m_co_handle = nullptr;
   }
   Generator &operator=(Generator &&that) noexcept {
+    if (m_co_handle)
+      m_co_handle.destroy();
     m_co_handle = that.m_co_handle;
     that.m_co_handle = nullptr;
     return *this;

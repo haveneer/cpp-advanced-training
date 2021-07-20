@@ -54,15 +54,30 @@ struct Generator {
     int operator*() const { return m_h_ptr->promise().m_val; }
     std::coroutine_handle<promise_type> *m_h_ptr;
   };
-  iterator begin() { return iterator{&m_handle}; }
+  iterator begin() { return iterator{&m_co_handle}; }
   iterator end() { return iterator{nullptr}; } // to only satisfy for-range API
   /* -------------------------------------------- */
   Generator(promise_type *p)
-      : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
-  ~Generator() {        // even if coroutine is done(), it is not implicitly destroy
-    m_handle.destroy(); // since final_suspend policy is suspend_always
+      : m_co_handle(std::coroutine_handle<promise_type>::from_promise(*p)) {}
+  ~Generator() {
+    if (m_co_handle)
+      m_co_handle.destroy();
   }
-  std::coroutine_handle<promise_type> m_handle;
+
+  Generator(const Generator &) = delete;
+  Generator &operator=(const Generator &) = delete;
+  Generator(Generator &&that) noexcept : m_co_handle(that.m_co_handle) {
+    that.m_co_handle = nullptr;
+  }
+  Generator &operator=(Generator &&that) noexcept {
+    if (m_co_handle)
+      m_co_handle.destroy();
+    m_co_handle = that.m_co_handle;
+    that.m_co_handle = nullptr;
+    return *this;
+  }
+
+  std::coroutine_handle<promise_type> m_co_handle;
 };
 
 template <typename C>

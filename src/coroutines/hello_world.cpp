@@ -40,8 +40,8 @@ struct HelloWorldCoro {
   struct promise_type; // type required by compiler; defined later
   using handle_type = std::coroutine_handle<promise_type>;
   HelloWorldCoro(promise_type *p)
-      : m_handle(std::coroutine_handle<promise_type>::from_promise(*p)) { PRINTME(); }
-  ~HelloWorldCoro() { PRINTME(); /* m_handle.destroy(); */ }
+      : m_co_handle(std::coroutine_handle<promise_type>::from_promise(*p)) { PRINTME(); }
+  ~HelloWorldCoro() { PRINTME(); if (m_co_handle) m_co_handle.destroy(); }
 
   struct promise_type {
     promise_type() { PRINTME(); }
@@ -53,7 +53,7 @@ struct HelloWorldCoro {
     void unhandled_exception() { PRINTME(); std::exit(1); }
   };
 
-  handle_type m_handle;
+  handle_type m_co_handle;
   // clang-format on  
 };
 
@@ -73,9 +73,9 @@ int main() {
   HelloWorldCoro c = helloWorld(); // new coroutine
 
   PRINTME();
-  c.m_handle.resume(); // (A) : usually, m_handle is wrapped in Coro object 
+  c.m_co_handle.resume(); // (A) : usually, m_co_handle is wrapped in Coro object 
   PRINTME();          
-  c.m_handle();        // (B) : equivalent to c.m_handle.resume();
+  c.m_co_handle();        // (B) : equivalent to c.m_co_handle.resume();
   PRINTME();
 }
 
