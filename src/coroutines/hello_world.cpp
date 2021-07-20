@@ -41,7 +41,7 @@ struct HelloWorldCoro {
   using handle_type = std::coroutine_handle<promise_type>;
   HelloWorldCoro(promise_type *p)
       : m_co_handle(std::coroutine_handle<promise_type>::from_promise(*p)) { PRINTME(); }
-  ~HelloWorldCoro() { PRINTME(); if (m_co_handle) m_co_handle.destroy(); }
+  ~HelloWorldCoro() { PRINTME(); /* m_co_handle.destroy(); */ } // HINT see later memory 
 
   struct promise_type {
     promise_type() { PRINTME(); }
