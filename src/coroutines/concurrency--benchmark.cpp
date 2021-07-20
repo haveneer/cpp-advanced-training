@@ -71,14 +71,28 @@ struct Generator {
 constexpr unsigned int seed = std::mt19937::default_seed;
 constexpr unsigned int size = 10; // weight of inner loop computation
 
-static void cold_start_empty_thread(benchmark::State &state) {
+static void start_cold_empty_thread(benchmark::State &state) {
   for (auto _ : state) {
     std::thread([] {}).detach();
   }
 }
-BENCHMARK(cold_start_empty_thread);
+BENCHMARK(start_cold_empty_thread);
 
-static void hot_start_thread(benchmark::State &state) {
+static void run_cold_thread(benchmark::State &state) {
+  std::vector<int> v(size);
+  std::mt19937 engine{seed};
+  std::generate(std::begin(v), std::end(v), engine);
+  for (auto _ : state) {
+    std::thread th([&v] {
+      auto data = std::accumulate(std::begin(v), std::end(v), 0);
+      benchmark::DoNotOptimize(data);
+    });
+    th.join();
+  }
+}
+BENCHMARK(run_cold_thread);
+
+static void run_hot_thread(benchmark::State &state) {
   std::mutex queue_mutex;
   std::condition_variable queue_condition;
   std::queue<std::function<void()>> task_queue;
@@ -96,10 +110,10 @@ static void hot_start_thread(benchmark::State &state) {
       task();
     }
   });
+  
   std::vector<int> v(size);
   std::mt19937 engine{seed};
   std::generate(std::begin(v), std::end(v), engine);
-
   bool keep_running = state.KeepRunning();
   while (keep_running) {
     std::unique_lock lock(queue_mutex);
@@ -111,31 +125,16 @@ static void hot_start_thread(benchmark::State &state) {
     queue_condition.notify_one();
 
     keep_running = state.KeepRunning();
-
     if (!keep_running) { // Trick to count end of queue inside benchmark
       lock.lock();
       stop = true;
       lock.unlock();
-      queue_condition.notify_one();
+      queue_condition.notify_all();
       ready_thread.join();
     }
   }
 }
-BENCHMARK(hot_start_thread);
-
-static void run_cold_thread(benchmark::State &state) {
-  std::vector<int> v(size);
-  std::mt19937 engine{seed};
-  std::generate(std::begin(v), std::end(v), engine);
-  for (auto _ : state) {
-    std::thread th([&v] {
-      auto data = std::accumulate(std::begin(v), std::end(v), 0);
-      benchmark::DoNotOptimize(data);
-    });
-    th.join();
-  }
-}
-BENCHMARK(run_cold_thread);
+BENCHMARK(run_hot_thread);
 
 static void run_function(benchmark::State &state) {
   std::vector<int> v(size);
