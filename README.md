@@ -1,4 +1,4 @@
-[![C++ CI](https://github.com/haveneer/cpp-advanced-training/workflows/C++%20CI/badge.svg)](https://github.com/haveneer/cpp-advanced-training/actions) [![Build Status](https://travis-ci.com/haveneer/cpp-advanced-training.svg?branch=master)](https://travis-ci.com/haveneer/cpp-advanced-training)
+[![C++ CI](https://github.com/haveneer/cpp-advanced-training/workflows/C++%20CI/badge.svg)](https://github.com/haveneer/cpp-advanced-training/actions) 
 
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
     <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0">
