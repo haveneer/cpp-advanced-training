@@ -22,18 +22,18 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
     echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections; \
     echo 'tzdata tzdata/Zones/Europe select Paris' | debconf-set-selections; \ 
     apt-get update && apt-get install -y tzdata
-
+    
 RUN apt-get install -y ssh \
       build-essential \
-      gdb \
-      gcc-11 \
-      g++-11 \
-      clang-12 \
-      cmake \
-      rsync \
-      tar \
-      python3 \
-      python3-pip \
+      gcc-11 g++-11 gdb \
+      clang-12 lldb-12 libc++-12-dev libc++abi-12-dev \
+      clangd-12 clang-tools-12 \
+      cmake ninja-build \
+      rsync tar \
+      git \
+      python3 python3-pip \
+      software-properties-common \
+      libpthread-stubs0-dev libtbb-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
   
