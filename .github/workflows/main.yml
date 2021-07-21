@@ -90,7 +90,7 @@ jobs:
       #     echo 'tzdata tzdata/Zones/Europe select Paris' | debconf-set-selections
       #     apt update && DEBIAN_FRONTEND="noninteractive" apt install -y tzdata
       #     apt install -y software-properties-common libpthread-stubs0-dev
-      #     apt install -y curl sudo cmake ninja-build
+      #     apt install -y curl sudo cmake ninja-build libtbb-dev
       - name: install Clang 13
         run: |
           # for sources, see https://apt.llvm.org
