@@ -28,6 +28,47 @@ if (ENABLE_STATIC_ANALYSIS)
 endif ()
 
 #------------------------------------------------------
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    # To focus only on useful warnings 
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wunused-function -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    # To focus only on useful warnings 
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-member-function -Wunused-private-field -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /Zc:__cplusplus")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI")
+    set(PGI TRUE)
+    set(CMAKE_CXX_STANDARD 17) # C++20 requires an updated compiler (not yet available) 
+endif ()
+
+#------------------------------------------------------
+
+find_package(TBB)
+if (TBB_FOUND)
+    message(STATUS "TBB v${TBB_VERSION} found")
+else()
+    message(STATUS "TBB not found")
+endif()
+    
+#------------------------------------------------------
+
+if (NOT WIN32)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    link_libraries(Threads::Threads)
+endif ()
+
+#------------------------------------------------------
 # Check compiler support (when __cpp_* feature is not available)
 include(CheckCXXSourceCompiles)
 
@@ -40,9 +81,9 @@ endif ()
 
 # https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared (in 4-Notes)
 check_cxx_source_compiles("#include <memory>\n int main() { auto a = std::make_shared<int[10]>(); }"
-        HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
-if (HAS_CXX_FEATURE_ABBREVIATED_FUNCTION_TEMPLATE)
-    ADD_COMPILE_DEFINITIONS(my_cpp_abbreviated_function_template)
+        HAS_CXX_FEATURE_SHARED_PTR_ARRAYS)
+if (HAS_CXX_FEATURE_SHARED_PTR_ARRAYS)
+    ADD_COMPILE_DEFINITIONS(my_cpp_lib_shared_ptr_arrays)
 endif ()
 
 check_cxx_source_compiles("#include <chrono>\n int main() { std::chrono::year_month_day check_this; }"
@@ -90,28 +131,6 @@ set(SRCS ${SRCS1} ${SRCS2} ${SRCS3} ${SRCS4} ${SRCS5})
 
 include_directories(include)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-    # To focus only on useful warnings 
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wunused-function -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-    # To focus only on useful warnings 
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-member-function -Wunused-private-field -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /Zc:__cplusplus")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI")
-    set(PGI TRUE)
-    set(CMAKE_CXX_STANDARD 17) # C++20 requires an updated compiler (not yet available) 
-endif ()
-
 #------------------------------------------------------
 
 # to enable shared lib in WIN32
@@ -127,18 +146,6 @@ add_subdirectory(third_party/benchmark)
 
 add_subdirectory(third_party/fmt)
 link_libraries(fmt::fmt)
-
-#------------------------------------------------------
-
-find_package(TBB)
-
-#------------------------------------------------------
-
-if (NOT WIN32)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
-    link_libraries(Threads::Threads)
-endif ()
 
 #------------------------------------------------------
 
