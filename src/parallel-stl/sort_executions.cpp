@@ -45,14 +45,11 @@ int main() {
   constexpr int repeat{3};
 
   // Fill a vector with samples numbers
-  std::random_device rd;
-  std::mt19937_64 mre(rd());
-  std::uniform_real_distribution<double> urd(0.0, 1.0);
-
+  std::mt19937_64 engine(2021);
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
+  
   std::vector<double> data(samples);
-  for (auto &e : data) {
-    e = urd(mre);
-  }
+  std::generate(std::begin(data), std::end(data), [&] { return dist(engine); });
 
   // Sort data using different execution policies
   std::cout << "no execution policy\n";

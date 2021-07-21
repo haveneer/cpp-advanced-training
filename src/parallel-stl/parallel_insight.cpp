@@ -148,7 +148,9 @@ int main() {
   std::generate(std::begin(v), std::end(v), [&] { return dist(engine); });
   //#endregion
 
+  //#region [Prepare timer]
   auto start = std::chrono::high_resolution_clock::now();
+  //#endregion
 
   //  std::sort(std::execution::par, std::begin(v), std::end(v));
 

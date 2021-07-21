@@ -10,26 +10,29 @@ REPORT_FEATURES({STR(__cpp_lib_parallel_algorithm)});
 //#endregion
 #else
 
+//#region [Includes]
 #include <algorithm>
 #include <execution>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+//#endregion
 
 int main() {
   std::vector<int> v{1, 2, 3, 4, 5};
 
   try {
     std::for_each(v.begin(), v.end(), [](auto) {
-      throw std::runtime_error("Without execution policy");
+      throw std::runtime_error("Exception without execution policy");
     });
   } catch (const std::runtime_error &e) { // exception caught here
     std::cout << e.what() << std::endl;
   }
 
   try {
-    std::for_each(std::execution::seq, v.begin(), v.end(),
-                  [](auto) { throw std::runtime_error("With execution policy"); });
+    std::for_each(std::execution::seq, v.begin(), v.end(), [](auto) {
+      throw std::runtime_error("Exception with execution policy");
+    });
   } catch (const std::runtime_error &e) { // exception never caught
     std::cout << e.what() << std::endl;
   } catch (...) {
