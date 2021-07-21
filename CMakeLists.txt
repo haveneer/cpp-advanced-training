@@ -56,10 +56,10 @@ endif ()
 find_package(TBB)
 if (TBB_FOUND)
     message(STATUS "TBB v${TBB_VERSION} found")
-else()
+else ()
     message(STATUS "TBB not found")
-endif()
-    
+endif ()
+
 #------------------------------------------------------
 
 if (NOT WIN32)
@@ -151,7 +151,7 @@ link_libraries(fmt::fmt)
 
 set(EXCLUDED)
 if (MSVC)
-    list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_filter_gcc_expanded.cpp src/ranges/range_algorithm.cpp ) # FIXME should be fixed for MVSC 19.29
+    list(APPEND EXCLUDED src/ranges/range_adaptors1.cpp src/ranges/range_filter_gcc_expanded.cpp src/ranges/range_algorithm.cpp) # FIXME should be fixed for MVSC 19.29
     if (DEFINED ENV{GITHUB_ACTIONS})
         # infinite execution loop on GHA (but Ok with TravisCI ?)
         list(APPEND EXCLUDED src/concepts/concept_setup.cpp)
@@ -183,6 +183,7 @@ list(APPEND BENCHMARK_LIST
         src/parallel-stl/parallel_insight.cpp
         src/parallel-stl/sort_executions.cpp
         src/pmr/cpp17-pmr--benchmark.cpp
+        src/source_location.cpp # just for testing MSVC output
         )
 
 #------------------------------------------------------
