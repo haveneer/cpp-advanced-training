@@ -3,7 +3,7 @@
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_lib_concepts)});
+REPORT_FEATURES({STR(__cpp_lib_source_location)});
 #else
 #error "Unsupported feature"
 #endif
