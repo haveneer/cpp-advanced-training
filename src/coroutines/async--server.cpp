@@ -143,9 +143,9 @@ void Destination::Awaitable::await_resume() const {
 
 /// Server
 
-Task echo_server(Source src, Destination dest, Context &ctxt) {
+Task echo_server(Source src, Destination dest, Context &ctx) {
   SyncCout{} << "New Echo Stream " << src.name << " -> " << dest.name;
-  co_await ctxt.schedule(); // TODO save thread context into coroutine promise
+  co_await ctx.schedule();
 
   std::byte data[64];
   for (;;) {
@@ -154,7 +154,6 @@ Task echo_server(Source src, Destination dest, Context &ctxt) {
       co_return;
     co_await dest.async_write(std::span(std::begin(data), n));
   }
-  throw std::runtime_error{"Unexpected call"};
 }
 
 #endif

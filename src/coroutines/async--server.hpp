@@ -106,6 +106,6 @@ struct Destination {
   std::string name;
 };
 
-Task echo_server(Source src, Destination dest, Context &ctxt);
+Task echo_server(Source src, Destination dest, Context &ctx);
 
 #endif
