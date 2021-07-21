@@ -30,6 +30,7 @@ static void PMRList(benchmark::State &state) {
     std::pmr::list<int> listOfThings{
         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
         &rsrc};
+    benchmark::DoNotOptimize(listOfThings);
   }
 }
 
@@ -42,6 +43,7 @@ static void PMRVector(benchmark::State &state) {
     std::pmr::vector<int> listOfThings{
         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
         &rsrc};
+    benchmark::DoNotOptimize(listOfThings);
   }
 }
 
@@ -53,6 +55,7 @@ static void standardList(benchmark::State &state) {
   for (auto _ : state) {
     std::list<int> listOfThings{
         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}};
+    benchmark::DoNotOptimize(listOfThings);
   }
 }
 
@@ -62,6 +65,7 @@ static void standardVector(benchmark::State &state) {
   for (auto _ : state) {
     std::vector<int> listOfThings{
         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}};
+    benchmark::DoNotOptimize(listOfThings);
   }
 }
 
