@@ -1,6 +1,6 @@
 template <typename T1, typename T2> // main declaration
 struct Converter {                  // for any two types T1 and T2
-  Converter() {}
+  Converter() = default;
   T2 convert(const T1 &t1);
 };
 
@@ -13,7 +13,7 @@ T2 Converter<T1, T2>::convert(const T1 &t1) { //
 
 template <typename T>    // specialization for same types
 struct Converter<T, T> { //
-  Converter() {}
+  Converter() = default;
   T convert(const T &t) { return t; }
 };
 
