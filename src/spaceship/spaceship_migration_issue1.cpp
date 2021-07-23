@@ -1,3 +1,4 @@
+#include <version>
 #include <cassert>
 
 struct A {
@@ -15,7 +16,7 @@ int main() {
     A a{};
     const bool resa1 = (a == 4);
     const bool resa2 = (4 == a);
-#if __cplusplus > 201703L   // C++ ≥20
+#if __cplusplus > 201703L && defined(__cpp_impl_three_way_comparison) // C++ ≥20
     assert(resa1 == false); // resa1 == a.operator==(4);
     assert(resa2 == false); // resa2 == a.operator==(4);
 #else                       // C++ <20
