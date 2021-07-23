@@ -22,6 +22,7 @@ template <typename T> std::string type() { if (std::is_same_v<std::remove_extent
 #endif              // clang-format on
 
 #include <cassert>
+#include <compare>
 #include <cstring>
 #include <iostream>
 #include <string>
