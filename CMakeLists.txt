@@ -123,6 +123,9 @@ add_executable(manage_test_crash tools/manage_test_crash.c)
 
 message(STATUS "Detect file to compile using globbing")
 file(GLOB_RECURSE SRCS1 RELATIVE "${CMAKE_SOURCE_DIR}" "src/*.cpp")
+# Modules examples use a dedicated configuration
+file(GLOB_RECURSE MODULE_SRCS RELATIVE "${CMAKE_SOURCE_DIR}" "src/modules/*.cpp")
+list(REMOVE_ITEM SRCS1 ${MODULE_SRCS})
 file(GLOB_RECURSE SRCS2 RELATIVE "${CMAKE_SOURCE_DIR}" "Solutions/*.cpp")
 file(GLOB_RECURSE SRCS3 RELATIVE "${CMAKE_SOURCE_DIR}" "Curiosity/*.cpp")
 file(GLOB_RECURSE SRCS4 RELATIVE "${CMAKE_SOURCE_DIR}" "extras/*.cpp")
@@ -280,3 +283,6 @@ foreach (SRC ${SRCS})
         endif ()
     endif ()
 endforeach ()
+
+message(STATUS "Special processing for module examples")
+add_subdirectory(src/modules)

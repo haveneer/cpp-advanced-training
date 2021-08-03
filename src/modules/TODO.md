@@ -5,3 +5,7 @@
 * https://build2.org/blog/build2-cxx20-modules-gcc.xhtml
     * https://build2.org/install.xhtml#other
     * https://build2.org/build2/doc/build2-build-system-manual.xhtml#module-cxx
+
+* Modules
+  * https://imfing.medium.com/hands-on-modules-in-c-20-abc3cd333133
+  * https://pspdfkit.com/blog/2020/cpp20-in-2020-modules/
