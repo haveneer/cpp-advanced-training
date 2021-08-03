@@ -53,7 +53,7 @@ endif ()
 
 #------------------------------------------------------
 
-find_package(TBB)
+find_package(TBB QUIET)
 if (TBB_FOUND)
     message(STATUS "TBB v${TBB_VERSION} found")
 else ()
