@@ -49,5 +49,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     #    add_executable(main1 main1.cpp hello1.cpp)
     #    add_module_dependencies_and_test(main1 hello1)
 else ()
-    message(WARNING "C++20 Modules build not supported")
+    message(STATUS "\tC++20 Modules build not supported")
+    string(TIMESTAMP DATETIME "%b %d %Y at %H:%M") # use strftime date format
+    file(APPEND "${CMAKE_BINARY_DIR}/unsupported_examples.md" "* ${DATETIME} : cannot build modules\n")
 endif ()
