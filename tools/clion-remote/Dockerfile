@@ -31,6 +31,7 @@ RUN apt-get install -y ssh \
       cmake ninja-build \
       rsync tar \
       git \
+      ccache \
       python3 python3-pip \
       software-properties-common \
       libpthread-stubs0-dev libtbb-dev \
