@@ -1,3 +1,4 @@
+# For a portable module configuration, follow https://gitlab.kitware.com/cmake/cmake/-/issues/18355
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
     set(CMAKE_CXX_EXTENSIONS OFF)
@@ -23,7 +24,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     endfunction()
 
     function(add_module_dependencies_and_test name)
-        add_dependencies(${name} ${ARGN}.pcm)
+        foreach (mod ${ARGN})
+            add_dependencies(${name} ${mod}.pcm)
+        endforeach ()
         target_compile_options(${name} PRIVATE -fmodules)
         target_compile_options(${name} PRIVATE -fbuiltin-module-map)
         target_compile_options(${name} PRIVATE -fimplicit-module-maps)
@@ -45,6 +48,18 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     #    add_module(module_with_std_import conflicting_modules/module_with_std_import.cpp)
     #    add_executable(main_with_std_import conflicting_modules/main_with_std_import.cpp conflicting_modules/module_with_std_import.cpp)
     #    add_module_dependencies_and_test(main_with_std_import module_with_std_import)
+
+    add_module(pimpled_module pimpl/pimpled_module.cpp)
+    add_executable(pimpl pimpl/use_pimpled.cpp pimpl/pimpled_module.cpp)
+    add_module_dependencies_and_test(pimpl pimpled_module)
+
+    add_module(v1_module ownership/v1_module.cpp)
+    add_module(v2_module ownership/v2_module.cpp)
+    add_executable(ownership ownership/use_vx_foo.cpp ownership/v1_module.cpp ownership/v2_module.cpp)
+    add_module_dependencies_and_test(ownership v1_module v2_module)
+
+    add_executable(std_import std_import/std_import.cpp)
+    add_module_dependencies_and_test(std_import)
 
 else ()
     message(STATUS "\tC++20 Modules build not supported")
