@@ -13,6 +13,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
                 -stdlib=libc++
                 -pthread # due to enabled pthread
                 -fmodules
+                # -fimplicit-module-maps -fimplicit-module-maps
                 -c
                 ${CMAKE_CURRENT_SOURCE_DIR}/${ARGN}
                 -Xclang -emit-module-interface
@@ -29,25 +30,22 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         target_compile_options(${name} PRIVATE -fprebuilt-module-path=${PREBUILT_MODULE_PATH})
         message(STATUS "\tAdd module exemple ${name}")
         add_test(NAME ${name} COMMAND ${name})
+        set_property(TEST ${name} PROPERTY LABELS "Modules")
     endfunction()
 
-    add_module(helloworld4 helloworld4.cpp)
-    add_executable(main4 main4.cpp helloworld4.cpp)
-    add_module_dependencies_and_test(main4 helloworld4)
+    add_module(helloworld_module modular_helloworld/helloworld_module.cpp)
+    add_executable(modular_helloworld modular_helloworld/modular_helloworld.cpp modular_helloworld/helloworld_module.cpp)
+    add_module_dependencies_and_test(modular_helloworld helloworld_module)
 
-    add_module(helloworld3 helloworld3.cpp)
-    add_executable(main3 main3.cpp helloworld3.cpp)
-    add_module_dependencies_and_test(main3 helloworld3)
-
-    # fatal error: module 'std_config' is defined in both
-    #    add_module(greetings2 greetings2.cpp)
-    #    add_executable(main2 main2.cpp greetings2.cpp)
-    #    add_module_dependencies_and_test(main2 greetings2)
+    add_module(helloworld_module2 modular_helloworld2/helloworld_module2.cpp)
+    add_executable(helloworld2 modular_helloworld2/modular_helloworld2.cpp modular_helloworld2/helloworld_module2.cpp)
+    add_module_dependencies_and_test(helloworld2 helloworld_module2)
 
     # fatal error: module 'std_config' is defined in both
-    #    add_module(hello1 hello1.cpp)
-    #    add_executable(main1 main1.cpp hello1.cpp)
-    #    add_module_dependencies_and_test(main1 hello1)
+    #    add_module(module_with_std_import conflicting_modules/module_with_std_import.cpp)
+    #    add_executable(main_with_std_import conflicting_modules/main_with_std_import.cpp conflicting_modules/module_with_std_import.cpp)
+    #    add_module_dependencies_and_test(main_with_std_import module_with_std_import)
+
 else ()
     message(STATUS "\tC++20 Modules build not supported")
     string(TIMESTAMP DATETIME "%b %d %Y at %H:%M") # use strftime date format
