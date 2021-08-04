@@ -33,14 +33,26 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         separate_arguments(CXX_FLAGS UNIX_COMMAND "${CMAKE_CXX_FLAGS}")
         foreach (mod ${ARGN})
             if (NOT TARGET ${mod}.gcm)
-                add_custom_target(${mod}.gcm DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/gcm.cache/${mod}.gcm")
+                file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${mod}_finder.h "#include <${mod}>\n")
+                execute_process( # use special gcc option : -H (https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html)
+                        COMMAND ${CMAKE_CXX_COMPILER} "-H" "${CMAKE_CURRENT_BINARY_DIR}/${mod}_finder.h"
+                        RESULT_VARIABLE _RESULT
+                        ERROR_VARIABLE mod_path
+                        )
+                if (NOT _RESULT EQUAL 0)
+                    message(FATAL_ERROR "Cannot locate system header <${mod}>")
+                endif ()
+                string(REGEX MATCH "[^\n]*" mod_path ${mod_path})
+                string(SUBSTRING ${mod_path} 2 -1 mod_path)
+                add_custom_target(${mod}.gcm DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/gcm.cache/${mod_path}.gcm")
                 add_custom_command(
                         OUTPUT
-                        ${CMAKE_CURRENT_BINARY_DIR}/gcm.cache/${mod}.gcm
+                        ${CMAKE_CURRENT_BINARY_DIR}/gcm.cache/${mod_path}.gcm
                         COMMAND
                         ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
                         -std=c++20 -fmodules-ts
                         -x c++-system-header ${mod}
+                        DEPENDS ${mod_path}
                         COMMENT "Build system module ${mod} for target ${name}"
                 )
             endif ()
