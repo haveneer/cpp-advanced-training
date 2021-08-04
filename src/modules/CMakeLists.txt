@@ -1,4 +1,6 @@
 # For a portable module configuration, follow https://gitlab.kitware.com/cmake/cmake/-/issues/18355
+set(TEST_MODULE_PREFIX "src/modules")
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0.0")
     set(HAS_CXX_MODULES_SUPPORT TRUE)
 
@@ -9,20 +11,20 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
         # GCC requires to compile all at once (AFAIK)
         separate_arguments(CXX_FLAGS UNIX_COMMAND "${CMAKE_CXX_FLAGS}")
         list(TRANSFORM ARGN PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
-        add_custom_target(${name}.exe ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name})
+        add_custom_target(${name} ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe)
         add_custom_command(
                 OUTPUT
-                ${CMAKE_CURRENT_BINARY_DIR}/${name}
+                ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
                 COMMAND
                 ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
                 -std=c++20 -fmodules-ts
-                ${ARGN} -o ${CMAKE_CURRENT_BINARY_DIR}/${name}
+                ${ARGN} -o ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
                 DEPENDS ${ARGN}
                 COMMENT "Build modular executable ${name}"
         )
-        message(STATUS "\tAdd module example ${name}.exe")
-        add_test(NAME ${name}.exe COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${name})
-        set_property(TEST ${name}.exe PROPERTY LABELS "Modules")
+        message(STATUS "\tAdd module example ${TEST_MODULE_PREFIX}/${name}")
+        add_test(NAME ${TEST_MODULE_PREFIX}/${name} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe)
+        set_property(TEST ${TEST_MODULE_PREFIX}/${name} PROPERTY LABELS "Modules")
     endfunction()
 
     function(add_modules name)
@@ -56,7 +58,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
                         COMMENT "Build system module ${mod} for target ${name}"
                 )
             endif ()
-            add_dependencies(${name}.exe ${mod}.gcm)
+            add_dependencies(${name} ${mod}.gcm)
         endforeach ()
     endfunction()
 
@@ -67,14 +69,14 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
     set(PREBUILT_MODULE_PATH ${CMAKE_BINARY_DIR}/modules)
 
     function(add_module_executable name)
-        add_executable(${name} ${ARGN})
-        target_compile_options(${name} PRIVATE -fmodules)
-        target_compile_options(${name} PRIVATE -fbuiltin-module-map)
-        target_compile_options(${name} PRIVATE -fimplicit-module-maps)
-        target_compile_options(${name} PRIVATE -fprebuilt-module-path=${PREBUILT_MODULE_PATH})
-        message(STATUS "\tAdd module example ${name}")
-        add_test(NAME ${name} COMMAND ${name})
-        set_property(TEST ${name} PROPERTY LABELS "Modules")
+        add_executable(${name}.exe ${ARGN})
+        target_compile_options(${name}.exe PRIVATE -fmodules)
+        target_compile_options(${name}.exe PRIVATE -fbuiltin-module-map)
+        target_compile_options(${name}.exe PRIVATE -fimplicit-module-maps)
+        target_compile_options(${name}.exe PRIVATE -fprebuilt-module-path=${PREBUILT_MODULE_PATH})
+        message(STATUS "\tAdd module example ${TEST_MODULE_PREFIX}/${name}")
+        add_test(NAME ${TEST_MODULE_PREFIX}/${name} COMMAND ${name}.exe)
+        set_property(TEST ${TEST_MODULE_PREFIX}/${name} PROPERTY LABELS "Modules")
     endfunction()
 
     function(add_modules name)
@@ -94,7 +96,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
                     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     COMMENT "Build module ${mod}"
                     )
-            add_dependencies(${name} ${mod_target})
+            add_dependencies(${name}.exe ${mod_target})
         endforeach ()
     endfunction()
 
