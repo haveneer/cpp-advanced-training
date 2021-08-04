@@ -1,5 +1,5 @@
 # For a portable module configuration, follow https://gitlab.kitware.com/cmake/cmake/-/issues/18355
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0.0")
     set(HAS_CXX_MODULES_SUPPORT TRUE)
 
     set(CMAKE_CXX_EXTENSIONS OFF)
