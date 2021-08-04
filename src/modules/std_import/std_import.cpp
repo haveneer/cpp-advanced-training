@@ -1,7 +1,7 @@
 // These 3 ways should be equivalent
 import<iostream>;
 #include <iostream>
-import std.ios;
+// import std.ios;
 
 int main() {
   //

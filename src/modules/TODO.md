@@ -9,3 +9,6 @@
 * Modules
   * https://imfing.medium.com/hands-on-modules-in-c-20-abc3cd333133
   * https://pspdfkit.com/blog/2020/cpp20-in-2020-modules/
+
+* With CMake
+  * https://github.com/NTSFka/CMakeCxxModules
