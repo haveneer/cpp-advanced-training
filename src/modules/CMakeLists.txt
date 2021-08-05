@@ -85,7 +85,10 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
         foreach (mod ${ARGN})
             string(REGEX REPLACE "[^A-Za-z0-9_.]" "_" mod_target ${mod})
             get_filename_component(modfile ${mod} NAME_WLE)
-            add_custom_target(${mod_target}
+            add_custom_target(${mod_target} DEPENDS "${PREBUILT_MODULE_PATH}/${modfile}.pcm")
+            add_custom_command(
+                    OUTPUT
+                    ${PREBUILT_MODULE_PATH}/${modfile}.pcm
                     COMMAND
                     ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
                     -std=c++20 -stdlib=libc++ -fmodules
@@ -93,9 +96,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
                     -c ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     -Xclang -emit-module-interface
                     -o ${PREBUILT_MODULE_PATH}/${modfile}.pcm
-                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
-                    COMMENT "Build module ${mod}"
-                    )
+                    COMMENT "Build module ${mod} for target ${name}"
+            )
             add_dependencies(${name}.exe ${mod_target})
         endforeach ()
     endfunction()
