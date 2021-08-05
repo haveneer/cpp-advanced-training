@@ -121,9 +121,9 @@ if (HAS_CXX_MODULES_SUPPORT)
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Clang => fatal error: module 'std_config' is defined in both
-        add_module_executable(main_with_std_import dual_import/module_with_std_import.cpp dual_import/main_with_std_import.cpp)
-        add_modules(main_with_std_import dual_import/module_with_std_import.cpp)
-        add_system_modules(main_with_std_import iostream)
+        add_module_executable(dual_std_import dual_std_import/module_with_std_import.cpp dual_std_import/main_with_std_import.cpp)
+        add_modules(dual_std_import dual_std_import/module_with_std_import.cpp)
+        add_system_modules(dual_std_import iostream)
     endif ()
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -137,6 +137,10 @@ if (HAS_CXX_MODULES_SUPPORT)
 
     add_module_executable(std_import std_import/std_import.cpp)
     add_system_modules(std_import iostream)
+
+    add_module_executable(template_import template_import/template_module.cpp template_import/other_module.cpp template_import/template_import.cpp)
+    add_modules(template_import template_import/template_module.cpp template_import/other_module.cpp)
+    add_system_modules(template_import iostream)
 
 else ()
     message(STATUS "\tC++20 Modules build not supported")
