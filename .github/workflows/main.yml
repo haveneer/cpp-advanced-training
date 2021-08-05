@@ -34,10 +34,10 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-9
             cxx-compiler: g++-9
-          - name: Ubuntu Clang 13
-            os: ubuntu-20.04
-            c-compiler: clang-13
-            cxx-compiler: clang++-13
+#          - name: Ubuntu Clang 13
+#            os: ubuntu-20.04
+#            c-compiler: clang-13
+#            cxx-compiler: clang++-13
           - name: Ubuntu Clang 12
             os: ubuntu-20.04
             c-compiler: clang-12
