@@ -1,4 +1,4 @@
-export module constant_module; // no instruction before module declaration
+export module other_module; // no instruction before module declaration
 
 import<iostream>; // no instruction before import
 

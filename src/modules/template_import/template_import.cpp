@@ -1,5 +1,5 @@
 import template_module;
-import constant_module;
+import other_module;
 
 int main() {
   constexpr unsigned size = 5;

@@ -5,13 +5,12 @@ module;
 
 export module template_module;
 
-// Private template : not 'details' namespace required
+// Not exported section : no 'details' namespace required
 
-// With template is not exported
-// Usually hidden in a 'details' namespace
+// Not exported; usually hidden in a 'details' namespace
 template <typename T> decltype(auto) accessor(T *ptr, std::size_t i, std::size_t n) {
-  assert(i < n);
-  return ptr[i];
+  assert(i < n); // Use C++14 decltype(auto) tricks to be DRY on const/non-const ops
+  return ptr[i]; // Better usage when applied to Self* inside the class
 }
 
 // Exported symbols
@@ -51,7 +50,17 @@ private:
   T *m_data;
 };
 
-export template <typename T> Vector<T> operator*(T a, const Vector<T> &v);
+export template <typename T>
+Vector<T> operator*(T a, const Vector<T> &v)
+//#region [Workaround]
+// clang-format off
+#ifdef __clang__
+    { return v * a; }
+#else
+    ;
+#endif
+// clang-format on
+//#endregion
 
 /***************** definitions *******************/
 
@@ -69,4 +78,8 @@ template <typename T> Vector<T> Vector<T>::operator*(T a) const {
   return newv;
 }
 
+//#region [Workaround]
+#ifndef __clang__
 template <typename T> Vector<T> operator*(T a, const Vector<T> &v) { return v * a; }
+#endif
+//#endregion

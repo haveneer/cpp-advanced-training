@@ -96,6 +96,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
                     -c ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     -Xclang -emit-module-interface
                     -o ${PREBUILT_MODULE_PATH}/${modfile}.pcm
+                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     COMMENT "Build module ${mod} for target ${name}"
             )
             add_dependencies(${name}.exe ${mod_target})
@@ -134,8 +135,11 @@ if (HAS_CXX_MODULES_SUPPORT)
         add_modules(pimpl pimpl/pimpled_module.cpp)
     endif ()
 
-    add_module_executable(ownership ownership/v1_module.cpp ownership/v2_module.cpp ownership/use_vx_foo.cpp)
-    add_modules(ownership ownership/v1_module.cpp ownership/v2_module.cpp)
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # Clang => error: 'bar' has different definitions in different modules; definition in module 'v2_module' first difference is function body
+        add_module_executable(ownership ownership/v1_module.cpp ownership/v2_module.cpp ownership/use_vx_foo.cpp)
+        add_modules(ownership ownership/v1_module.cpp ownership/v2_module.cpp)
+    endif ()
 
     add_module_executable(std_import std_import/std_import.cpp)
     add_system_modules(std_import iostream)
