@@ -1,4 +1,4 @@
-export module helloworld_module; // define module name and export it
+export module helloworld; // define module name and export it
 
 import<iostream>;
 

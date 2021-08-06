@@ -9,7 +9,9 @@ int main() {
   }
   Vector<double> w = pi<double> * v;
 
+  //#region [Workaround]
 #ifndef __clang__
   print(w);
 #endif
+  //#endregion
 }

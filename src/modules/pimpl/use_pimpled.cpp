@@ -1,4 +1,4 @@
-import pimpled_module;
+import pimpled;
 
 //#region [Collapse all]
 #ifdef DEBUG_TYPE

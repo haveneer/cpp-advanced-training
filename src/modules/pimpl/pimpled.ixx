@@ -1,4 +1,4 @@
-export module pimpled_module;
+export module pimpled;
 struct Impl;
 
 export class S {

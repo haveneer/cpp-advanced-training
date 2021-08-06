@@ -18,7 +18,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
                 COMMAND
                 ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
                 -std=c++20 -fmodules-ts
-                ${ARGN} -o ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
+                -x c++ ${ARGN} -o ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
                 DEPENDS ${ARGN}
                 COMMENT "Build modular executable ${name}"
         )
@@ -74,6 +74,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
         target_compile_options(${name}.exe PRIVATE -fbuiltin-module-map)
         target_compile_options(${name}.exe PRIVATE -fimplicit-module-maps)
         target_compile_options(${name}.exe PRIVATE -fprebuilt-module-path=${PREBUILT_MODULE_PATH})
+        target_compile_options(${name}.exe PRIVATE -x c++) # to help .ixx file to be allowed
         message(STATUS "\tAdd module example ${TEST_MODULE_PREFIX}/${name}")
         add_test(NAME ${TEST_MODULE_PREFIX}/${name} COMMAND ${name}.exe)
         set_property(TEST ${TEST_MODULE_PREFIX}/${name} PROPERTY LABELS "Modules")
@@ -93,13 +94,14 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
                     ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
                     -std=c++20 -stdlib=libc++ -fmodules
                     -pthread # due to enabled pthread
-                    -c ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
+                    -c -x c++ ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     -Xclang -emit-module-interface
                     -o ${PREBUILT_MODULE_PATH}/${modfile}.pcm
                     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     COMMENT "Build module ${mod} for target ${name}"
             )
             add_dependencies(${name}.exe ${mod_target})
+            set_source_files_properties(${mod} PROPERTIES LANGUAGE CXX)
         endforeach ()
     endfunction()
 
@@ -111,44 +113,47 @@ endif ()
 
 if (HAS_CXX_MODULES_SUPPORT)
 
-    add_module_executable(modular_helloworld modular_helloworld/helloworld_module.cpp modular_helloworld/modular_helloworld.cpp)
-    add_modules(modular_helloworld modular_helloworld/helloworld_module.cpp)
-    add_system_modules(modular_helloworld iostream)
+
+    add_module_executable(helloworld helloworld/helloworld.ixx helloworld/helloworld.cpp)
+    add_modules(helloworld helloworld/helloworld.ixx)
+    add_system_modules(helloworld iostream)
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # GCC => error: sorry, unimplemented: private module fragment
-        add_module_executable(modular_helloworld2 modular_helloworld2/modular_helloworld2.cpp modular_helloworld2/helloworld_module2.cpp)
-        add_modules(modular_helloworld2 modular_helloworld2/helloworld_module2.cpp)
-        add_system_modules(modular_helloworld2 iostream)
+        add_module_executable(helloworld2 helloworld2/helloworld2.ixx helloworld2/helloworld2.cpp)
+        add_modules(helloworld2 helloworld2/helloworld2.ixx)
+        add_system_modules(helloworld2 iostream)
     endif ()
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Clang => fatal error: module 'std_config' is defined in both
-        add_module_executable(dual_std_import dual_std_import/module_with_std_import.cpp dual_std_import/main_with_std_import.cpp)
-        add_modules(dual_std_import dual_std_import/module_with_std_import.cpp)
+        add_module_executable(dual_std_import dual_std_import/first_std_import.ixx dual_std_import/second_std_import.cpp)
+        add_modules(dual_std_import dual_std_import/first_std_import.ixx)
         add_system_modules(dual_std_import iostream)
     endif ()
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # GCC => error: sorry, unimplemented: private module fragment
-        add_module_executable(pimpl pimpl/use_pimpled.cpp pimpl/pimpled_module.cpp)
-        add_modules(pimpl pimpl/pimpled_module.cpp)
+        add_module_executable(pimpl pimpl/use_pimpled.cpp pimpl/pimpled.ixx)
+        add_modules(pimpl pimpl/pimpled.ixx)
     endif ()
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Clang => error: 'bar' has different definitions in different modules; definition in module 'v2_module' first difference is function body
-        add_module_executable(ownership ownership/v1_module.cpp ownership/v2_module.cpp ownership/use_vx_foo.cpp)
-        add_modules(ownership ownership/v1_module.cpp ownership/v2_module.cpp)
+        add_module_executable(ownership ownership/module1.ixx ownership/module2.ixx ownership/use_multiple_foo.cpp)
+        add_modules(ownership ownership/module1.ixx ownership/module2.ixx)
     endif ()
 
     add_module_executable(std_import std_import/std_import.cpp)
     add_system_modules(std_import iostream)
 
-    add_module_executable(template_import template_import/template_module.cpp template_import/other_module.cpp template_import/template_import.cpp)
-    add_modules(template_import template_import/template_module.cpp template_import/other_module.cpp)
+    add_module_executable(template_import template_import/template_module.ixx template_import/other_module.ixx template_import/template_import.cpp)
+    add_modules(template_import template_import/template_module.ixx template_import/other_module.ixx)
     add_system_modules(template_import iostream)
 
 else ()
+    # for MSVC, see https://devblogs.microsoft.com/cppblog/using-cpp-modules-in-msvc-from-the-command-line-part-1/
+    # for GCC, clang: https://stackoverflow.com/questions/57300495/how-to-use-c20-modules-with-cmake
     message(STATUS "\tC++20 Modules build not supported")
     string(TIMESTAMP DATETIME "%b %d %Y at %H:%M") # use strftime date format
     file(APPEND "${CMAKE_BINARY_DIR}/unsupported_examples.md" "* ${DATETIME} : cannot build modules\n")

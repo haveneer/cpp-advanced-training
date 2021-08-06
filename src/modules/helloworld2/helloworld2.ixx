@@ -1,7 +1,7 @@
 module; // global module fragment
 #include <iostream>
 
-export module helloworld_module2;
+export module helloworld2;
 export void hello(const char *name = "world");
 
 module : private; // private module fragment (below not available to importers)
