@@ -112,8 +112,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
 endif ()
 
 if (HAS_CXX_MODULES_SUPPORT)
-
-
+    
+    # Use add_module_executable with all module interface (.ixx) before .cpp's
+    
     add_module_executable(helloworld helloworld/helloworld.ixx helloworld/helloworld.cpp)
     add_modules(helloworld helloworld/helloworld.ixx)
     add_system_modules(helloworld iostream)
@@ -125,27 +126,27 @@ if (HAS_CXX_MODULES_SUPPORT)
         add_system_modules(helloworld2 iostream)
     endif ()
 
+    add_module_executable(std_import std_import/std_import.cpp)
+    add_system_modules(std_import iostream)
+    
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Clang => fatal error: module 'std_config' is defined in both
-        add_module_executable(dual_std_import dual_std_import/first_std_import.ixx dual_std_import/second_std_import.cpp)
-        add_modules(dual_std_import dual_std_import/first_std_import.ixx)
-        add_system_modules(dual_std_import iostream)
+        add_module_executable(std_dual_import std_dual_import/module_std_import.ixx std_dual_import/main_std_import.cpp)
+        add_modules(std_dual_import std_dual_import/module_std_import.ixx)
+        add_system_modules(std_dual_import iostream)
     endif ()
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # GCC => error: sorry, unimplemented: private module fragment
-        add_module_executable(pimpl pimpl/use_pimpled.cpp pimpl/pimpled.ixx)
+        add_module_executable(pimpl pimpl/pimpled.ixx pimpl/use_pimpled.cpp)
         add_modules(pimpl pimpl/pimpled.ixx)
     endif ()
 
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # Clang => error: 'bar' has different definitions in different modules; definition in module 'v2_module' first difference is function body
+        # Clang => error: 'bar' has different definitions in different modules; definition in module 'module2' first difference is function body
         add_module_executable(ownership ownership/module1.ixx ownership/module2.ixx ownership/use_multiple_foo.cpp)
         add_modules(ownership ownership/module1.ixx ownership/module2.ixx)
     endif ()
-
-    add_module_executable(std_import std_import/std_import.cpp)
-    add_system_modules(std_import iostream)
 
     add_module_executable(template_import template_import/template_module.ixx template_import/other_module.ixx template_import/template_import.cpp)
     add_modules(template_import template_import/template_module.ixx template_import/other_module.ixx)
@@ -155,6 +156,11 @@ else ()
     # for MSVC, see https://devblogs.microsoft.com/cppblog/using-cpp-modules-in-msvc-from-the-command-line-part-1/
     # for GCC, clang: https://stackoverflow.com/questions/57300495/how-to-use-c20-modules-with-cmake
     message(STATUS "\tC++20 Modules build not supported")
-    string(TIMESTAMP DATETIME "%b %d %Y at %H:%M") # use strftime date format
-    file(APPEND "${CMAKE_BINARY_DIR}/unsupported_examples.md" "* ${DATETIME} : cannot build modules\n")
+    try_run(RUN_RESULT COMPILE_RESULT # use this to get exact date-time format as in unsupported.hpp 
+            ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/get_cpp_time.cpp
+            RUN_OUTPUT_VARIABLE RUN_OUTPUT)
+    if (NOT COMPILE_RESULT OR RUN_RESULT)
+        message(FATAL_ERROR "Cannot compile get_cpp_time.cpp")
+    endif()
+    file(APPEND "${CMAKE_BINARY_DIR}/unsupported_examples.md" "* ${RUN_OUTPUT} : cannot build modules\n")
 endif ()
