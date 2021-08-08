@@ -29,15 +29,18 @@ RUN apt-get install -y ssh \
       clang-12 lldb-12 libc++-12-dev libc++abi-12-dev \
       clangd-12 clang-tools-12 \
       cmake ninja-build \
-      rsync tar \
-      git \
+      rsync tar git curl \
       ccache \
       python3 python3-pip \
       software-properties-common \
       libpthread-stubs0-dev libtbb-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-  
+
+RUN curl -LO https://github.com/watchexec/watchexec/releases/download/cli-v1.17.1/watchexec-1.17.1-x86_64-unknown-linux-gnu.deb \
+    && dpkg -i watchexec-1.17.1-x86_64-unknown-linux-gnu.deb \
+    && rm -f watchexec-1.17.1-x86_64-unknown-linux-gnu.deb
+
 RUN pip3 install conan
 
 RUN ( \
