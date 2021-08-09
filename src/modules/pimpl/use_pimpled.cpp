@@ -12,9 +12,10 @@ template <typename T> std::string type() { if (std::is_same_v<std::remove_extent
 #include <iostream>
 
 int main() {
-  S s;
+  S s;              // S is exported => visible => reachable 
   s.do_stuff();     // OK.
   auto p = s.get(); // OK: pointer to incomplete type.
+                    // Impl is required => reachable only
   std::cout << "Type of p is " << type<decltype(p)>() << '\n';
   // auto impl = *s.get(); // ill-formed: use of undefined type 'Impl'.
 }

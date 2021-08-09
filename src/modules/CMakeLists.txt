@@ -16,9 +16,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
                 OUTPUT
                 ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
                 COMMAND
-                ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
+                ${CMAKE_CXX_COMPILER} ${CXX_FLAGS} -DDEBUG_TYPE
                 -std=c++20 -fmodules-ts
                 -x c++ ${ARGN} -o ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
+                -I ${CMAKE_SOURCE_DIR}/include
                 DEPENDS ${ARGN}
                 COMMENT "Build modular executable ${name}"
         )
@@ -75,6 +76,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
         target_compile_options(${name}.exe PRIVATE -fimplicit-module-maps)
         target_compile_options(${name}.exe PRIVATE -fprebuilt-module-path=${PREBUILT_MODULE_PATH})
         target_compile_options(${name}.exe PRIVATE -x c++) # to help .ixx file to be allowed
+        target_include_directories(${name}.exe PRIVATE ${CMAKE_SOURCE_DIR}/include)
         message(STATUS "\tAdd module example ${TEST_MODULE_PREFIX}/${name}")
         add_test(NAME ${TEST_MODULE_PREFIX}/${name} COMMAND ${name}.exe)
         set_property(TEST ${TEST_MODULE_PREFIX}/${name} PROPERTY LABELS "Modules")
@@ -134,14 +136,17 @@ if (HAS_CXX_MODULES_SUPPORT)
 
     add_module_executable(std_import std_import/std_import.cpp)
     add_system_modules(std_import iostream)
-    
+
+    add_module_executable(no_macro_effect no_macro_effect/preproc_citadel.ixx no_macro_effect/no_macro_effect.cpp)
+    add_modules(no_macro_effect no_macro_effect/preproc_citadel.ixx)
+
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Clang => fatal error: module 'std_config' is defined in both
         add_module_executable(std_dual_import std_dual_import/module_std_import.ixx std_dual_import/main_std_import.cpp)
         add_modules(std_dual_import std_dual_import/module_std_import.ixx)
         add_system_modules(std_dual_import iostream)
     endif ()
-
+    
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # GCC => error: sorry, unimplemented: private module fragment
         add_module_executable(pimpl pimpl/pimpled.ixx pimpl/use_pimpled.cpp)
