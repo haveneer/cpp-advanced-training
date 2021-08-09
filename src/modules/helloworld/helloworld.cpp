@@ -4,4 +4,3 @@ int main() {
   hello();
   hello("Bob");
 }
-

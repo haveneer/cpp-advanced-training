@@ -2,6 +2,7 @@ export module module1;
 
 int bar() { return 1; }
 
-export namespace module1 {
+export int foo1() { return bar(); }
+export namespace ns_module1 {
 int foo() { return bar(); }
-} // namespace module1
+} // namespace ns_module1

@@ -4,4 +4,11 @@ module;
 
 export module reexported;
 
-export int phi = (1+std::sqrt(5.))/2; 
+double foo();
+
+export int phi = (1 + std::sqrt(5.)) / 2;
+export namespace Namespace {
+double baz() { return foo(); }
+} // namespace Namespace
+
+double foo() { return std::cos(0); }

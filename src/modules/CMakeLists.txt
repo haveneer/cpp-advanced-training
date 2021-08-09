@@ -96,6 +96,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
                     -pthread # due to enabled pthread
                     -c -x c++ ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     -Xclang -emit-module-interface
+                    -fprebuilt-module-path=${PREBUILT_MODULE_PATH}
                     -o ${PREBUILT_MODULE_PATH}/${modfile}.pcm
                     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
                     COMMENT "Build module ${mod} for target ${name}"
@@ -125,6 +126,11 @@ if (HAS_CXX_MODULES_SUPPORT)
         add_modules(helloworld2 helloworld2/helloworld2.ixx)
         add_system_modules(helloworld2 iostream)
     endif ()
+
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        add_module_executable(anatomy anatomy/reexported.ixx anatomy/useful.module.ixx anatomy/anatomy.module.ixx anatomy/anatomy.module.mxx anatomy/anatomy.cpp)
+        add_modules(anatomy anatomy/reexported.ixx anatomy/useful.module.ixx anatomy/anatomy.module.ixx)
+    endif()
 
     add_module_executable(std_import std_import/std_import.cpp)
     add_system_modules(std_import iostream)

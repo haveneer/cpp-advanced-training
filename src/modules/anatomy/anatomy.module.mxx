@@ -8,3 +8,7 @@ Type function(Class *c) {
   assert(c != nullptr);
   return (data + foo()) * phi;
 }
+
+namespace Namespace {
+double bar() { return foo(); }
+} // namespace Namespace

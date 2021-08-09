@@ -13,7 +13,8 @@ export Type function(Class *);
 export int data = 1;
 export namespace Namespace {
 /* more exported things */
-}
+double bar();
+} // namespace Namespace
 
 // Not exported things (but isolated in this module)
 
