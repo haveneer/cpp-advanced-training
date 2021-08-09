@@ -1,0 +1,10 @@
+module;
+
+#include <cassert>
+
+module anatomy.module;
+
+Type function(Class *c) {
+  assert(c != nullptr);
+  return (data + foo()) * phi;
+}
