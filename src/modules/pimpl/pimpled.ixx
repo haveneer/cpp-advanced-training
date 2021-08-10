@@ -20,6 +20,7 @@ private:
 };
 
 module : private; // Everything beyond this point is not available to importers
+                  // Almost equivalent to be located in a .mxx file
 
 struct Impl {
   void do_stuff() {}

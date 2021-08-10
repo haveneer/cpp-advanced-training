@@ -16,10 +16,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
                 OUTPUT
                 ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
                 COMMAND
-                ${CMAKE_CXX_COMPILER} ${CXX_FLAGS} -DDEBUG_TYPE
+                ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
+                -I ${CMAKE_SOURCE_DIR}/include
                 -std=c++20 -fmodules-ts
                 -x c++ ${ARGN} -o ${CMAKE_CURRENT_BINARY_DIR}/${name}.exe
-                -I ${CMAKE_SOURCE_DIR}/include
                 DEPENDS ${ARGN}
                 COMMENT "Build modular executable ${name}"
         )
@@ -94,6 +94,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
                     ${PREBUILT_MODULE_PATH}/${modfile}.pcm
                     COMMAND
                     ${CMAKE_CXX_COMPILER} ${CXX_FLAGS}
+                    -I ${CMAKE_SOURCE_DIR}/include
                     -std=c++20 -stdlib=libc++ -fmodules
                     -pthread # due to enabled pthread
                     -c -x c++ ${CMAKE_CURRENT_SOURCE_DIR}/${mod}
