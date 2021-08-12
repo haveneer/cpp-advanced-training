@@ -296,7 +296,8 @@ static_assert(_inc2(1) == 2);
   [convertible_to](https://en.cppreference.com/w/cpp/concepts/convertible_to)
  */
 
-#if !defined(__clang__) || (__clang_major__ > 12) || (__clang_major__ == 12 && __clang_minor__ > 0)
+#if !defined(__PGI) && \
+    (!defined(__clang__) || (__clang_major__ > 12) || (__clang_major__ == 12 && __clang_minor__ > 0))
 template <typename T> concept compound_requirements = requires(T x) {
   { x + 1 }
   ->convertible_to<bool>; // not supported by clang 12.0

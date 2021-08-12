@@ -4,9 +4,6 @@ option(ENABLE_STATIC_ANALYSIS "Enable static analysis" OFF)
 option(BENCHMARK_ONLY "Only enables benchmark list" OFF)
 set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source in sub-projects
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # This message also avoid warning : "Manually-specified variables were not used by the project"
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}") # used for conan
 message(STATUS "Current binary directory: ${CMAKE_BINARY_DIR}")
@@ -46,9 +43,25 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-member-function -Wunused-private-field -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /Zc:__cplusplus")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI" OR CMAKE_CXX_COMPILER_ID MATCHES "NVHPC")
     set(PGI TRUE)
-    set(CMAKE_CXX_STANDARD 17) # C++20 requires an updated compiler (not yet available) 
+endif ()
+
+
+IF (PGI)
+    include(CheckCXXCompilerFlag)
+    # CMake 3.21 does not know the compile flags to use to enable it
+    # look at /usr/share/cmake-3.*/Modules/Compiler/PGI-CXX.cmake
+    set(CMAKE_CXX20_STANDARD_COMPILE_OPTION --std=c++20)
+    check_cxx_compiler_flag(${CMAKE_CXX20_STANDARD_COMPILE_OPTION} HAS_PGI_CXX20_FLAG)
+    if (HAS_PGI_CXX20_FLAG)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX20_STANDARD_COMPILE_OPTION}")
+    else ()
+        message(FATAL_ERROR "language dialect CXX20 not supported")
+    endif ()
+else ()
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif ()
 
 #------------------------------------------------------
@@ -147,8 +160,10 @@ add_subdirectory(third_party/benchmark)
 
 #------------------------------------------------------
 
-add_subdirectory(third_party/fmt)
-link_libraries(fmt::fmt)
+if (NOT PGI)
+    add_subdirectory(third_party/fmt)
+    link_libraries(fmt::fmt)
+endif ()
 
 #------------------------------------------------------
 
@@ -169,10 +184,27 @@ if (MSVC)
 endif ()
 
 if (PGI)
-    # compile time errors
-    list(APPEND EXCLUDED)
+    # compile time errors (about lib::fmt)
+    file(GLOB_RECURSE _SRCS RELATIVE "${CMAKE_SOURCE_DIR}" "src/format/*.cpp")
+    list(APPEND EXCLUDED ${_SRCS} extras/format-dynamic_translate.cpp)
+    # other files
+    list(APPEND EXCLUDED
+            src/concurrency/combinatory_result.cpp
+            src/concepts/concept_usage_showcase.cpp
+            src/concepts/legal_constraints.cpp
+            src/concepts/case_disjunction.cpp
+            )
+    # dev WIP files
+    list(APPEND EXCLUDED
+            src/concurrency/combinatory_result2.cpp
+            src/constexpr-consteval-constinit-WIP.cpp
+            )
     # runtime errors
-    list(APPEND EXCLUDED)
+    list(APPEND EXCLUDED
+            src/parallel-stl/parallel_insight.cpp
+            src/spaceship/spaceship_migration_issue1.cpp
+            src/spaceship/spaceship_migration_issue2.cpp
+            )
 endif ()
 #------------------------------------------------------
 
