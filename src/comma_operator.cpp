@@ -1,3 +1,17 @@
+#include <version>
+#if !defined(__cpp_impl_three_way_comparison) || \
+    !defined(__cpp_lib_three_way_comparison)
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_impl_three_way_comparison),
+                 STR(__cpp_lib_three_way_comparison)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 //#region [Headers]
 #include <iostream>
 //#endregion
@@ -34,3 +48,5 @@ int main() {
     std::cout << '\n';
   }
 }
+
+#endif
