@@ -11,25 +11,25 @@ REPORT_FEATURES(STR(__cpp_lib_constexpr_vector),
 //#endregion
 #else
 
+//#region [Includes]
 #include <algorithm>
-#include <cassert>
-#include <iostream>
 #include <vector>
+//#endregion
 
 constexpr int f() {
-  std::vector v = {2, 4, 5, 3};
-  std::vector<int> v2;
-  for (auto e : v) {
-    v2.push_back(e);
-    v2.push_back(e / 2);
-  }
-  std::sort(v2.begin(), v2.end());
+  std::vector v = {2, 4, 5, 3};    // vector in constexpr context
+  std::vector<int> v2;             //
+  for (auto e : v) {               //
+    v2.push_back(e);               // allocations and reallocations
+    v2.push_back(e / 2);           //
+  }                                //
+  std::sort(v2.begin(), v2.end()); // call STL non-trivial algorithm
   return v2.front() + v2.back();
 }
 
 int main() {
   constexpr auto x = f();
-  static_assert(x == 6);
+  static_assert(x == 6); // result computed at compile time
 }
 
 #endif
