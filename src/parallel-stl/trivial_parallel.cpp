@@ -25,19 +25,21 @@ int main() {
   std::generate(std::begin(data), std::end(data), [&] { return dist(engine); });
 
   const auto start1 = std::chrono::steady_clock::now();
-  
+
   std::sort(data.begin(), data.end()); // HINT compare this ...
-  
+
   const auto end1 = std::chrono::steady_clock::now();
-  std::cout << std::chrono::duration<double, std::milli>(end1 - start1).count()
+  std::cout << "original sort: "
+            << std::chrono::duration<double, std::milli>(end1 - start1).count()
             << " ms\n";
 
   const auto start2 = std::chrono::steady_clock::now();
-  
+
   std::sort(std::execution::par, data.begin(), data.end()); // HINT ... to this
-  
+
   const auto end2 = std::chrono::steady_clock::now();
-  std::cout << std::chrono::duration<double, std::milli>(end2 - start2).count()
+  std::cout << "parallel sort: "
+            << std::chrono::duration<double, std::milli>(end2 - start2).count()
             << " ms\n";
 }
 

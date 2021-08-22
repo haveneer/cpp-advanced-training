@@ -219,6 +219,7 @@ list(APPEND BENCHMARK_LIST
         src/parallel-stl/sort_executions.cpp
         src/pmr/cpp17-pmr--benchmark.cpp
         src/source_location.cpp # just for testing MSVC output
+        Solutions/parallel_word_count_bench--benchmark.cpp
         )
 
 #------------------------------------------------------
@@ -260,7 +261,7 @@ foreach (SRC ${SRCS})
         endif ()
         file(GLOB EXTRAS_PATH RELATIVE "${CMAKE_SOURCE_DIR}" "${TEST}--*.*")
 
-        string(REGEX MATCH "/parallel-stl/" NEED_PARALLEL ${SRC})
+        string(REGEX MATCH "/parallel" NEED_PARALLEL ${SRC}) # in directory or filename
         if (NEED_PARALLEL)
             set(TYPE "parallel example")
         endif ()
