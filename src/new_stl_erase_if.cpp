@@ -13,6 +13,7 @@ REPORT_FEATURES({STR(__cpp_lib_erase_if)});
 //#region [Headers]
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <list>
 #include <vector>
 

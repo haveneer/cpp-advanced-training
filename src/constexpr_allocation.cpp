@@ -1,9 +1,9 @@
 #include <version>
-#if !defined(__cpp_constexpr_dynamic_alloc)
+#if !defined(__cpp_constexpr_dynamic_alloc) || !defined(__cpp_lib_to_array)
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES(STR(__cpp_constexpr_dynamic_alloc));
+REPORT_FEATURES(STR(__cpp_constexpr_dynamic_alloc), STR(__cpp_lib_to_array));
 #else
 #error "Unsupported feature"
 #endif
@@ -98,7 +98,7 @@ constexpr double f(double x) {
   auto r = v[0]; // mutable object are allowed
   r += v[1] + v[2];
   // r += v[3]; // compiler has boundary checks
-  
+
   delete op;                   // memory deallocation checked by compiler
   return 1. / custom::sqrt(r); // floating point computation
                                // NB: std::sqrt is not _yet_ constexpr
