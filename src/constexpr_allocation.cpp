@@ -15,7 +15,7 @@ REPORT_FEATURES(STR(__cpp_constexpr_dynamic_alloc));
 // cf: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93413
 #ifdef __GNUC__
 #ifndef __clang__
-#if __GNUC__ <= 10 || __GNUC__ == 11 && __GNUC_MINOR__ <= 1
+#if __GNUC__ <= 10 || __GNUC__ == 11 && __GNUC_MINOR__ <= 2
 #define DISABLE_VIRTUAL_DTOR
 #endif
 #endif
@@ -59,7 +59,7 @@ struct Vector { // Custom aggregate
 
 struct IOp { // Virtual method allowed !!
   virtual constexpr void apply(double &a, const double &b) const noexcept = 0;
-#ifdef DISABLE_VIRTUAL_DTOR
+#ifndef DISABLE_VIRTUAL_DTOR
   virtual constexpr ~IOp() = default;
 #endif
 };
@@ -68,7 +68,7 @@ struct AddOp : IOp {
   constexpr void apply(double &a, const double &b) const noexcept override {
     a += b;
   }
-#ifdef DISABLE_VIRTUAL_DTOR
+#ifndef DISABLE_VIRTUAL_DTOR
   constexpr ~AddOp() override = default;
 #endif
 };
@@ -77,7 +77,7 @@ struct SubOp : IOp {
   constexpr void apply(double &a, const double &b) const noexcept override {
     a -= b;
   }
-#ifdef DISABLE_VIRTUAL_DTOR
+#ifndef DISABLE_VIRTUAL_DTOR
   constexpr ~SubOp() override = default;
 #endif
 };
@@ -98,7 +98,7 @@ constexpr double f(double x) {
   auto r = v[0]; // mutable object are allowed
   r += v[1] + v[2];
   // r += v[3]; // compiler has boundary checks
-
+  
   delete op;                   // memory deallocation checked by compiler
   return 1. / custom::sqrt(r); // floating point computation
                                // NB: std::sqrt is not _yet_ constexpr
