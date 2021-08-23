@@ -3,7 +3,7 @@
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES(STR(__cpp_constexpr_dynamic_alloc), STR(__cpp_lib_to_array));
+REPORT_FEATURES({STR(__cpp_constexpr_dynamic_alloc), STR(__cpp_lib_to_array)});
 #else
 #error "Unsupported feature"
 #endif
