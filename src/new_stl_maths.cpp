@@ -11,9 +11,13 @@ REPORT_FEATURES({STR(__cpp_lib_math_constants), STR(__cpp_lib_bit_cast)});
 #else
 
 //#region [Headers]
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <limits>
+
+const int a = std::numeric_limits<int>::max() / 2;
+const int b = a + 2;
 //#endregion
 #include <bit>     // for std::bit_cast
 #include <cmath>   // for std::lerp
@@ -27,7 +31,8 @@ int main() {
   std::cout << std::setw(33) << "std::numbers::log2e: " << std::numbers::log2e << '\n';
   std::cout << std::setw(33) << "std::numbers::log10e: " << std::numbers::log10e << '\n';
   std::cout << std::setw(33) << "std::numbers::pi: " << std::numbers::pi << '\n';
-  std::cout << std::setw(33) << "std::numbers::inv_pi: " << std::numbers::inv_pi << '\n';
+//#region [Many others constants]
+ std::cout << std::setw(33) << "std::numbers::inv_pi: " << std::numbers::inv_pi << '\n';
   std::cout << std::setw(33) << "std::numbers::inv_sqrtpi: " << std::numbers::inv_sqrtpi << '\n';
   std::cout << std::setw(33) << "std::numbers::ln2: " << std::numbers::ln2 << '\n';
   std::cout << std::setw(33) << "std::numbers::sqrt2: " << std::numbers::sqrt2 << '\n';
@@ -35,6 +40,7 @@ int main() {
   std::cout << std::setw(33) << "std::numbers::inv_sqrt3: " << std::numbers::inv_sqrt3 << '\n';
   std::cout << std::setw(33) << "std::numbers::egamma: " << std::numbers::egamma << '\n';
   std::cout << std::setw(33) << "std::numbers::phi: " << std::numbers::phi << "\n\n";
+  //#endregion
 
   std::cout << std::setprecision(20);
   std::cout << std::setw(33) << "std::numbers::pi_v<double>: " << std::numbers::pi_v<double> << '\n';
@@ -44,8 +50,10 @@ int main() {
   constexpr double f64v = 0.3;
   constexpr std::uint64_t u64v = 0x3cb0000000000000ULL;
   std::cout << "std::bit_cast<std::uint64_t>(" << f64v << ") == 0x" << std::hex << std::bit_cast<std::uint64_t>(f64v) << '\n';
-  std::cout << "std::bit_cast<double>(0x" << std::hex << u64v << ") == " << std::bit_cast<double>(u64v) << '\n';
-  // clang-format on
-}
+  std::cout << "std::bit_cast<double>(0x" << std::hex << u64v << ") == " << std::bit_cast<double>(u64v) << std::dec << '\n';
 
+  assert(a > 0 && b > 0);
+  std::cout << "\n(a+b)/2 = " << (a + b) / 2 << " or " << std::midpoint(a, b) << " ?\n";
+}
+// clang-format on
 #endif
