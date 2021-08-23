@@ -59,7 +59,7 @@ struct Vector { // Custom aggregate
 
 struct IOp { // Virtual method allowed !!
   virtual constexpr void apply(double &a, const double &b) const noexcept = 0;
-#ifndef DISABLE_VIRTUAL_DTOR
+#ifndef DISABLE_VIRTUAL_DTOR // GCC 11.2 workaround
   virtual constexpr ~IOp() = default;
 #endif
 };
@@ -68,7 +68,7 @@ struct AddOp : IOp {
   constexpr void apply(double &a, const double &b) const noexcept override {
     a += b;
   }
-#ifndef DISABLE_VIRTUAL_DTOR
+#ifndef DISABLE_VIRTUAL_DTOR // GCC 11.2 workaround
   constexpr ~AddOp() override = default;
 #endif
 };
@@ -77,7 +77,7 @@ struct SubOp : IOp {
   constexpr void apply(double &a, const double &b) const noexcept override {
     a -= b;
   }
-#ifndef DISABLE_VIRTUAL_DTOR
+#ifndef DISABLE_VIRTUAL_DTOR // GCC 11.2 workaround
   constexpr ~SubOp() override = default;
 #endif
 };
@@ -86,20 +86,21 @@ struct SubOp : IOp {
 constexpr double f(double x) {
   // Variable in constexpr are restricted to literals and aggregates
   Vector v{new double[3]{x, x}}; // compile-time memory allocation
-  // Vector v_not_set;           // data initialization is REQUIRED by compiler
+  // Vector v_not_set;           // error: data initialization REQUIRED by compiler
   const std::array a = std::to_array({3, 4, 5}); // aggregate OK
 
   IOp *op = new AddOp{}; // virtual class
 
   for (std::size_t i = 0; i < 3; ++i) {
-    // a[i] = 0; // const rules are still applicable
+    // a[i] = 0; // error: const rules are still applicable in constexpr
     op->apply(v[i], a[i]);
   }
   auto r = v[0]; // mutable object are allowed
   r += v[1] + v[2];
-  // r += v[3]; // compiler has boundary checks
+  // r += v[3]; // error: compiler has boundary checks
 
-  delete op;                   // memory deallocation checked by compiler
+  delete op; //                // memory deallocation checked by compiler
+  // delete op;                // error: double free checked by compiler
   return 1. / custom::sqrt(r); // floating point computation
                                // NB: std::sqrt is not _yet_ constexpr
 }
