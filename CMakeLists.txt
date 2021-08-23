@@ -197,7 +197,6 @@ if (PGI)
     # dev WIP files
     list(APPEND EXCLUDED
             src/concurrency/combinatory_result2.cpp
-            src/constexpr-consteval-constinit-WIP.cpp
             )
     # runtime errors
     list(APPEND EXCLUDED
