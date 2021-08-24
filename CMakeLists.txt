@@ -281,16 +281,17 @@ foreach (SRC ${SRCS})
         string(REGEX REPLACE "\\.cpp$" "" EXE_PATH ${SRC})
         string(REGEX REPLACE "^src/" "" EXE_PATH ${EXE_PATH})
         get_filename_component(EXE ${EXE_PATH} NAME)
-        
+
         add_executable(${EXE} ${SRCS})
         set_target_properties(${EXE} PROPERTIES SUFFIX .exe)
         # OUTPUT_NAME on Windows cannot be a full path
-        # https://gitlab.kitware.com/cmake/cmake/-/issues/22133
-        if (WIN32)
-            string(REPLACE "/" "__" EXE_PATH ${EXE_PATH})
-        endif()
+        #   https://gitlab.kitware.com/cmake/cmake/-/issues/22133
+        # make generator does not create full path 
+        # if (WIN32)
+        string(REPLACE "/" "__" EXE_PATH ${EXE_PATH})
+        # endif()
         set_target_properties(${EXE} PROPERTIES OUTPUT_NAME ${EXE_PATH})
-        
+
         string(REGEX REPLACE "^src/" "" TEST ${TEST})
         set(WILL_FAIL_FOUND 0)
         string(FIND ${SRC} "-will_fail" WILL_FAIL_FOUND)
