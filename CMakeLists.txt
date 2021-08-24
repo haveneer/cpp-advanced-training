@@ -225,9 +225,6 @@ list(APPEND BENCHMARK_LIST
 
 enable_testing()
 foreach (SRC ${SRCS})
-    string(REGEX REPLACE ".cpp$" ".exe" EXE_PATH ${SRC})
-    string(REGEX REPLACE "^src/" "" EXE_PATH ${EXE_PATH})
-    
     list(FIND EXCLUDED ${SRC} IS_EXCLUDED)
     list(FIND BENCHMARK_LIST ${SRC} IS_BENCHMARK)
     if (IS_EXCLUDED GREATER_EQUAL 0)
@@ -280,10 +277,13 @@ foreach (SRC ${SRCS})
             message(STATUS "\tAdd ${TYPE} ${SRC}")
         endif ()
 
+        string(REGEX REPLACE ".cpp$" ".exe" EXE_PATH ${SRC})
+        string(REGEX REPLACE "^src/" "" EXE_PATH ${EXE_PATH})
         get_filename_component(EXE ${EXE_PATH} NAME)
         add_executable(${EXE} ${SRCS})
         set_target_properties(${EXE} PROPERTIES OUTPUT_NAME ${EXE_PATH})
-
+        
+        string(REGEX REPLACE "^src/" "" TEST ${TEST})
         set(WILL_FAIL_FOUND 0)
         string(FIND ${SRC} "-will_fail" WILL_FAIL_FOUND)
         if (${WILL_FAIL_FOUND} EQUAL "-1")
