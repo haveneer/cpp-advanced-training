@@ -122,48 +122,7 @@ if (HAS_CXX_MODULES_SUPPORT)
     add_module_executable(helloworld helloworld/helloworld.ixx helloworld/helloworld.cpp)
     add_modules(helloworld helloworld/helloworld.ixx)
     add_system_modules(helloworld iostream)
-
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # GCC => error: sorry, unimplemented: private module fragment
-        add_module_executable(helloworld2 helloworld2/helloworld2.ixx helloworld2/helloworld2.cpp)
-        add_modules(helloworld2 helloworld2/helloworld2.ixx)
-        add_system_modules(helloworld2 iostream)
-    endif ()
-
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        add_module_executable(anatomy anatomy/reexported.ixx anatomy/useful.module.ixx anatomy/anatomy.module.ixx anatomy/anatomy.module.mxx anatomy/anatomy.cpp)
-        add_modules(anatomy anatomy/reexported.ixx anatomy/useful.module.ixx anatomy/anatomy.module.ixx)
-    endif()
-
-    add_module_executable(std_import std_import/std_import.cpp)
-    add_system_modules(std_import iostream)
-
-    add_module_executable(no_macro_effect no_macro_effect/preproc_citadel.ixx no_macro_effect/no_macro_effect.cpp)
-    add_modules(no_macro_effect no_macro_effect/preproc_citadel.ixx)
-
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # Clang => fatal error: module 'std_config' is defined in both
-        add_module_executable(std_dual_import std_dual_import/module_std_import.ixx std_dual_import/main_std_import.cpp)
-        add_modules(std_dual_import std_dual_import/module_std_import.ixx)
-        add_system_modules(std_dual_import iostream)
-    endif ()
     
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # GCC => error: sorry, unimplemented: private module fragment
-        add_module_executable(pimpl pimpl/pimpled.ixx pimpl/use_pimpled.cpp)
-        add_modules(pimpl pimpl/pimpled.ixx)
-    endif ()
-
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # Clang => error: 'bar' has different definitions in different modules; definition in module 'module2' first difference is function body
-        add_module_executable(ownership ownership/module1.ixx ownership/module2.ixx ownership/use_multiple_foo.cpp)
-        add_modules(ownership ownership/module1.ixx ownership/module2.ixx)
-    endif ()
-
-    add_module_executable(template_import template_import/template_module.ixx template_import/other_module.ixx template_import/template_import.cpp)
-    add_modules(template_import template_import/template_module.ixx template_import/other_module.ixx)
-    add_system_modules(template_import iostream)
-
 else ()
     # for MSVC, see https://devblogs.microsoft.com/cppblog/using-cpp-modules-in-msvc-from-the-command-line-part-1/
     # for GCC, clang: https://stackoverflow.com/questions/57300495/how-to-use-c20-modules-with-cmake

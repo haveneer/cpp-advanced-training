@@ -1,3 +1,0 @@
-//#region [title]
-... code ...
-//#endregion

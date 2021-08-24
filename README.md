@@ -1,4 +1,4 @@
-[![C++ CI](https://github.com/haveneer/cpp-advanced-training/workflows/C++%20CI/badge.svg)](https://github.com/haveneer/cpp-advanced-training/actions) 
+[![C++ CI](https://github.com/haveneer/cpp-advanced-training/workflows/C++%20CI/badge.svg)](https://github.com/haveneer/cpp-advanced-training/actions)
 
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
     <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0">
@@ -22,26 +22,17 @@ For more details about this training, contact [hpwxf@haveneer.com](mailto:hpwxf@
 
 * Any file `filename--unittest.cpp` is a google test and is automatically compiled using extra files `filename.h*` `filename--*.*`
 
-* Any file `filaname.cxx` is not compiled and usually contains explicit bugs 
+* Any file `filaname.cxx` is not compiled and usually contains explicit bugs
 
 * `type.h` contains tool `type(obj)` to get printable type name for given object argument
 
 * Files in `src/modules` have a specific build rules
 
-# Build with conan
-
-```
-mkdir build
-cd build 
-conan install ..
-cmake -DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake ..
-```
-
 
 # CMake options
 
 * `-DENABLE_STATIC_ANALYSIS=ON|OFF` : enable/disable static analysis while compiling
- 
+
 * `-DCMAKE_CXX_COMPILER_LAUNCHER=ccache` : enable `ccache` as compiler cache
 
 # Third party libs

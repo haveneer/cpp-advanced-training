@@ -1,8 +1,0 @@
-[requires]
-gtest/cci.20210126
-fmt/8.0.0
-#termcolor/2.0.0
-
-[generators]
-cmake_paths
-cmake_find_package
