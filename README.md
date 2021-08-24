@@ -16,7 +16,7 @@
 
 For more details about this training, contact [hpwxf@haveneer.com](mailto:hpwxf@haveneer.com).
 
-# cpp-training
+# cpp-advanced-training
 
 * Any file `filename.cpp` is automatically compiled using extra files `filename.h*` `filename--*.*`
 
@@ -24,7 +24,9 @@ For more details about this training, contact [hpwxf@haveneer.com](mailto:hpwxf@
 
 * Any file `filaname.cxx` is not compiled and usually contains explicit bugs 
 
-* `type.h` contains tool `type(obj)` to get printable type name for given object argument 
+* `type.h` contains tool `type(obj)` to get printable type name for given object argument
+
+* Files in `src/modules` have a specific build rules
 
 # Build with conan
 
