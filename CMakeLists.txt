@@ -225,9 +225,9 @@ list(APPEND BENCHMARK_LIST
 
 enable_testing()
 foreach (SRC ${SRCS})
-    get_filename_component(SHORT_SRC ${SRC} NAME)
-    string(REGEX REPLACE ".cpp$" ".exe" EXE ${SHORT_SRC})
-
+    string(REGEX REPLACE ".cpp$" ".exe" EXE_PATH ${SRC})
+    string(REGEX REPLACE "^src/" "" EXE_PATH ${EXE_PATH})
+    
     list(FIND EXCLUDED ${SRC} IS_EXCLUDED)
     list(FIND BENCHMARK_LIST ${SRC} IS_BENCHMARK)
     if (IS_EXCLUDED GREATER_EQUAL 0)
@@ -235,7 +235,7 @@ foreach (SRC ${SRCS})
     elseif (BENCHMARK_ONLY AND IS_BENCHMARK LESS 0)
         # message(STATUS "\tSkip non benchmark example ${SRC}")
     else ()
-        set(SRCS ${SRC} src/coroutines/async--server.hpp)
+        set(SRCS ${SRC})
 
         set(TYPE "example")
         string(REGEX MATCH "--unittest\\.cpp$" NEED_GTEST ${SRC})
@@ -280,7 +280,9 @@ foreach (SRC ${SRCS})
             message(STATUS "\tAdd ${TYPE} ${SRC}")
         endif ()
 
+        get_filename_component(EXE ${EXE_PATH} NAME)
         add_executable(${EXE} ${SRCS})
+        set_target_properties(${EXE} PROPERTIES OUTPUT_NAME ${EXE_PATH})
 
         set(WILL_FAIL_FOUND 0)
         string(FIND ${SRC} "-will_fail" WILL_FAIL_FOUND)
