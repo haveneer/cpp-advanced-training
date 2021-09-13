@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <string_view>
+#include <sys/stat.h>
 #include <thread>
 
 std::string_view this_file_reference = __FILE__; // this include gets reference root
@@ -21,26 +22,46 @@ std::string_view remove_common_prefix(std::string_view file,
   return file;
 }
 
-#define REPORT_FEATURES(...)                                                     \
-  int main() {                                                                   \
-    std::filesystem::path file_path{"unsupported_examples.md"};                  \
-    while (std::filesystem::exists("_lock")) { /* not a perfect file lock */     \
-      using namespace std::chrono_literals;                                      \
-      std::puts("Waiting for file lock");                                        \
-      std::this_thread::sleep_for(100ms);                                        \
-    }                                                                            \
-    std::ofstream lock("_lock");                                                 \
-    std::ofstream f(file_path, std::ios_base::app);                              \
-    f << "* " << __DATE__ << " at " << __TIME__ << " : unsupported set ( ";      \
-    std::cout << "Unsupported feature set ( ";                                   \
-    for (auto &&t : __VA_ARGS__) {                                               \
-      f << t << ' ';                                                             \
-      std::cout << t << ' ';                                                     \
-    }                                                                            \
-    f << ") in " << remove_common_prefix(__FILE__, this_file_reference) << '\n'; \
-    std::cout << ")";                                                            \
-                                                                                 \
-    f.close();                                                                   \
-    lock.close();                                                                \
-    std::filesystem::remove("_lock");                                            \
+inline bool file_exists(const std::string &filename) {
+  struct stat buffer;
+  // return std::filesystem::exists(name); // not portable with NVC 21.5
+  return (stat(filename.c_str(), &buffer) == 0);
+}
+
+struct UnsupportedReportContext {
+  UnsupportedReportContext(std::string_view date, std::string_view time) {
+    while (file_exists("_lock")) { /* not a perfect file lock */
+      using namespace std::chrono_literals;
+      std::puts("Waiting for file lock");
+      std::this_thread::sleep_for(100ms);
+    }
+    lock.open("_lock");
+    f.open(file_path, std::ios_base::app);
+    f << "* " << date << " at " << time << " : ";
   }
+
+  ~UnsupportedReportContext() {
+    f.close();
+    lock.close();
+    std::filesystem::remove("_lock");
+  }
+
+  std::filesystem::path file_path{"unsupported_examples.md"};
+  std::ofstream lock;
+  std::ofstream f;
+};
+
+#define REPORT_FEATURES(...)                                                    \
+  int main() {                                                                  \
+    UnsupportedReportContext context{__DATE__, __TIME__};                       \
+    context.f << "unsupported set ( ";                                          \
+    std::cout << "Unsupported feature set ( ";                                  \
+    for (auto &&t : __VA_ARGS__) {                                              \
+      context.f << t << ' ';                                                    \
+      std::cout << t << ' ';                                                    \
+    }                                                                           \
+    context.f << ") in " << remove_common_prefix(__FILE__, this_file_reference) \
+              << '\n';                                                          \
+    std::cout << ")";                                                           \
+  }                                                                             \
+  struct dummy // to avoid warning about "extra ';'" when using this macro
