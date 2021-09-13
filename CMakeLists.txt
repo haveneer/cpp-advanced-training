@@ -130,6 +130,21 @@ if (HAS_CXX_FEATURE_ATOMIC_WAIT)
     ADD_COMPILE_DEFINITIONS(my_cpp_lib_atomic_wait)
 endif ()
 
+# work around for MSVC 19.29 which seems to have a bug when range loop depends on a structured binding values
+check_cxx_source_compiles("
+#include <vector>
+struct S {
+  int a;
+  std::vector<int> v;
+};
+int main() {
+  for (const auto &[a, v] = S{}; auto x : v);
+}" HAS_CXX_FEATURE_RANGE_BASED_FOR_LOOP_WITH_STRUCTURED_BINDING_INIT)
+if (HAS_CXX_FEATURE_RANGE_BASED_FOR_LOOP_WITH_STRUCTURED_BINDING_INIT)
+    ADD_COMPILE_DEFINITIONS(my_cpp_feature_range_based_for_loop_with_structured_binding_init)
+endif ()
+
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
