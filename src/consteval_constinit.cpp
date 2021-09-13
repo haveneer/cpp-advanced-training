@@ -1,3 +1,15 @@
+#include <version>
+#if !defined(__cpp_consteval) || !defined(__cpp_constinit)
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_consteval), STR(__cpp_constinit)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 //#region [Declarations]
 #include <iostream>
 #include <tuple>
@@ -26,3 +38,5 @@ int main() {
   //                                  //        in a constant expression
   // std::cout << x << "! = " << frand << " compile-time=" << b2 << '\n';
 }
+
+#endif
