@@ -1,4 +1,11 @@
-int square(int n) { // a function
+//#region [Headers]
+#include <cassert>
+#include <type_traits>
+//#endregion
+
+// a runtime function: constexpr does not change anything
+constexpr int square(int n) {
+  assert(!std::is_constant_evaluated());
   return n * n;
 }
 
