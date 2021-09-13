@@ -46,7 +46,7 @@ private:
 
 public:
   auto makeOne() const {
-    return [*this] {
+    return [=] {
       std::cout << "I have been built by " << std::flush << m_name << std::endl;
     };
   }
