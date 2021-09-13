@@ -48,7 +48,8 @@ private:
 public:
   auto makeOne() const {
     return [=] {
-      std::cout << "I have been built by " << std::flush << m_name << std::endl;
+      std::cout << "I have been built by " //
+                << std::flush << m_name << std::endl;
     };
   }
 
@@ -59,9 +60,9 @@ private:
 //#region [Custom memory management]
 std::array<std::byte, sizeof(MyFactory)> buffer;
 #ifdef my_cpp_feature_lambda_in_unevaluated_context
-using Deleter = decltype([](MyFactory *ptr) {
-  ptr->MyFactory::~MyFactory();
-  buffer.fill(std::byte{0xFF});
+using Deleter = decltype([](MyFactory *ptr) { // Define a type from a lambda
+  ptr->MyFactory::~MyFactory();               // It can be assigned and copied
+  buffer.fill(std::byte{0xFF});               // Deleter d{}; is valid !
 });
 #else
 struct Deleter {
