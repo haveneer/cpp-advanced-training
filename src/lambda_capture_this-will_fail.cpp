@@ -1,4 +1,5 @@
 //#region [Includes]
+#include <array>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -57,11 +58,19 @@ private:
 
 //#region [Custom memory management]
 std::array<std::byte, sizeof(MyFactory)> buffer;
+#ifdef my_cpp_feature_lambda_in_unevaluated_context
 using Deleter = decltype([](MyFactory *ptr) {
   ptr->MyFactory::~MyFactory();
   buffer.fill(std::byte{0xFF});
 });
-
+#else
+struct Deleter {
+  void operator()(MyFactory *ptr) {
+    ptr->MyFactory::~MyFactory();
+    buffer.fill(std::byte{0xFF});
+  }
+};
+#endif
 auto makeFactory() {
   return std::unique_ptr<MyFactory, Deleter>{new (buffer.data()) MyFactory};
 }

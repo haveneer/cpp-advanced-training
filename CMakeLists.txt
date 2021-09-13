@@ -144,6 +144,14 @@ if (HAS_CXX_FEATURE_RANGE_BASED_FOR_LOOP_WITH_STRUCTURED_BINDING_INIT)
     ADD_COMPILE_DEFINITIONS(my_cpp_feature_range_based_for_loop_with_structured_binding_init)
 endif ()
 
+check_cxx_source_compiles("
+int main() {
+  using T = decltype([] {});
+}" HAS_CXX_FEATURE_LAMBDA_IN_UNEVALUATED_CONTEXT)
+if (HAS_CXX_FEATURE_LAMBDA_IN_UNEVALUATED_CONTEXT)
+    ADD_COMPILE_DEFINITIONS(my_cpp_feature_lambda_in_unevaluated_context)
+endif ()
+
 
 #------------------------------------------------------
 
