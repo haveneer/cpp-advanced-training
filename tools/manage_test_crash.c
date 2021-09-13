@@ -82,12 +82,12 @@ void _tmain(int argc, TCHAR *argv[]) {
     break;
   case WAIT_FAILED:
     printf("WaitForSingleObject() failed, error %u\n", GetLastError());
-    ExitProcess(0);
   }
 
   // Close process and thread handles.
   CloseHandle(pi.hProcess);
   CloseHandle(pi.hThread);
+  ExitProcess(1);
 }
 
 #endif /* _MSC_VER */
