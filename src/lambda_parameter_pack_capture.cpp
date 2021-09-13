@@ -25,7 +25,4 @@ int main() {
     std::cout << ">", ((std::cout << " " << std::forward<Ts>(ts)), ...) << '\n';
   };
   vglambdaT(1, 'a', 3.14); // outputs "> 1 a 3.14"
-
-  // better than an "open bar function" : [](const auto & v) { return v.size(); }
-  auto glambdaVT = []<typename T>(const std::vector<T> &v) { return v.size(); };
 }
