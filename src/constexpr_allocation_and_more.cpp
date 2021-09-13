@@ -22,8 +22,11 @@ REPORT_FEATURES({STR(__cpp_constexpr_dynamic_alloc), STR(__cpp_lib_to_array)});
 #endif
 //#endregion
 
+//#region [Headers]
 #include <array>
 #include <numeric>
+#include <iostream>
+//#endregion
 
 //#region [details]
 namespace custom {
@@ -91,10 +94,14 @@ constexpr double f(double x) {
 
   IOp *op = new AddOp{}; // virtual class
 
-  for (std::size_t i = 0; i < 3; ++i) {
-    // a[i] = 0; // error: const rules are still applicable in constexpr
-    op->apply(v[i], a[i]);
-  }
+  for (std::size_t i = 0; i < 3; ++i)
+    try {
+      // a[i] = 0; // error: const rules are still applicable in constexpr
+      op->apply(v[i], a[i]);
+    } catch (...) { // try-catch allowed but NOT throw
+      // error management
+    }
+
   auto r = v[0]; // mutable object are allowed
   r += v[1] + v[2];
   // r += v[3]; // error: compiler has boundary checks
@@ -105,7 +112,6 @@ constexpr double f(double x) {
                                // NB: std::sqrt is not _yet_ constexpr
 }
 
-#include <iostream>
 int main() {
   static_assert(f(2.) == 0.25); // floating point assertion
   std::cout << f(2.) << '\n';
