@@ -13,15 +13,16 @@ consteval std::tuple<int, bool> factorial(int n) noexcept {
 }
 
 constexpr auto constexpr_fact5 = std::get<0>(factorial(5));
-constinit auto consteval_fact5 = std::get<0>(factorial(5)); // static storage
+constinit auto constinit_fact5 = std::get<0>(factorial(5)); // static storage
 
 int main() {
-  constinit thread_local auto [f5, b1] = factorial(5); // thread local storage
+  constexpr auto r = factorial(5); // structured binding not allowed here
+  constinit thread_local auto f5 = std::get<0>(r); // thread local storage 
+  constinit thread_local auto b1 = std::get<1>(r); 
   std::cout << "5! = " << f5 << " compile-time=" << b1 << '\n';
 
   int x = std::rand() % 20;
   // auto [frand, b2] = factorial(x); // error: the value of 'x' is not usable
   //                                  //        in a constant expression
   // std::cout << x << "! = " << frand << " compile-time=" << b2 << '\n';
-  
 }
