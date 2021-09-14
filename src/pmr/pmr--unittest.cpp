@@ -3,9 +3,10 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory_resource>
+#include <string>
 
 template <template <typename T> class Collection, typename Type>
-TrackNew::Status test_body(const Type &default_value) {
+TrackNew::Status test_body(auto default_value) {
   TrackNew::reset();
 
   // buffer is a static array allocated on the stack
@@ -18,7 +19,7 @@ TrackNew::Status test_body(const Type &default_value) {
   Collection<Type> collection{&pool};
 
   for (int i = 0; i < 1000; ++i) {
-    collection.emplace_back();
+    collection.emplace_back("A string that beats SSO or Small String Optimization");
   }
 
   return TrackNew::status();
