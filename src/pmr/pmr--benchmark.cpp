@@ -1,3 +1,15 @@
+#include <version>
+#if !defined(__cpp_lib_memory_resource)
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_lib_memory_resource)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 #include <benchmark/benchmark.h>
 
 // Special memory management :
@@ -12,16 +24,8 @@
 // %<------------------------------------------------
 
 #include <list>
-#include <vector>
-
-#if defined __has_include
-#if __has_include(<memory_resource>)
-#define HAS_PMR
-#endif
-#endif
-
-#ifdef HAS_PMR
 #include <memory_resource>
+#include <vector>
 
 static void PMRList(benchmark::State &state) {
   for (auto _ : state) {
@@ -49,8 +53,6 @@ static void PMRVector(benchmark::State &state) {
 
 BENCHMARK(PMRVector);
 
-#endif /* HAS_MPR */
-
 static void standardList(benchmark::State &state) {
   for (auto _ : state) {
     std::list<int> listOfThings{
@@ -74,3 +76,5 @@ BENCHMARK(standardVector);
 // ------------------------------------------------>%
 
 BENCHMARK_MAIN();
+
+#endif

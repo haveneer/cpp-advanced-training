@@ -1,4 +1,16 @@
-﻿#include "TrackNew.hpp"
+﻿#include <version>
+#if !defined(__cpp_lib_memory_resource)
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_lib_memory_resource)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
+#include "TrackNew.hpp"
 #include <array>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -40,3 +52,5 @@ TEST(PMR, std_string_in_pmr_vector_should_not_use_new) {
   EXPECT_EQ(status.sumSize, 0);
   std::cout << status << '\n';
 }
+
+#endif

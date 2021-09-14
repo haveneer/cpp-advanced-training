@@ -1,3 +1,15 @@
+#include <version>
+#if !defined(__cpp_lib_memory_resource)
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(__cpp_lib_memory_resource)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 #include <cstdint>
 
 // Special memory management :
@@ -10,23 +22,13 @@
 // later: use https://github.com/google/benchmark
 
 #include <array>
+#include <iomanip>
+#include <iostream>
 #include <list>
+#include <memory_resource>
 #include <set>
 #include <string>
 #include <vector>
-
-#if defined __has_include
-#if __has_include(<memory_resource>)
-#define HAS_PMR
-#endif
-#endif
-
-#ifdef HAS_PMR
-#include <memory_resource>
-#endif
-
-#include <iomanip>
-#include <iostream>
 
 template <std::size_t N, typename Container>
 void print_buffer(const std::string_view &header,
@@ -63,7 +65,6 @@ void print_buffer(const std::string_view &header,
 int main() {
   using namespace std::string_literals;
   std::array<std::uint8_t, 96> buffer{};
-#ifdef HAS_PMR
   std::pmr::monotonic_buffer_resource rsrc(buffer.data(), buffer.size());
 
   // Choose one of these datastructures (list, vector, set) to observe
@@ -96,5 +97,6 @@ int main() {
   print_buffer("After insert 4" + hint(), buffer, container);
   container.insert(container.end(), 0x5);
   print_buffer("After insert 5" + hint(), buffer, container);
-#endif
 }
+
+#endif

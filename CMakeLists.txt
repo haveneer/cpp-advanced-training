@@ -239,7 +239,7 @@ list(APPEND BENCHMARK_LIST
         src/coroutines/massive-usage.cpp
         src/parallel-stl/parallel_insight.cpp
         src/parallel-stl/sort_executions.cpp
-        src/pmr/cpp17-pmr--benchmark.cpp
+        src/pmr/pmr--benchmark.cpp
         src/source_location.cpp # just for testing MSVC output
         Solutions/parallel_word_count_bench--benchmark.cpp
         )
