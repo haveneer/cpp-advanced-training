@@ -232,6 +232,7 @@ endif ()
 
 set(BENCHMARK_LIST)
 list(APPEND BENCHMARK_LIST
+        src/check_support__full_display.cpp
         src/concurrency/incrementation--benchmark.cpp
         src/concurrency/pingpong--benchmark.cpp
         src/coroutines/concurrency--benchmark.cpp
