@@ -40,7 +40,16 @@ public:
     ++m_status.numAlloc;
     m_status.sumSize += size;
 
-    void *p = (align == 0) ? std::malloc(size) : std::aligned_alloc(align, size);
+    void *p = nullptr;
+    if (align == 0) {
+      p = std::malloc(size);
+    } else {
+#ifdef _MSC_VER
+      p = _aligned_malloc(size, align);
+#else
+      p = std::aligned_alloc(align, size); // Not available in MSVC
+#endif
+    }
 
     if (m_do_trace) {
       // DON'T use std::cout here because it might allocate memory
@@ -78,7 +87,13 @@ public:
 
 void operator delete(void *p) noexcept { std::free(p); }
 void operator delete(void *p, std::size_t) noexcept { ::operator delete(p); }
-void operator delete(void *p, std::align_val_t) noexcept { std::free(p); }
+void operator delete(void *p, std::align_val_t) noexcept {
+#ifdef _MSC_VER
+  _aligned_free(p); // Windows API
+#else
+  std::free(p);                            // C++17 API
+#endif
+}
 void operator delete(void *p, std::size_t, std::align_val_t align) noexcept {
   ::operator delete(p, align);
 }
