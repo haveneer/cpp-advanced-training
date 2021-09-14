@@ -200,6 +200,7 @@ if (MSVC)
         list(APPEND EXCLUDED src/coroutines/async--unittest.cpp) # Strange timeout; should be debugged later
         list(APPEND EXCLUDED src/format/minimal-custom-formatter.cpp) # internal lib error (with MSVC 19.29)
         list(APPEND EXCLUDED src/format/format-other-functions.cpp) # timeout with MSVC 19.29
+        list(APPEND EXCLUDED src/pmr/pmr--unittest.cpp) # fatal error C1001: Internal compiler (MSVC 19.29)
     endif ()
     if (NOT DONT_VS_EXCLUDE)
         list(APPEND EXCLUDED)
@@ -243,6 +244,8 @@ list(APPEND BENCHMARK_LIST
         src/pmr/container--benchmark.cpp
         src/source_location.cpp # just for testing MSVC output
         Solutions/parallel_word_count_bench--benchmark.cpp
+        src/pmr/monotonic--unittest.cpp
+        src/pmr/pool--unittest.cpp
         )
 
 #------------------------------------------------------
