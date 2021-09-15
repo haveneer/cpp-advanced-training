@@ -25,7 +25,7 @@ REPORT_FEATURES({STR(__cpp_lib_barrier), STR(__cpp_lib_syncbuf),
 int main() {
   std::array names = {"Krusty", "Bart", "Homer", "Ned", "Maggie"};
   bool do_run = true;
-  std::barrier barrier(names.size(), [&do_run, round = 1]() mutable {
+  std::barrier barrier(names.size(), [&do_run, round = 1]() mutable noexcept {
     std::cout << "\nRound #" << round << " done\n";
     if ((do_run = (++round < 3))) // compact form: don't do that
       std::cout << "Go next round\n\t";
