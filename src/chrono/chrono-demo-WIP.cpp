@@ -22,7 +22,7 @@ int main() {
   in >> std::chrono::parse(format, tp);
   auto tp_days = floor<std::chrono::days>(tp);
   std::chrono::hh_mm_ss hms{tp - tp_days};
-  std::cout << tp << '\n';
+  //  std::cout << tp << '\n'; // should be OK in C++20 : http://wg21.link/p0355
   std::cout << "Number of days         = " << tp_days.time_since_epoch() << '\n';
   std::cout << "Number of hours        = " << hms.hours() << '\n';
   std::cout << "Number of minutes      = " << hms.minutes() << '\n';
