@@ -40,7 +40,7 @@ int main() {
     }
   });
 
-  std::jthread interruptible([](std::stop_token stopToken) { // HINT stop_token HERE
+  std::jthread interruptible([](std::stop_token stopToken /*, HINT args here */) {
     for (int counter{0}; counter < 10; ++counter) {
       std::this_thread::sleep_for(0.20s);
       if (stopToken.stop_requested())

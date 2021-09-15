@@ -14,8 +14,8 @@ REPORT_FEATURES({STR(__cpp_lib_barrier), STR(__cpp_lib_syncbuf),
 
 //#region [Collapse all]
 #include <array>
+#include <barrier>
 #include <iostream>
-#include <latch>
 #include <mutex>
 #include <syncstream>
 #include <thread>
@@ -24,19 +24,23 @@ REPORT_FEATURES({STR(__cpp_lib_barrier), STR(__cpp_lib_syncbuf),
 
 int main() {
   std::array names = {"Krusty", "Bart", "Homer", "Ned", "Maggie"};
-  std::latch latch(names.size());
-  std::cout << "Come on guys !\n\t";
+  bool do_run = true;
+  std::barrier barrier(names.size(), [&do_run, round = 1]() mutable {
+    std::cout << "\nRound #" << round << " done\n";
+    if ((do_run = (++round < 3))) // compact form: don't do that
+      std::cout << "Go next round\n\t";
+  });
+  std::cout << "Start first round\n\t";
 
   std::vector<std::jthread> runners;
   for (auto name : names) {
     runners.emplace_back([&, name]() {
-      std::osyncstream(std::cout) << name << " ";
-      latch.count_down(); // don't wait
+      while (do_run) {
+        std::cout << name << " ";
+        barrier.arrive_and_wait();
+      }
     });
   }
-
-  latch.wait();
-  std::cout << "\nEverybody is there" << std::endl;
 }
 
 #endif
