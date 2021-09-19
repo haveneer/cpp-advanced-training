@@ -117,7 +117,7 @@ public:
 #ifndef CPP20_STYLE
     std::unique_lock guard(m_mutex);
 #endif
-    bool has_value = m_head.operator bool();
+    bool has_value = static_cast<bool>(m_head);
     return !has_value;
   }
 };
