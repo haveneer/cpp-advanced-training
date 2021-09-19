@@ -13,8 +13,8 @@ REPORT_FEATURES({STR(__cpp_lib_atomic_ref)});
 //#region [Collapse all]
 #include <atomic>
 #include <future>
-#include <vector>
 #include <iostream>
+#include <vector>
 //#endregion
 
 struct BigStructure {
@@ -25,7 +25,7 @@ struct BigStructure {
 void count_parity(BigStructure &s, bool count_even) {
   std::atomic_ref counter{s.counter}; // TODO what happens with atomic not _ref ?
   for (const auto &x : s.data) {
-    if (x % 2 == count_even)
+    if (x % 2 == (count_even ? 0 : 1))
       ++counter;
   }
 }

@@ -114,7 +114,9 @@ public:
   }
 
   bool is_empty() const {
+#ifndef CPP20_STYLE
     std::unique_lock guard(m_mutex);
+#endif
     bool has_value = m_head.operator bool();
     return !has_value;
   }

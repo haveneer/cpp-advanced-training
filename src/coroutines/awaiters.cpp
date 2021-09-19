@@ -1,6 +1,8 @@
 #include <version>
 #if __has_include(<experimental/coroutine>)
+#ifndef __cpp_lib_coroutine
 #define __cpp_lib_coroutine
+#endif
 #endif
 #ifndef __cpp_lib_coroutine
 //#region [Feature check]
