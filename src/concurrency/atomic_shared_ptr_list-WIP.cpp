@@ -114,10 +114,12 @@ public:
   }
 
   bool is_empty() const {
-#ifndef CPP20_STYLE
+#ifdef CPP20_STYLE
+    bool has_value = static_cast<bool>(m_head.load());
+#else
     std::unique_lock guard(m_mutex);
+    bool has_value = static_cast<bool>(m_head.get());
 #endif
-    bool has_value = static_cast<bool>(m_head);
     return !has_value;
   }
 };
