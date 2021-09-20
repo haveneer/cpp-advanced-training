@@ -164,7 +164,7 @@ jobs:
             ;;
           *)
             mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug
-          fi
+          esac
       - name: build
         run: cmake --build build
       - name: test
