@@ -32,14 +32,13 @@ REPORT_FEATURES({STR(__cpp_lib_latch), STR(__cpp_lib_syncbuf),
 int main() {
   std::random_device rd;
 
-  constexpr int nthread{10};
-
+  constexpr int nthread{10};         // parameter for the number of threads
   std::vector<std::jthread> threads; // could be reserved to nthread
   //                                 //  but not to show movable threads
 
-  std::promise<unsigned> promise;
-  std::stop_source source;
-  std::latch latch{nthread + 1};
+  std::promise<unsigned> promise; // to set the winner (only once)
+  std::stop_source source;        // to stop other threads
+  std::latch latch{nthread + 1};  // to sync all threads start
 
   for (unsigned i{0}; i < nthread; ++i) {
     threads.emplace_back(
@@ -48,7 +47,7 @@ int main() {
                                std::promise<unsigned> &promise, // to set the winner
                                unsigned id) {                   // id of this thread
           std::default_random_engine engine{seed};
-          latch.arrive_and_wait();
+          latch.arrive_and_wait(); // all threads will start challenge together
           unsigned round = 0;
           while (engine() % 20092021) {
             // only check stop_requested sometimes to show delayed answer behavior
@@ -58,10 +57,10 @@ int main() {
               return;
             }
           }
-          try {
-            promise.set_value(id);
-            source.request_stop();
-          } catch (...) {
+          try { // an exception may occur if promise is already set
+            promise.set_value(id); // first try to be the winner
+            source.request_stop(); // then stop other threads
+          } catch (...) {          // if an exception occurs, this is a 'late' winner
             std::osyncstream(std::cout)
                 << "Thread " << id << " is too late" << std::endl;
           }
@@ -69,13 +68,13 @@ int main() {
         source.get_token(), std::ref(promise), i);
   }
 
-  latch.arrive_and_wait();
-  auto start = std::chrono::steady_clock::now();
-  auto winner = promise.get_future().get();
+  latch.arrive_and_wait(); // release last lock for latch on threads
+  auto start = std::chrono::steady_clock::now(); // will time of first completion
+  auto winner = promise.get_future().get();      // effective get data
   auto duration = std::chrono::duration<double, std::milli>(
                       std::chrono::steady_clock::now() - start)
                       .count();
-  std::cout << "The winner is " << winner << " after " << duration << "_ms"
+  std::cout << "The winner is thread #" << winner << " after " << duration << "_ms"
             << std::endl;
 }
 
