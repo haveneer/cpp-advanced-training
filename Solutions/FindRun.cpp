@@ -1,9 +1,11 @@
 #include <version>
-#if !defined(__cpp_lib_jthread)
+#if !defined(__cpp_lib_latch) || !defined(__cpp_lib_syncbuf) || \
+    !defined(__cpp_lib_jthread)
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"
-REPORT_FEATURES({STR(__cpp_lib_jthread)});
+REPORT_FEATURES({STR(__cpp_lib_latch), STR(__cpp_lib_syncbuf),
+                 STR(__cpp_lib_jthread)});
 #else
 #error "Unsupported feature"
 #endif
