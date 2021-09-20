@@ -284,6 +284,12 @@ set(SANITIZE_MEMORY_EXCLUSION_LIST
         src/analysis/dangling.cpp        # contains intentional unsafe operations 
         extras/nodiscard.cpp             # FIXME need check
         src/coroutines/massive-usage.cpp # FIXME need check
+        src/parallel-stl/parallel_insight.cpp # pb inside TBB
+        src/parallel-stl/sort_executions.cpp  # pb inside TBB
+        src/parallel-stl/transform.cpp        # pb inside TBB
+        src/parallel-stl/trivial_parallel.cpp # pb inside TBB
+        Solutions/parallel_word_count_bench--benchmark.cpp # pb inside TBB
+        Solutions/parallel_word_count_test--unittest.cpp   # pb inside TBB
         )
 
 #------------------------------------------------------
