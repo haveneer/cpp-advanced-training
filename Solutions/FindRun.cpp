@@ -40,7 +40,6 @@ int main() {
   std::promise<unsigned> promise;
   std::stop_source source;
   std::latch latch{nthread + 1};
-  std::chrono::steady_clock::time_point start;
 
   for (unsigned i{0}; i < nthread; ++i) {
     threads.emplace_back(
@@ -71,7 +70,7 @@ int main() {
   }
 
   latch.arrive_and_wait();
-  start = std::chrono::steady_clock::now();
+  auto start = std::chrono::steady_clock::now();
   auto winner = promise.get_future().get();
   auto duration = std::chrono::duration<double, std::milli>(
                       std::chrono::steady_clock::now() - start)
