@@ -27,6 +27,16 @@ jobs:
             c-compiler: gcc-11
             cxx-compiler: g++-11
             config: benchmark
+          - name: Ubuntu GCC 11 Thread Sanitizer
+            os: ubuntu-20.04
+            c-compiler: gcc-11
+            cxx-compiler: g++-11
+            config: sanitize-thread
+          - name: Ubuntu GCC 11 Memory Sanitizer
+            os: ubuntu-20.04
+            c-compiler: gcc-11
+            cxx-compiler: g++-11
+            config: sanitize-memory
           - name: Ubuntu GCC 10
             os: ubuntu-20.04
             c-compiler: gcc-10
@@ -142,9 +152,17 @@ jobs:
       - name: configure
         run: |
           echo "Configure on $(uname -a)"
-          if [ "${{matrix.config}}" == "benchmark" ]; then
-            mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ONLY=TRUE 
-          else
+          case "${{matrix.config}}" in
+          benchmark):
+            mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ONLY=TRUE
+            ;;
+          sanitize-thread):
+            mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSANITIZE=THREAD
+            ;;
+          sanitize-memory):
+            mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSANITIZE=MEMORY
+            ;;
+          *)
             mkdir build && cd build && CC="${{matrix.c-compiler}}" CXX="${{matrix.cxx-compiler}}" cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug
           fi
       - name: build

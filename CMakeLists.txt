@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(cpp-advanced-training)
 option(ENABLE_STATIC_ANALYSIS "Enable static analysis" OFF)
 option(BENCHMARK_ONLY "Only enables benchmark list" OFF)
+option(SANITIZE "Enable sanitize feature" OFF) # could be THREAD or MEMORY
 set(CPP_TRAINING_SOURCE_DIR ${PROJECT_SOURCE_DIR}) # to locate main root source in sub-projects
 
 # This message also avoid warning : "Manually-specified variables were not used by the project"
@@ -29,22 +30,38 @@ endif ()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    if (SANITIZE STREQUAL "THREAD")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+    elseif (SANITIZE STREQUAL "MEMORY")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    elseif (NOT SANITIZE STREQUAL "OFF")
+        message(FATAL_ERROR "Bad SANITIZE value; should be THREAD, MEMORY or OFF")
+    endif ()
     # To focus only on useful warnings 
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wunused-function -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-unused-parameter")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    if (SANITIZE STREQUAL "THREAD")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+    elseif (SANITIZE STREQUAL "MEMORY")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    elseif (NOT SANITIZE STREQUAL "OFF")
+        message(FATAL_ERROR "Bad SANITIZE value; should be THREAD, MEMORY or OFF")
+    endif ()
     # To focus only on useful warnings 
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-member-function -Wunused-private-field -Wno-unused-variable -Wno-unused-parameter -Wno-unused-value -Wno-unused-result -Wno-unused-but-set-variable")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /Zc:__cplusplus")
+    if (NOT SANITIZE STREQUAL "OFF")
+        message(FATAL_ERROR "SANITIZE feature not support with ${CMAKE_CXX_COMPILER_ID}")
+    endif ()
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "PGI" OR CMAKE_CXX_COMPILER_ID MATCHES "NVHPC")
     set(PGI TRUE)
+    if (NOT SANITIZE STREQUAL "OFF")
+        message(FATAL_ERROR "SANITIZE feature not support with ${CMAKE_CXX_COMPILER_ID}")
+    endif ()
 endif ()
 
 
@@ -248,16 +265,43 @@ list(APPEND BENCHMARK_LIST
         src/pmr/pool--unittest.cpp
         )
 
+# Excluded for thread sanitizer
+set(SANITIZE_THREAD_EXCLUSION_LIST
+        src/concurrency/combinatory_result2.cpp # local test and too long
+        src/concurrency/incrementation--benchmark.cpp # contains intentional unsafe operations
+        src/coroutines/async--unittest.cpp    # FIXME need check
+        src/parallel-stl/parallel_insight.cpp # pb inside TBB
+        src/parallel-stl/sort_executions.cpp  # pb inside TBB
+        src/parallel-stl/transform.cpp        # pb inside TBB
+        src/parallel-stl/trivial_parallel.cpp # pb inside TBB
+        Solutions/parallel_word_count_bench--benchmark.cpp # pb inside TBB
+        Solutions/parallel_word_count_test--unittest.cpp   # pb inside TBB
+        )
+
+# Excluded for memory sanitizer
+set(SANITIZE_MEMORY_EXCLUSION_LIST
+        src/concurrency/combinatory_result2.cpp # local test and too long
+        src/analysis/dangling.cpp        # contains intentional unsafe operations 
+        extras/nodiscard.cpp             # FIXME need check
+        src/coroutines/massive-usage.cpp # FIXME need check
+        )
+
 #------------------------------------------------------
 
 enable_testing()
 foreach (SRC ${SRCS})
     list(FIND EXCLUDED ${SRC} IS_EXCLUDED)
     list(FIND BENCHMARK_LIST ${SRC} IS_BENCHMARK)
+    list(FIND SANITIZE_THREAD_EXCLUSION_LIST ${SRC} IS_SANITIZE_THREAD_EXCLUDED)
+    list(FIND SANITIZE_MEMORY_EXCLUSION_LIST ${SRC} IS_SANITIZE_MEMORY_EXCLUDED)
     if (IS_EXCLUDED GREATER_EQUAL 0)
         message(STATUS "\tExclude example ${SRC}")
     elseif (BENCHMARK_ONLY AND IS_BENCHMARK LESS 0)
         # message(STATUS "\tSkip non benchmark example ${SRC}")
+    elseif (SANITIZE STREQUAL "THREAD" AND IS_SANITIZE_THREAD_EXCLUDED GREATER_EQUAL 0)
+        message(STATUS "\tSkip thread sanitize excluded example ${SRC}")
+    elseif (SANITIZE STREQUAL "MEMORY" AND IS_SANITIZE_MEMORY_EXCLUDED GREATER_EQUAL 0)
+        message(STATUS "\tSkip memory sanitize excluded example ${SRC}")
     else ()
         set(SRCS ${SRC})
 
