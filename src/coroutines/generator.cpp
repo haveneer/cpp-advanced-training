@@ -50,7 +50,7 @@ public:
 
   std::optional<T> next() { // (5)
     m_co_handle.resume();
-    if (not m_co_handle.done()) {
+    if (not m_co_handle.done()) { // done <=> coro on final suspend point
       return std::make_optional(m_co_handle.promise().current_value);
     } else {
       return std::nullopt;

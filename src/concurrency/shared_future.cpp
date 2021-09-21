@@ -6,8 +6,9 @@
 //#endregion
 
 int main() {
-  std::promise<void> ready_promise, t1_ready_promise, t2_ready_promise;
+  std::promise<void> ready_promise;
   std::shared_future<void> ready_future(ready_promise.get_future());
+  std::promise<void> t1_ready_promise, t2_ready_promise;
 
   std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
