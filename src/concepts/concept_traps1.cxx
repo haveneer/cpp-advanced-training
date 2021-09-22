@@ -32,7 +32,7 @@ concept Indexable = requires(T t) {
 template <typename V>
 requires Indexable<V>
 void f(const V &v) {
-  std::cout << "Iterable implementation with V=" << type<V>() << '\n';
+  std::cout << "Indexable implementation with V=" << type<V>() << '\n';
 }
 
 constexpr bool negate(bool b) { return !b; }

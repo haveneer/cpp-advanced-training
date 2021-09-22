@@ -21,8 +21,8 @@ auto imc(const Person &p) { return p.poids / (p.taille * p.taille); }
 // Use this custom operator to 'print' a Person object
 std::ostream &operator<<(std::ostream &o, const Person &p) {
   return o << "Person{" << std::setw(8) << ("\"" + p.name + "\"") << ","
-           << std::setw(3) << p.age << ", " << std::setw(4) << p.taille << ","
-           << std::setw(3) << p.poids << " imc=" << std::setw(4) << imc(p) << "}";
+           << std::setw(3) << p.age << ", " << std::setw(4) << p.taille << "m,"
+           << std::setw(3) << p.poids << "kg, imc=" << std::setw(4) << imc(p) << "}";
 }
 
 int main() {

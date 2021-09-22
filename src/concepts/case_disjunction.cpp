@@ -67,7 +67,7 @@ void f(const V &v) {   // choose #5 if Indexable but not Iterable
 }
 
 // template <HasValueType V> // #6: one distinct constraint
-// void f(const V &v) {      // no case disjunction => ambigous
+// void f(const V &v) {      // no case disjunction => ambiguous
 //   std::cout << "Indexable implementation with V=" << type<V>() << '\n';
 // }
 

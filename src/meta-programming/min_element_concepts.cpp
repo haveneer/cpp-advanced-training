@@ -18,7 +18,7 @@ REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_lib_concepts)});
 //#endregion
 
 template <typename Iter>
-concept ForwardIterator = requires(Iter iter) {
+concept ForwardIterable = requires(Iter iter) {
   ++iter;
   *iter;
 };
@@ -26,6 +26,7 @@ concept ForwardIterator = requires(Iter iter) {
 template <typename T>
 concept Comparable = requires(T a, T b) {
   { a < b } -> std::same_as<bool>;
+  { a != b } -> std::same_as<bool>;
 };
 
 template <typename T>
@@ -34,12 +35,12 @@ concept Copiable = requires(T a, T b) {
   {a = std::move(b)};
 };
 
-template <ForwardIterator I> using deref_t = decltype(*std::declval<I>());
+template <ForwardIterable I> using deref_t = decltype(*std::declval<I>());
 template <typename I>
-concept ValuableIterator = Comparable<deref_t<I>> &&(Copiable<deref_t<I>>);
+concept ValuableDeref = Comparable<deref_t<I>> &&(Copiable<deref_t<I>>);
 
-template <ForwardIterator IterT>
-IterT min_element(IterT first, IterT last) requires ValuableIterator<IterT> {
+template <ForwardIterable IterT>
+IterT min_element(IterT first, IterT last) requires ValuableDeref<IterT> {
   if (first == last) {
     return last;
   }
