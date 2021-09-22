@@ -13,7 +13,7 @@ REPORT_FEATURES({STR(my_cpp_abbreviated_function_template), STR(__cpp_concepts)}
 // MyConcept definition
 template <typename T>
 concept MyConcept = requires {
-  true;
+  false; // TODO: why this concept is always true ?
 };
 
 // MyConcept usages
