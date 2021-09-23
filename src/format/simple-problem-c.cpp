@@ -25,8 +25,8 @@ int main() {
   for (auto [name, answer, number, expected_result] : data) {
 
     const char *fmt =
-        "Name: %9s; answer: %#06x=%2$5d; number: %+-11.5g;"; // shared format
-    size_t sz = std::snprintf(nullptr, 0, fmt, name.c_str(), answer, number);
+        "Name: %9s; answer: %#06x=%5d; number: %+-11.5g;"; // shared format
+    size_t sz = std::snprintf(nullptr, 0, fmt, name.c_str(), answer, answer, number);
     std::vector<char> buffer(sz + 1);               // Note: +1 for null terminator
     std::snprintf(std::data(buffer), buffer.size(), // never use sprintf (without n)
                   fmt, name.c_str(), answer, answer, number); // should return 'sz'
