@@ -50,7 +50,7 @@ constexpr bool check() { return (InstantiateAsManyAsYouWant<Ts> && ...); }
 static_assert(check<int, unsigned, char, signed, long>());
 // C++20 template lambda style
 #if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >=201707L 
-static_assert([]<typename... Ts> { // using template lambdas
+static_assert([]<typename... Ts>() { // using template lambdas (extra () for GCC10)
   return (!InstantiateAsManyAsYouWant<Ts> && ...);
 }.template operator()<std::string, double, std::byte>());
 #endif
