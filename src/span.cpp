@@ -43,7 +43,7 @@ void g(std::string &&name, std::span<T, Extent> container) {
             << ") = {";
   for (int pos = 0; auto x : container) {
     std::cout << ((pos++ == 0) ? "" : ",") << ' ' << x;
-    x++; // we can change change
+    x++; // we can change the value
   }
   std::cout << " }\n";
 }
@@ -75,6 +75,14 @@ int main() {
   char v4[]{'1', '2', '3', '4'};
   // f(("v4", std::span{v4}); // error: requires a dynamic extent span
   g("v4", std::span{v4});
+
+  std::array v5 = {0, 1, 2, 3, 4, 5};
+  std::span sp5 = std::span{v5}.subspan(1, 4); // subspan
+  f("v5", sp5);
+  g("v5", sp5);
+  for (auto &&b : std::as_bytes(sp5)) { // span as bytes (or std::as_writable_bytes)
+    std::cout << std::hex << static_cast<int>(b);
+  }
   //#endregion
 }
 
