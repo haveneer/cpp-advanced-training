@@ -169,6 +169,13 @@ if (HAS_CXX_FEATURE_LAMBDA_IN_UNEVALUATED_CONTEXT)
     ADD_COMPILE_DEFINITIONS(my_cpp_feature_lambda_in_unevaluated_context)
 endif ()
 
+check_cxx_source_compiles("
+int main() {
+  if constexpr (requires { true; });
+}" HAS_CXX_FEATURE_IF_CONSTEXPR_REQUIRES)
+if (HAS_CXX_FEATURE_IF_CONSTEXPR_REQUIRES)
+    ADD_COMPILE_DEFINITIONS(my_cpp_feature_if_constexpr_requires)
+endif ()
 
 #------------------------------------------------------
 
