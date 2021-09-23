@@ -21,7 +21,12 @@ template <typename Container>
 void print_container(const std::string_view &text, const Container &c) {
   std::cout << text << "\n";
   std::copy(c.begin(), c.end(), std::ostream_iterator<int>(std::cout, " "));
-  std::cout << '\n';
+#ifdef __cpp_concepts
+  if constexpr (requires(Container c) { c.capacity(); })
+    std::cout << "(size=" << c.size() << ", capacity=" << c.capacity() << ")\n";
+  else
+#endif
+    std::cout << "(size=" << c.size() << ")\n";
 }
 //#endregion
 

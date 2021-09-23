@@ -22,9 +22,8 @@ static_assert(GoodNumber<5> && !GoodNumber<10>); // You can assert it at compile
 
 template <auto i>
 concept GoodNumberOnAutoTemplate = (i > 60) && requires { (i < 70); }; // requires in
-static_assert(GoodNumberOnAutoTemplate<68llu>);
 static_assert(GoodNumberOnAutoTemplate<'A'>);
-static_assert(GoodNumberOnAutoTemplate<75>); // TODO Why is it OK ? 
+static_assert(GoodNumberOnAutoTemplate<75LLU>); // TODO Why is it OK ?
 
 template <typename... Args>
 concept FoldableExpression = requires(Args... args) { // Variadic constraint
@@ -44,17 +43,27 @@ template <typename T>
 concept InstantiateAsManyAsYouWant = requires(T a, T b, T c, T d) {
   a + b / c ^ d;
 };
-static_assert(InstantiateAsManyAsYouWant<int>);
-static_assert(!InstantiateAsManyAsYouWant<double>);
+//#region [How to check a large set of type ?]
+// C++17 style
+template<typename... Ts>
+constexpr bool check() { return (InstantiateAsManyAsYouWant<Ts> && ...); }
+static_assert(check<int, unsigned, char, signed, long>());
+// C++20 template lambda style
+static_assert([]<typename... Ts> {
+  return (!InstantiateAsManyAsYouWant<Ts> && ...);
+}.template operator()<std::string, double, std::byte>());
+//#endregion
 
 template <typename T>
 concept ComplexInstanciationIsAllowed = requires {
   std::vector<T*>{new T{.x = 2}};
 };
+//#region [Ad-hoc structs for testing]
 struct Complex { int x; };
 static_assert(ComplexInstanciationIsAllowed<Complex>);
 static_assert(!ComplexInstanciationIsAllowed<double>);
 
 int main() {}
+//#endregion
 
 #endif
