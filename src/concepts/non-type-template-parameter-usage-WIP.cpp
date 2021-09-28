@@ -27,8 +27,8 @@ struct ConcreteDims {
   int i4 = 0;
 };
 
-struct DimsT {
-  constexpr auto operator()(int i1, int i2) { return ConcreteDims{i1, i2}; }
+constexpr struct DimsT {
+  constexpr auto operator()(int i1, int i2) const { return ConcreteDims{i1, i2}; }
 } Dims;
 
 std::ostream &operator<<(std::ostream &o, const ConcreteDims &dims) {
