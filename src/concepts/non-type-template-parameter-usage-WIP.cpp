@@ -20,41 +20,60 @@ REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_nontype_template_args) "_201911L
 // C++20 : Class Types in Non-Type Template Parameters:
 // * http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1907r0.html
 
-struct ConcreteDims {
-  int i1 = 0;
-  int i2 = 0;
-  int i3 = 0;
-  int i4 = 0;
+template <size_t N>
+requires((N >= 1) && (N <= 4)) struct ConcreteDims {
+  constexpr ConcreteDims(const int (&indexes)[N]) {
+    for (size_t i = 0; i < N; ++i)
+      this->indexes[i] = indexes[i];
+  }
+  int indexes[N];
 };
 
-constexpr struct DimsT {
-  constexpr auto operator()(int i1, int i2) const { return ConcreteDims{i1, i2}; }
+template <size_t N> ConcreteDims(const int (&)[N]) -> ConcreteDims<N>;
+
+template <typename DimType>
+concept IsConcreteType = std::is_same_v<DimType, ConcreteDims<1>> ||
+    std::is_same_v<DimType, ConcreteDims<2>> ||
+    std::is_same_v<DimType, ConcreteDims<3>> ||
+    std::is_same_v<DimType, ConcreteDims<4>>;
+static_assert(IsConcreteType<ConcreteDims<2>>);
+// static_assert(not IsConcreteType<ConcreteDims<0>>); // illegal by construction
+
+constexpr struct NotConstrainedDims {
+  template <auto...> constexpr auto operator()(auto... indexes) const {
+    return ConcreteDims({indexes...});
+  }
 } Dims;
 
-std::ostream &operator<<(std::ostream &o, const ConcreteDims &dims) {
-  return o << "ConcreteDims(" << dims.i1 << "," << dims.i2 << "," << dims.i3 << ","
-           << dims.i4 << ")";
+template <size_t N>
+std::ostream &operator<<(std::ostream &o, const ConcreteDims<N> &dims) {
+  o << "ConcreteDims(";
+  for (int pos = 0; auto &&index : dims.indexes)
+    o << ((pos++) ? "," : "") << index;
+  o << ")";
+  return o;
 }
 
-std::ostream &operator<<(std::ostream &o, const DimsT &dims) {
+std::ostream &operator<<(std::ostream &o, const NotConstrainedDims &dims) {
   return o << "VirtualDims()";
 }
 
 template <typename T, auto Dims = Dims> struct array {
-  array() requires(std::is_same_v<ConcreteDims, std::decay_t<decltype(Dims)>>) {
+  using DimType = std::decay_t<decltype(Dims)>;
+  array() requires(IsConcreteType<DimType>) {
     std::cout << "Statically sized with dims = " << Dims << "\n";
   }
-  array(ConcreteDims dims) requires(
-      std::is_same_v<DimsT, std::decay_t<decltype(Dims)>>) {
+  template <size_t N>
+  array(ConcreteDims<N> dims) requires(std::is_same_v<NotConstrainedDims, DimType>) {
     std::cout << "Dynamically sized with dims = " << dims << "\n";
   }
 };
 
 int main() {
   array<float, Dims(1, 2)> a; // static since Dims(1, 2) is constexpr
-  // array<float, Dims(1, 2)> a{Dims(x,y)}; // invalid: compile time sizes
+  // array<float, Dims(1, 2)> a2{Dims(2,3)}; // invalid: compile time sizes
   array<float> b{Dims(1, 2)}; // dynamic since Dims is not constexpr
-  // array<float> b{}; // invalid: runtime sizes required
+  // array<float> b2{}; // invalid: runtime sizes required
 }
 
 #endif
