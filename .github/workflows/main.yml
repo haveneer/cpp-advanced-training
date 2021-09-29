@@ -45,19 +45,19 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-9
             cxx-compiler: g++-9
-#          - name: Ubuntu Clang 13
-#            os: ubuntu-20.04
-#            c-compiler: clang-13
-#            cxx-compiler: clang++-13
+          - name: Ubuntu Clang 13
+            os: ubuntu-20.04
+            c-compiler: clang-13
+            cxx-compiler: clang++-13
+          - name: Ubuntu Clang 13 Benchmark
+            os: ubuntu-20.04
+            c-compiler: clang-13
+            cxx-compiler: clang++-13
+            config: benchmark
           - name: Ubuntu Clang 12
             os: ubuntu-20.04
             c-compiler: clang-12
             cxx-compiler: clang++-12
-          - name: Ubuntu Clang 12 Benchmark
-            os: ubuntu-20.04
-            c-compiler: clang-12
-            cxx-compiler: clang++-12
-            config: benchmark
           - name: Ubuntu Clang 11
             os: ubuntu-20.04
             c-compiler: clang-11
@@ -106,11 +106,13 @@ jobs:
       #     curl -s https://apt.kitware.com/keys/kitware-archive-latest.asc | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
       #     sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main'
       #     sudo apt update && sudo apt-get install -y cmake
+        
+      # clang compiler should be installed using https://github.com/egor-tensin/setup-clang
       - name: install Clang 13
         run: |
           # for sources, see https://apt.llvm.org
           curl -Ls https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal main'
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main'
           sudo apt update && sudo apt install -qy clang-13 libc++-13-dev libc++abi-13-dev
         if: matrix.c-compiler == 'clang-13' && runner.os == 'Linux'
       - name: install Clang-12
