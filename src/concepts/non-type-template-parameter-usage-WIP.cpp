@@ -20,8 +20,7 @@ REPORT_FEATURES({STR(__cpp_concepts), STR(__cpp_nontype_template_args) "_201911L
 // C++20 : Class Types in Non-Type Template Parameters:
 // * http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1907r0.html
 
-template <size_t N>
-requires((N >= 1) && (N <= 4)) struct ConcreteDims {
+template <size_t N> struct ConcreteDims {
   constexpr ConcreteDims(const int (&indexes)[N]) {
     for (size_t i = 0; i < N; ++i)
       this->indexes[i] = indexes[i];
@@ -31,19 +30,34 @@ requires((N >= 1) && (N <= 4)) struct ConcreteDims {
 
 template <size_t N> ConcreteDims(const int (&)[N]) -> ConcreteDims<N>;
 
-template <typename DimType>
-concept IsConcreteType = std::is_same_v<DimType, ConcreteDims<1>> ||
-    std::is_same_v<DimType, ConcreteDims<2>> ||
-    std::is_same_v<DimType, ConcreteDims<3>> ||
-    std::is_same_v<DimType, ConcreteDims<4>>;
-static_assert(IsConcreteType<ConcreteDims<2>>);
-// static_assert(not IsConcreteType<ConcreteDims<0>>); // illegal by construction
-
 constexpr struct NotConstrainedDims {
   template <auto...> constexpr auto operator()(auto... indexes) const {
     return ConcreteDims({indexes...});
   }
 } Dims;
+
+#ifdef my_cpp_feature_lambda_in_unevaluated_context
+template <typename T>
+concept IsConcreteType = requires(T **x) {
+  // The double-pointer is necessary to avoid derived-to-base conversions, ex. struct
+  // S : mytype<int, int, int> {}.
+  []<size_t N>(ConcreteDims<N> **) {}(x); // unevaluated lambda
+};
+#else
+template <typename T, template <auto...> class Z>
+struct is_specialization_of : std::false_type {};
+
+template <auto... Args, template <auto...> class Z>
+struct is_specialization_of<Z<Args...>, Z> : std::true_type {};
+
+template <typename T, template <auto...> class Z>
+inline constexpr bool is_specialization_of_v = is_specialization_of<T, Z>::value;
+
+template <typename T>
+concept IsConcreteType = is_specialization_of_v<T, ConcreteDims>;
+#endif
+static_assert(IsConcreteType<ConcreteDims<2>>);
+static_assert(not IsConcreteType<NotConstrainedDims>);
 
 template <size_t N>
 std::ostream &operator<<(std::ostream &o, const ConcreteDims<N> &dims) {
