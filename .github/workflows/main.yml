@@ -13,7 +13,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
-    continue-on-error: ${{ matrix.experimental == 'true' }}
+    continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
       matrix:
