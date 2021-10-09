@@ -99,6 +99,7 @@ if (NOT WIN32)
 endif ()
 
 #------------------------------------------------------
+message(STATUS "Custom compiler feature checks")
 # Check compiler support (when __cpp_* feature is not available)
 include(CheckCXXSourceCompiles)
 
@@ -196,18 +197,23 @@ include_directories(include)
 
 #------------------------------------------------------
 
+message(STATUS "Googletest configuration")
 # to enable shared lib in WIN32
 # cf    https://github.com/google/googletest/tree/master/googletest#incorporating-into-an-existing-cmake-project
 #   and https://stackoverflow.com/questions/12540970/how-to-make-gtest-build-mdd-instead-of-mtd-by-default-using-cmake
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # 
-
 add_subdirectory(third_party/googletest)
+
+#------------------------------------------------------
+
+message(STATUS "Google benchmark configuration")
 OPTION(BENCHMARK_ENABLE_TESTING "" OFF)
 add_subdirectory(third_party/benchmark)
 
 #------------------------------------------------------
 
 if (NOT PGI)
+    message(STATUS "FMT configuration")
     add_subdirectory(third_party/fmt)
     link_libraries(fmt::fmt)
 endif ()
