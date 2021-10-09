@@ -13,6 +13,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
+    continue-on-error: ${{ matrix.experimental == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -45,19 +46,20 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-9
             cxx-compiler: g++-9
-          - name: Ubuntu Clang 13
+          - name: Ubuntu Clang 13 (experimental)
             os: ubuntu-20.04
             c-compiler: clang-13
             cxx-compiler: clang++-13
-          - name: Ubuntu Clang 13 Benchmark
-            os: ubuntu-20.04
-            c-compiler: clang-13
-            cxx-compiler: clang++-13
-            config: benchmark
+            experimental: true
           - name: Ubuntu Clang 12
             os: ubuntu-20.04
             c-compiler: clang-12
             cxx-compiler: clang++-12
+          - name: Ubuntu Clang 12 Benchmark
+            os: ubuntu-20.04
+            c-compiler: clang-12
+            cxx-compiler: clang++-12
+            config: benchmark
           - name: Ubuntu Clang 11
             os: ubuntu-20.04
             c-compiler: clang-11
