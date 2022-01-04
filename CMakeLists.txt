@@ -178,6 +178,14 @@ if (HAS_CXX_FEATURE_IF_CONSTEXPR_REQUIRES)
     ADD_COMPILE_DEFINITIONS(my_cpp_feature_if_constexpr_requires)
 endif ()
 
+check_cxx_source_compiles("
+template <class T> T::R f1();
+int main() { }
+" HAS_CXX_FEATURE_LESS_TYPENAME)
+if (HAS_CXX_FEATURE_LESS_TYPENAME)
+    ADD_COMPILE_DEFINITIONS(my_cpp_feature_less_typename)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
