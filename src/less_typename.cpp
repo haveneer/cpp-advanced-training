@@ -1,3 +1,15 @@
+#include <version>
+#if __cplusplus > 201703L && !defined my_cpp_feature_less_typename
+//#region [Feature check]
+#if __has_include("unsupported_features.hpp")
+#include "unsupported_features.hpp"
+REPORT_FEATURES({STR(my_cpp_feature_less_typename)});
+#else
+#error "Unsupported feature"
+#endif
+//#endregion
+#else
+
 //#region [Declarations]
 #ifdef DEBUG_TYPE
 #include "type.hpp" // advanced type printing
@@ -6,8 +18,7 @@
 template <typename T> std::string type() { if (std::is_same_v<std::remove_extent_t<std::remove_const_t< std::remove_pointer_t<std::remove_reference_t<T>>>>, T>) return typeid(T).name(); else if (std::is_array_v<T>) return type<std::remove_extent_t<T>>() + "[]"; else if (std::is_const_v<T>) return type<std::remove_const_t<T>>() + " const"; else if (std::is_pointer_v<T>) return type<std::remove_pointer_t<T>>() + "*"; else if (std::is_reference_v<T>) return type<std::remove_reference_t<T>>() + ((std::is_lvalue_reference_v<T>) ? "&" : "") + ((std::is_rvalue_reference_v<T>) ? "&&" : ""); else return std::string("cannot decode ") + typeid(T).name(); }
 #endif              // clang-format on
 
-#include <vector>
-#ifdef my_cpp_feature_less_typename
+#ifdef __cplusplus> 201703L
 // C++20 compilers can infer non-ambiguous typename keyword
 // Cf proposal P0634: https://wg21.link/P0634
 #define OPTIONAL_TYPENAME
@@ -17,6 +28,7 @@ template <typename T> std::string type() { if (std::is_same_v<std::remove_extent
 #endif
 
 #include <iostream>
+#include <vector>
 
 struct TypeT {
   using V = int;
@@ -85,3 +97,5 @@ int main() {
   //                                //  non-type, but instantiation yields a type
 }
 //#endregion
+
+#endif
