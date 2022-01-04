@@ -147,8 +147,9 @@ jobs:
       - name: install additional tools and libs
         run: |
           if [ "${{runner.os}}" == "Linux" ]; then
-            # libunwind-dev sometimes required to work around cxx_feature_check(STD_REGEX) for Google Benchmark 
-            sudo apt install -y libtbb-dev ninja-build libunwind-dev
+            # libc6-dev provides around cxx_feature_check(POSIX_REGEX) for Google Benchmark
+            sudo apt install -y libc6-dev
+            sudo apt install -y libtbb-dev ninja-build 
           fi
           if [ "${{runner.os}}" == "macOS" ]; then
             brew install tbb ninja
