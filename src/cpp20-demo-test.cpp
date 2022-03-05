@@ -182,7 +182,11 @@ void lambda_20() {
     int x, y;
   };
   auto point_lambda = []<class T = point>(T && var){};
+#if !defined(_MSC_VER) || _MSC_FULL_VER!=193131104
+  // Failure seen on GitHub
+  // error C2783: 'auto lambda::lambda_20::<lambda_3>::operator ()(T &&) const': could not deduce template argument for 'T'
   point_lambda({1, 2});
+#endif
 
 #if __cpp_template_template_args
   assert(make_lambda_with_parameter_pack_capture(1, 2, 3)() == 6);
