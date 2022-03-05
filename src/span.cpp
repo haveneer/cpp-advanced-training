@@ -1,5 +1,5 @@
 #include <version>
-#ifndef __cpp_lib_span
+#ifndef my_cpp_feature_good_span_support
 //#region [Feature check]
 #if __has_include("unsupported_features.hpp")
 #include "unsupported_features.hpp"

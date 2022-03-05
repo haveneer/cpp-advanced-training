@@ -47,6 +47,10 @@ jobs:
             os: ubuntu-20.04
             c-compiler: gcc-9
             cxx-compiler: g++-9
+          - name: Ubuntu Clang 14
+            os: ubuntu-20.04
+            c-compiler: clang-14
+            cxx-compiler: clang++-14
           - name: Ubuntu Clang 13
             os: ubuntu-20.04
             c-compiler: clang-13
@@ -110,6 +114,13 @@ jobs:
       #     sudo apt update && sudo apt-get install -y cmake
         
       # clang compiler should be installed using https://github.com/egor-tensin/setup-clang
+      - name: install Clang 14
+        run: |
+          # for sources, see https://apt.llvm.org
+          curl -Ls https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-add-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main'
+          sudo apt update && sudo apt install -qy clang-14 libc++-14-dev libc++abi-14-dev
+        if: matrix.c-compiler == 'clang-14' && runner.os == 'Linux'
       - name: install Clang 13
         run: |
           # for sources, see https://apt.llvm.org

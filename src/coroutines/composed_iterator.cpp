@@ -1,5 +1,5 @@
 #include <version>
-#if __has_include(<experimental/coroutine>)
+#if !defined(__cpp_lib_coroutine) && __has_include(<experimental/coroutine>)
 #define __cpp_lib_coroutine
 #endif
 

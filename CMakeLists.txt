@@ -186,6 +186,24 @@ if (HAS_CXX_FEATURE_LESS_TYPENAME)
     ADD_COMPILE_DEFINITIONS(my_cpp_feature_less_typename)
 endif ()
 
+# Check good support of span
+# better than __cpp_lib_span with clang++-14
+check_cxx_source_compiles("
+#include <string>
+#include <vector>
+#include <span>
+
+int main() {
+  std::vector v1 = {1, 2, 3, 4};
+  std::span sp1{v1};                          
+  std::string v3{\"1234\"};
+  std::span sp3{v3};
+}
+" HAS_CXX_GOOD_SPAN_SUPPORT)
+if (HAS_CXX_GOOD_SPAN_SUPPORT)
+    ADD_COMPILE_DEFINITIONS(my_cpp_feature_good_span_support)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)
