@@ -182,7 +182,7 @@ void lambda_20() {
     int x, y;
   };
   auto point_lambda = []<class T = point>(T && var){};
-#if !defined(_MSC_VER) || (_MSC_FULL_VER<193100000 || _MSC_FULL_VER>=193200000) 
+#ifndef _MSC_VER // fails since _MSC_FULL_VER>=193100000
   // Failure seen on GitHub
   // error C2783: 'auto lambda::lambda_20::<lambda_3>::operator ()(T &&) const': could not deduce template argument for 'T'
   point_lambda({1, 2});
