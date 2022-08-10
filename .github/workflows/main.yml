@@ -76,19 +76,11 @@ jobs:
             os: ubuntu-20.04
             c-compiler: clang-10
             cxx-compiler: clang++-10
-          - name: macOS 10.15 Apple Clang
-            os: macOS-10.15
-          - name: macOS 10.15 Apple Clang Benchmark
-            os: macOS-10.15
+          - name: macOS 12 Apple Clang
+            os: macOS-12
+          - name: macOS 12 Apple Clang Benchmark
+            os: macOS-11
             config: benchmark
-          # - name: macOS 10.15 Clang 12
-          #  os: macOS-10.15
-          #  c-compiler: clang-12
-          #  cxx-compiler: clang++-12
-          ## macOS-11 not yet publicly available
-          # - name: macOS 11
-          #   os: macOS-11
-          #   compiler: # default
 
           # - name: NVidia HPC 20.11
           #   os: ubuntu-20.04
