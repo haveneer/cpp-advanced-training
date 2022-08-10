@@ -204,6 +204,24 @@ if (HAS_CXX_GOOD_SPAN_SUPPORT)
     ADD_COMPILE_DEFINITIONS(my_cpp_feature_good_span_support)
 endif ()
 
+# Check support of constexpr virtual dtor
+# May be a bug in GCC
+# cf: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93413
+check_cxx_source_compiles("
+struct Base {
+    constexpr virtual ~Base(){}
+};
+
+struct Derived: Base {};
+
+constexpr Derived d;
+
+int main() { }
+" HAS_CXX_CONSTEXPR_VIRTUAL_DTOR)
+if (HAS_CXX_CONSTEXPR_VIRTUAL_DTOR)
+    ADD_COMPILE_DEFINITIONS(my_cpp_feature_const_virtual_dtor)
+endif ()
+
 #------------------------------------------------------
 
 add_executable(manage_test_crash tools/manage_test_crash.c)

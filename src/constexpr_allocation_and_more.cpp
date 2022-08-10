@@ -10,18 +10,6 @@ REPORT_FEATURES({STR(__cpp_constexpr_dynamic_alloc), STR(__cpp_lib_to_array)});
 //#endregion
 #else
 
-//#region [GCC workaround]
-// May be a bug in GCC
-// cf: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93413
-#ifdef __GNUC__
-#ifndef __clang__
-#if __GNUC__ <= 10 || __GNUC__ == 11 && __GNUC_MINOR__ <= 2
-#define DISABLE_VIRTUAL_DTOR
-#endif
-#endif
-#endif
-//#endregion
-
 //#region [Headers]
 #include <array>
 #include <numeric>
@@ -62,7 +50,7 @@ struct Vector { // Custom aggregate
 
 struct IOp { // Virtual method allowed !!
   virtual constexpr void apply(double &a, const double &b) const noexcept = 0;
-#ifndef DISABLE_VIRTUAL_DTOR // GCC 11.2 workaround
+#ifdef my_cpp_feature_const_virtual_dtor // GCC 11.2 workaround
   virtual constexpr ~IOp() = default;
 #endif
 };
@@ -71,7 +59,7 @@ struct AddOp : IOp {
   constexpr void apply(double &a, const double &b) const noexcept override {
     a += b;
   }
-#ifndef DISABLE_VIRTUAL_DTOR // GCC 11.2 workaround
+#ifdef my_cpp_feature_const_virtual_dtor // GCC 11.2 workaround
   constexpr ~AddOp() override = default;
 #endif
 };
@@ -80,7 +68,7 @@ struct SubOp : IOp {
   constexpr void apply(double &a, const double &b) const noexcept override {
     a -= b;
   }
-#ifndef DISABLE_VIRTUAL_DTOR // GCC 11.2 workaround
+#ifdef my_cpp_feature_const_virtual_dtor // GCC 11.2 workaround
   constexpr ~SubOp() override = default;
 #endif
 };
