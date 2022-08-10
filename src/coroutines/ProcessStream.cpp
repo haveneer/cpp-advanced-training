@@ -21,6 +21,7 @@ REPORT_FEATURES({STR(__cpp_lib_coroutine)});
 #include <type_traits>
 #include <vector>
 #include <version>
+#include <utility>
 
 using std::byte;
 std::byte operator""_B(char c) { return static_cast<byte>(c); }
