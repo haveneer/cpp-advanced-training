@@ -10,6 +10,16 @@ REPORT_FEATURES({STR(__cpp_lib_ranges)});
 //#endregion
 #else
 
+//#region [Verify GCC fix]
+#ifdef __GNUC__
+#ifndef __clang__
+#if __GNUC__ >= 12
+#define SHOULD_BE_FIXED_IN_GCC12
+#endif
+#endif
+#endif
+//#endregion
+
 #include <ranges>
 #include <cassert>
 
@@ -19,7 +29,7 @@ int main() {
       | std::views::transform([](const auto &s) { return std::views::single(s); }) //
       | std::views::join;
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(SHOULD_BE_FIXED_IN_GCC12) 
   assert(std::ranges::next(v.begin()) == v.end());
 #else
   // When this assertion will fail, the bug will be solved
