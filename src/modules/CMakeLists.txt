@@ -1,7 +1,9 @@
 # For a portable module configuration, follow https://gitlab.kitware.com/cmake/cmake/-/issues/18355
 set(TEST_MODULE_PREFIX "src/modules")
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0.0")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+        AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0.0"
+        AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.0.0")
     set(HAS_CXX_MODULES_SUPPORT TRUE)
 
     set(CMAKE_CXX_EXTENSIONS OFF)
@@ -116,9 +118,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_SYSTEM_NAME STREQUAL "L
 endif ()
 
 if (HAS_CXX_MODULES_SUPPORT)
-    
+
     # Use add_module_executable with all module interface (.ixx) before .cpp's
-    
+
     add_module_executable(helloworld helloworld/helloworld.ixx helloworld/helloworld.cpp)
     add_modules(helloworld helloworld/helloworld.ixx)
     add_system_modules(helloworld iostream)
@@ -133,7 +135,7 @@ if (HAS_CXX_MODULES_SUPPORT)
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         add_module_executable(anatomy anatomy/reexported.ixx anatomy/useful.module.ixx anatomy/anatomy.module.ixx anatomy/anatomy.module.mxx anatomy/anatomy.cpp)
         add_modules(anatomy anatomy/reexported.ixx anatomy/useful.module.ixx anatomy/anatomy.module.ixx)
-    endif()
+    endif ()
 
     add_module_executable(std_import std_import/std_import.cpp)
     add_system_modules(std_import iostream)
@@ -147,7 +149,7 @@ if (HAS_CXX_MODULES_SUPPORT)
         add_modules(std_dual_import std_dual_import/module_std_import.ixx)
         add_system_modules(std_dual_import iostream)
     endif ()
-    
+
     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # GCC => error: sorry, unimplemented: private module fragment
         add_module_executable(pimpl pimpl/pimpled.ixx pimpl/use_pimpled.cpp)
@@ -173,6 +175,6 @@ else ()
             RUN_OUTPUT_VARIABLE RUN_OUTPUT)
     if (NOT COMPILE_RESULT OR RUN_RESULT)
         message(FATAL_ERROR "Cannot compile get_cpp_time.cpp")
-    endif()
+    endif ()
     file(APPEND "${CMAKE_BINARY_DIR}/unsupported_examples.md" "* ${RUN_OUTPUT} : cannot build modules\n")
 endif ()
