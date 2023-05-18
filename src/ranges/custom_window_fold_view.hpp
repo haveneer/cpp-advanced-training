@@ -6,6 +6,7 @@
 #include <iterator>
 #include <ranges>
 #include <type_traits>
+#include <string>
 
 template <std::ranges::input_range Vp, typename Acc>
 requires std::ranges::view<Vp>
