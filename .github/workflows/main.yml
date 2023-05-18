@@ -79,7 +79,7 @@ jobs:
           - name: macOS 12 Apple Clang
             os: macOS-12
           - name: macOS 12 Apple Clang Benchmark
-            os: macOS-11
+            os: macOS-12
             config: benchmark
 
           # - name: NVidia HPC 20.11
